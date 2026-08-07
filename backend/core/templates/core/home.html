@@ -4,24 +4,58 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Comunidad360</title>
 
     <link rel="stylesheet" href="{% static 'core/css/styles.css' %}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
 <body>
 
-<div class="container">
+<div class="container py-5">
 
-    <h1>🏡 Comunidad360</h1>
+    <div class="row justify-content-center">
 
-    <h2>Las Acacias Hudson</h2>
+        <div class="col-md-5">
 
-    <p>Bienvenido al portal oficial del barrio.</p>
+            <div class="card shadow-lg p-4">
 
-    <a href="#" class="boton">Ingresar</a>
+                <h1 class="text-center text-success mb-3">
+                    🏡 Comunidad360
+                </h1>
+
+                <h4 class="text-center text-secondary mb-4">
+                    Las Acacias Hudson
+                </h4>
+
+                <form>
+
+                    <div class="mb-3">
+                        <label class="form-label">Número de lote</label>
+                        <input type="text" class="form-control" placeholder="Ej: 65">
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label">Contraseña</label>
+                        <input type="password" class="form-control">
+                    </div>
+
+                    <button type="submit" class="btn btn-success w-100">
+                        Ingresar
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
 
 </div>
 
 </body>
+
 </html>
