@@ -1,9 +1,21 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 
 class Lote(models.Model):
+    usuario = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name="lote"
+    )
+
     numero = models.PositiveIntegerField(unique=True)
-    apellido_familia = models.CharField("Apellido de la familia", max_length=100)
+    apellido_familia = models.CharField(
+        "Apellido de la familia",
+        max_length=100
+    )
     email = models.EmailField(blank=True)
     telefono = models.CharField(max_length=30, blank=True)
     activo = models.BooleanField(default=True)
@@ -21,7 +33,6 @@ class Integrante(models.Model):
 
     nombre = models.CharField(max_length=100)
     apellido = models.CharField(max_length=100)
-
     fecha_nacimiento = models.DateField()
 
     parentesco = models.CharField(
@@ -30,12 +41,7 @@ class Integrante(models.Model):
     )
 
     email = models.EmailField(blank=True)
-
-    telefono = models.CharField(
-        max_length=30,
-        blank=True
-    )
-
+    telefono = models.CharField(max_length=30, blank=True)
     activo = models.BooleanField(default=True)
 
     def __str__(self):

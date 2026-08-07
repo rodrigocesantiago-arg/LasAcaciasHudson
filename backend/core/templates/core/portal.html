@@ -1,0 +1,214 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Comunidad360 - Mi Portal</title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{% static 'core/css/styles.css' %}"
+    >
+
+</head>
+
+<body>
+
+<div class="container mt-5">
+
+    <div class="card shadow-lg p-4">
+
+        <div class="text-center">
+
+            <h1 class="text-success">
+                🏡 Comunidad360
+            </h1>
+
+            <h4 class="text-secondary">
+                Las Acacias Hudson
+            </h4>
+
+        </div>
+
+        <hr>
+
+        <div class="text-center mb-4">
+
+            <h2>
+                ¡Buen día, familia {{ lote.apellido_familia }}!
+            </h2>
+
+            <p>
+                Lote {{ lote.numero }}
+            </p>
+
+        </div>
+
+
+        <div class="row g-3">
+
+            <div class="col-md-6">
+
+                <div class="card h-100 shadow-sm">
+
+                    <div class="card-body text-center">
+
+                        <h4>📰 Noticias</h4>
+
+                        <p>
+                            Noticias y novedades del barrio.
+                        </p>
+
+                        <button class="btn btn-success" disabled>
+                            Próximamente
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-md-6">
+
+                <div class="card h-100 shadow-sm">
+
+                    <div class="card-body text-center">
+
+                        <h4>📅 Reserva del SUM</h4>
+
+                        <p>
+                            Consultá y reservá el SUM.
+                        </p>
+
+                        <button class="btn btn-success" disabled>
+                            Próximamente
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-md-6">
+
+                <div class="card h-100 shadow-sm">
+
+                    <div class="card-body text-center">
+
+                        <h4>🎂 Cumpleaños</h4>
+
+                        <p>
+                            Cumpleaños de los vecinos.
+                        </p>
+
+                        <button class="btn btn-success" disabled>
+                            Próximamente
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-md-6">
+
+                <div class="card h-100 shadow-sm">
+
+                    <div class="card-body text-center">
+
+                        <h4>👨‍👩‍👧‍👦 Mi familia</h4>
+
+                        <p>
+                            Integrantes del lote.
+                        </p>
+
+                        <a
+                            href="#familia"
+                            class="btn btn-success"
+                        >
+                            Ver familia
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <hr class="my-4">
+
+
+        <div id="familia">
+
+            <h3 class="text-center mb-3">
+                👨‍👩‍👧‍👦 Integrantes del lote
+            </h3>
+
+            <div class="list-group">
+
+                {% for integrante in lote.integrantes.all %}
+
+                    <div class="list-group-item">
+
+                        <strong>
+                            {{ integrante.nombre }}
+                            {{ integrante.apellido }}
+                        </strong>
+
+                        <span class="text-muted">
+                            — {{ integrante.parentesco }}
+                        </span>
+
+                    </div>
+
+                {% empty %}
+
+                    <div class="alert alert-info">
+                        No hay integrantes registrados.
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+
+        <div class="text-center mt-4">
+
+           <a
+    href="{% url 'logout' %}"
+    class="btn btn-outline-secondary"
+>
+    Cerrar sesión
+</a>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+
+</html>
