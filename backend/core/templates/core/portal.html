@@ -25,128 +25,100 @@
 
 <body>
 
-<div class="container mt-5">
+<div class="container py-4">
 
-    <div class="card shadow-lg p-4">
+    <!-- ENCABEZADO -->
 
-        <div class="text-center">
+    <div class="card shadow-sm border-0 mb-4">
 
-            <h1 class="text-success">
-                🏡 Comunidad360
-            </h1>
+        <div class="card-body">
 
-            <h4 class="text-secondary">
-                Las Acacias Hudson
-            </h4>
+            <div class="d-flex justify-content-between align-items-center">
+
+                <div>
+
+                    <h1 class="text-success mb-1">
+                        🏡 Comunidad360
+                    </h1>
+
+                    <div class="text-secondary">
+                        Las Acacias Hudson
+                    </div>
+
+                </div>
+
+                <div class="text-end">
+
+                    <div class="fw-bold">
+                        Lote {{ lote.numero }}
+                    </div>
+
+                    <a
+                        href="{% url 'logout' %}"
+                        class="btn btn-outline-secondary btn-sm mt-2"
+                    >
+                        Cerrar sesión
+                    </a>
+
+                </div>
+
+            </div>
 
         </div>
 
-        <hr>
+    </div>
 
-        <div class="text-center mb-4">
 
-            <h2>
-                ¡Buen día, familia {{ lote.apellido_familia }}!
+    <!-- BIENVENIDA -->
+
+    <div class="card shadow-sm border-0 mb-4">
+
+        <div class="card-body text-center py-4">
+
+            <h2 class="text-success">
+                Buen día, familia {{ lote.apellido_familia }} 👋
             </h2>
 
-            <p>
-                Lote {{ lote.numero }}
+            <p class="text-secondary mb-0">
+                Bienvenidos al portal de Las Acacias Hudson.
             </p>
 
         </div>
 
+    </div>
 
-        <div class="row g-3">
 
-            <div class="col-md-6">
+    <!-- ACCESOS PRINCIPALES -->
 
-                <div class="card h-100 shadow-sm">
+    <div class="row g-4 mb-4">
 
-                    <div class="card-body text-center">
+        <!-- NOTICIAS -->
 
-                        <h4>📰 Noticias</h4>
+        <div class="col-md-6">
 
-                        <p>
-                            Noticias y novedades del barrio.
-                        </p>
+            <div class="card h-100 shadow-sm border-0">
 
-                        <button class="btn btn-success" disabled>
-                            Próximamente
-                        </button>
+                <div class="card-body text-center p-4">
 
+                    <div class="fs-1">
+                        📰
                     </div>
 
-                </div>
+                    <h3 class="mt-2">
+                        Noticias
+                    </h3>
 
-            </div>
+                    <p class="text-secondary">
+                        Enterate de las novedades y comunicados
+                        importantes del barrio.
+                    </p>
 
-
-            <div class="col-md-6">
-
-                <div class="card h-100 shadow-sm">
-
-                    <div class="card-body text-center">
-
-                        <h4>📅 Reserva del SUM</h4>
-
-                        <p>
-                            Consultá y reservá el SUM.
-                        </p>
-
-                        <button class="btn btn-success" disabled>
-                            Próximamente
-                        </button>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <div class="col-md-6">
-
-                <div class="card h-100 shadow-sm">
-
-                    <div class="card-body text-center">
-
-                        <h4>🎂 Cumpleaños</h4>
-
-                        <p>
-                            Cumpleaños de los vecinos.
-                        </p>
-
-                        <button class="btn btn-success" disabled>
-                            Próximamente
-                        </button>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <div class="col-md-6">
-
-                <div class="card h-100 shadow-sm">
-
-                    <div class="card-body text-center">
-
-                        <h4>👨‍👩‍👧‍👦 Mi familia</h4>
-
-                        <p>
-                            Integrantes del lote.
-                        </p>
-
-                        <a
-                            href="#familia"
-                            class="btn btn-success"
-                        >
-                            Ver familia
-                        </a>
-
-                    </div>
+                    <button
+                        class="btn btn-success"
+                        disabled
+                    >
+                        Próximamente
+                    </button>
 
                 </div>
 
@@ -155,12 +127,123 @@
         </div>
 
 
-        <hr class="my-4">
+        <!-- SUM -->
+
+        <div class="col-md-6">
+
+            <div class="card h-100 shadow-sm border-0">
+
+                <div class="card-body text-center p-4">
+
+                    <div class="fs-1">
+                        📅
+                    </div>
+
+                    <h3 class="mt-2">
+                        Reservar SUM
+                    </h3>
+
+                    <p class="text-secondary">
+                        Consultá la disponibilidad y reservá
+                        el salón de usos múltiples.
+                    </p>
+
+                    <button
+                        class="btn btn-success"
+                        disabled
+                    >
+                        Próximamente
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
 
 
-        <div id="familia">
+        <!-- CUMPLEAÑOS -->
 
-            <h3 class="text-center mb-3">
+        <div class="col-md-6">
+
+            <div class="card h-100 shadow-sm border-0">
+
+                <div class="card-body text-center p-4">
+
+                    <div class="fs-1">
+                        🎂
+                    </div>
+
+                    <h3 class="mt-2">
+                        Cumpleaños
+                    </h3>
+
+                    <p class="text-secondary">
+                        Consultá los próximos cumpleaños
+                        de los vecinos.
+                    </p>
+
+                    <button
+                        class="btn btn-success"
+                        disabled
+                    >
+                        Próximamente
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- FAMILIA -->
+
+        <div class="col-md-6">
+
+            <div class="card h-100 shadow-sm border-0">
+
+                <div class="card-body text-center p-4">
+
+                    <div class="fs-1">
+                        👨‍👩‍👧‍👦
+                    </div>
+
+                    <h3 class="mt-2">
+                        Mi familia
+                    </h3>
+
+                    <p class="text-secondary">
+                        Consultá los integrantes registrados
+                        en tu lote.
+                    </p>
+
+                    <a
+                        href="#familia"
+                        class="btn btn-success"
+                    >
+                        Ver familia
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- FAMILIA -->
+
+    <div
+        id="familia"
+        class="card shadow-sm border-0 mb-4"
+    >
+
+        <div class="card-body p-4">
+
+            <h3 class="text-success mb-3">
                 👨‍👩‍👧‍👦 Integrantes del lote
             </h3>
 
@@ -168,23 +251,39 @@
 
                 {% for integrante in lote.integrantes.all %}
 
-                    <div class="list-group-item">
+                    <div
+                        class="list-group-item d-flex justify-content-between align-items-center"
+                    >
 
-                        <strong>
-                            {{ integrante.nombre }}
-                            {{ integrante.apellido }}
-                        </strong>
+                        <div>
 
-                        <span class="text-muted">
-                            — {{ integrante.parentesco }}
-                        </span>
+                            <strong>
+                                {{ integrante.nombre }}
+                                {{ integrante.apellido }}
+                            </strong>
+
+                            <div class="text-secondary small">
+                                {{ integrante.parentesco }}
+                            </div>
+
+                        </div>
+
+                        {% if integrante.activo %}
+
+                            <span class="badge text-bg-success">
+                                Activo
+                            </span>
+
+                        {% endif %}
 
                     </div>
 
                 {% empty %}
 
-                    <div class="alert alert-info">
+                    <div class="alert alert-info mb-0">
+
                         No hay integrantes registrados.
+
                     </div>
 
                 {% endfor %}
@@ -193,17 +292,83 @@
 
         </div>
 
+    </div>
 
-        <div class="text-center mt-4">
 
-           <a
-    href="{% url 'logout' %}"
-    class="btn btn-outline-secondary"
->
-    Cerrar sesión
-</a>
+    <!-- INFORMACIÓN DEL LOTE -->
+
+    <div class="card shadow-sm border-0">
+
+        <div class="card-body p-4">
+
+            <h4 class="text-success">
+                🏠 Información de mi lote
+            </h4>
+
+            <div class="row mt-3">
+
+                <div class="col-md-4 mb-3">
+
+                    <strong>
+                        Lote
+                    </strong>
+
+                    <div>
+                        {{ lote.numero }}
+                    </div>
+
+                </div>
+
+                <div class="col-md-4 mb-3">
+
+                    <strong>
+                        Familia
+                    </strong>
+
+                    <div>
+                        {{ lote.apellido_familia }}
+                    </div>
+
+                </div>
+
+                <div class="col-md-4 mb-3">
+
+                    <strong>
+                        Estado
+                    </strong>
+
+                    <div>
+
+                        {% if lote.activo %}
+
+                            <span class="text-success">
+                                ● Activo
+                            </span>
+
+                        {% else %}
+
+                            <span class="text-danger">
+                                ● Inactivo
+                            </span>
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+            </div>
 
         </div>
+
+    </div>
+
+
+    <!-- PIE -->
+
+    <div class="text-center text-secondary small mt-4">
+
+        Comunidad360 · Las Acacias Hudson
 
     </div>
 
