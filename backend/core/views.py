@@ -1,6 +1,8 @@
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect
-from .models import Noticia
+
+from .forms import ReservaSUMForm
+from .models import Noticia, ReservaSUM
 
 
 def home(request):
@@ -43,12 +45,20 @@ def portal(request):
         "-fecha_publicacion"
     )[:3]
 
+    proximas_reservas = ReservaSUM.objects.filter(
+        lote=lote
+    ).order_by(
+        "-fecha",
+        "-fecha_creacion"
+    )[:3]
+
     return render(
         request,
         "core/portal.html",
         {
             "lote": lote,
             "noticias": noticias,
+            "proximas_reservas": proximas_reservas,
         }
     )
 
@@ -67,6 +77,48 @@ def noticias_view(request):
         request,
         "core/noticias.html",
         {"noticias": noticias}
+    )
+
+
+def reservar_sum(request):
+    if not request.user.is_authenticated:
+        return redirect("home")
+
+    lote = request.user.lote
+
+    if request.method == "POST":
+        form = ReservaSUMForm(request.POST)
+
+        if form.is_valid():
+            reserva = form.save(commit=False)
+            reserva.lote = lote
+            reserva.estado = "pendiente"
+
+            try:
+                reserva.save()
+
+                return render(
+                    request,
+                    "core/reserva_sum_ok.html",
+                    {"reserva": reserva}
+                )
+
+            except Exception:
+                form.add_error(
+                    None,
+                    "Ese turno ya está reservado para la fecha seleccionada."
+                )
+
+    else:
+        form = ReservaSUMForm()
+
+    return render(
+        request,
+        "core/reservar_sum.html",
+        {
+            "form": form,
+            "lote": lote,
+        }
     )
 
 
