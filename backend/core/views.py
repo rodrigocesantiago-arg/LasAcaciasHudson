@@ -1,7 +1,8 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from django.contrib.auth import authenticate, login, logout
-from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404, redirect, render
+from django.utils import timezone
 
 from .forms import ReservaSUMForm
 from .models import Noticia, ReservaSUM
@@ -54,6 +55,16 @@ def portal(request):
         "-fecha_creacion"
     )[:3]
 
+    hoy = timezone.localdate()
+
+    for reserva in proximas_reservas:
+        fecha_limite_cancelacion = reserva.fecha - timedelta(days=7)
+
+        reserva.puede_cancelar = (
+            hoy <= fecha_limite_cancelacion
+            and reserva.estado != "cancelada"
+        )
+
     return render(
         request,
         "core/portal.html",
@@ -79,6 +90,38 @@ def noticias_view(request):
         request,
         "core/noticias.html",
         {"noticias": noticias}
+    )
+
+
+def mis_reservas_sum(request):
+    if not request.user.is_authenticated:
+        return redirect("home")
+
+    lote = request.user.lote
+    hoy = timezone.localdate()
+
+    reservas = ReservaSUM.objects.filter(
+        lote=lote
+    ).order_by(
+        "-fecha",
+        "-fecha_creacion"
+    )
+
+    for reserva in reservas:
+        fecha_limite_cancelacion = reserva.fecha - timedelta(days=7)
+
+        reserva.puede_cancelar = (
+            hoy <= fecha_limite_cancelacion
+            and reserva.estado != "cancelada"
+        )
+
+    return render(
+        request,
+        "core/mis_reservas_sum.html",
+        {
+            "lote": lote,
+            "reservas": reservas,
+        }
     )
 
 
@@ -140,8 +183,6 @@ def reservar_sum(request):
 
     lote = request.user.lote
 
-    # Recibimos la fecha y el turno desde la pantalla
-    # de disponibilidad.
     fecha_inicial = request.GET.get("fecha")
     turno_inicial = request.GET.get("turno")
 
@@ -151,11 +192,7 @@ def reservar_sum(request):
         if form.is_valid():
             reserva = form.save(commit=False)
 
-            # El lote se obtiene automáticamente
-            # del usuario que inició sesión.
             reserva.lote = lote
-
-            # Toda reserva nueva comienza pendiente.
             reserva.estado = "pendiente"
 
             try:
@@ -189,6 +226,32 @@ def reservar_sum(request):
             "lote": lote,
         }
     )
+
+
+def cancelar_reserva_sum(request, reserva_id):
+    if not request.user.is_authenticated:
+        return redirect("home")
+
+    lote = request.user.lote
+
+    reserva = get_object_or_404(
+        ReservaSUM,
+        id=reserva_id,
+        lote=lote
+    )
+
+    if request.method == "POST":
+        hoy = timezone.localdate()
+        fecha_limite = reserva.fecha - timedelta(days=7)
+
+        if (
+            hoy <= fecha_limite
+            and reserva.estado != "cancelada"
+        ):
+            reserva.estado = "cancelada"
+            reserva.save()
+
+    return redirect("portal")
 
 
 def logout_view(request):
