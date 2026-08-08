@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Integrante, Lote, Noticia
+from .models import Integrante, Lote, Noticia, ReservaSUM
 
 
 @admin.register(Lote)
@@ -60,4 +60,31 @@ class NoticiaAdmin(admin.ModelAdmin):
 
     readonly_fields = (
         "fecha_publicacion",
+    )
+
+
+@admin.register(ReservaSUM)
+class ReservaSUMAdmin(admin.ModelAdmin):
+    list_display = (
+        "fecha",
+        "turno",
+        "lote",
+        "cantidad_personas",
+        "estado",
+        "fecha_creacion",
+    )
+
+    list_filter = (
+        "turno",
+        "estado",
+        "fecha",
+    )
+
+    search_fields = (
+        "lote__numero",
+        "lote__apellido_familia",
+    )
+
+    readonly_fields = (
+        "fecha_creacion",
     )

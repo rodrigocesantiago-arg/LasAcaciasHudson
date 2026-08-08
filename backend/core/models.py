@@ -109,3 +109,74 @@ class Noticia(models.Model):
         ordering = ["-fecha_publicacion"]
         verbose_name = "Noticia"
         verbose_name_plural = "Noticias"
+
+
+class ReservaSUM(models.Model):
+
+    TURNOS = [
+        ("dia", "Turno Día"),
+        ("noche", "Turno Noche"),
+    ]
+
+    ESTADOS = [
+        ("pendiente", "Pendiente"),
+        ("confirmada", "Confirmada"),
+        ("cancelada", "Cancelada"),
+    ]
+
+    lote = models.ForeignKey(
+        Lote,
+        on_delete=models.CASCADE,
+        related_name="reservas_sum"
+    )
+
+    fecha = models.DateField(
+        "Fecha de reserva"
+    )
+
+    turno = models.CharField(
+        "Turno",
+        max_length=10,
+        choices=TURNOS
+    )
+
+    cantidad_personas = models.PositiveIntegerField(
+        "Cantidad estimada de personas",
+        default=1
+    )
+
+    observaciones = models.TextField(
+        "Observaciones",
+        blank=True
+    )
+
+    estado = models.CharField(
+        "Estado",
+        max_length=20,
+        choices=ESTADOS,
+        default="pendiente"
+    )
+
+    fecha_creacion = models.DateTimeField(
+        "Fecha de creación",
+        auto_now_add=True
+    )
+
+    def __str__(self):
+        return (
+            f"SUM - Lote {self.lote.numero} - "
+            f"{self.fecha} - {self.get_turno_display()}"
+        )
+
+    class Meta:
+        ordering = ["fecha", "turno"]
+
+        verbose_name = "Reserva del SUM"
+        verbose_name_plural = "Reservas del SUM"
+
+        constraints = [
+            models.UniqueConstraint(
+                fields=["fecha", "turno"],
+                name="reserva_sum_fecha_turno_unico"
+            )
+        ]
