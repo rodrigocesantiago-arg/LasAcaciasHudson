@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Lote, Integrante
+from .models import Integrante, Lote, Noticia
 
 
 @admin.register(Lote)
@@ -7,18 +7,14 @@ class LoteAdmin(admin.ModelAdmin):
     list_display = (
         "numero",
         "apellido_familia",
-        "email",
-        "telefono",
+        "usuario",
         "activo",
     )
 
     search_fields = (
         "numero",
         "apellido_familia",
-        "email",
     )
-
-    list_filter = ("activo",)
 
 
 @admin.register(Integrante)
@@ -31,12 +27,37 @@ class IntegranteAdmin(admin.ModelAdmin):
         "activo",
     )
 
+    list_filter = (
+        "parentesco",
+        "activo",
+    )
+
     search_fields = (
         "nombre",
         "apellido",
     )
 
+
+@admin.register(Noticia)
+class NoticiaAdmin(admin.ModelAdmin):
+    list_display = (
+        "titulo",
+        "fecha_publicacion",
+        "destacada",
+        "activa",
+        "autor",
+    )
+
     list_filter = (
-        "parentesco",
-        "activo",
+        "destacada",
+        "activa",
+    )
+
+    search_fields = (
+        "titulo",
+        "contenido",
+    )
+
+    readonly_fields = (
+        "fecha_publicacion",
     )

@@ -1,5 +1,6 @@
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect
+from .models import Noticia
 
 
 def home(request):
@@ -36,10 +37,19 @@ def portal(request):
 
     lote = request.user.lote
 
+    noticias = Noticia.objects.filter(
+        activa=True
+    ).order_by(
+        "-fecha_publicacion"
+    )
+
     return render(
         request,
         "core/portal.html",
-        {"lote": lote}
+        {
+            "lote": lote,
+            "noticias": noticias,
+        }
     )
 
 
