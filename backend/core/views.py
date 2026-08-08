@@ -41,7 +41,7 @@ def portal(request):
         activa=True
     ).order_by(
         "-fecha_publicacion"
-    )
+    )[:3]
 
     return render(
         request,
@@ -50,6 +50,23 @@ def portal(request):
             "lote": lote,
             "noticias": noticias,
         }
+    )
+
+
+def noticias_view(request):
+    if not request.user.is_authenticated:
+        return redirect("home")
+
+    noticias = Noticia.objects.filter(
+        activa=True
+    ).order_by(
+        "-fecha_publicacion"
+    )
+
+    return render(
+        request,
+        "core/noticias.html",
+        {"noticias": noticias}
     )
 
 
