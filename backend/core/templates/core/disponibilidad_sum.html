@@ -1,0 +1,225 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Disponibilidad del SUM - Comunidad360</title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{% static 'core/css/styles.css' %}"
+    >
+</head>
+
+<body>
+
+<div class="container py-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+            <h1 class="text-success mb-1">
+                📅 Disponibilidad del SUM
+            </h1>
+
+            <div class="text-secondary">
+                Lote {{ lote.numero }} · Familia {{ lote.apellido_familia }}
+            </div>
+        </div>
+
+        <a
+            href="{% url 'portal' %}"
+            class="btn btn-outline-secondary"
+        >
+            Volver al portal
+        </a>
+
+    </div>
+
+
+    <div class="row justify-content-center">
+
+        <div class="col-lg-8">
+
+            <div class="card shadow-sm border-0 mb-4">
+
+                <div class="card-body p-4">
+
+                    <h3 class="mb-3">
+                        Consultar fecha
+                    </h3>
+
+                    <p class="text-secondary">
+                        Seleccioná el día que querés consultar.
+                    </p>
+
+                    <form method="GET">
+
+                        <div class="row g-2">
+
+                            <div class="col-md-9">
+
+                                <input
+                                    type="date"
+                                    name="fecha"
+                                    value="{{ fecha_texto|default:'' }}"
+                                    class="form-control"
+                                    required
+                                >
+
+                            </div>
+
+                            <div class="col-md-3">
+
+                                <button
+                                    type="submit"
+                                    class="btn btn-success w-100"
+                                >
+                                    Consultar
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+
+            {% if fecha_consultada %}
+
+                <div class="card shadow-sm border-0">
+
+                    <div class="card-body p-4">
+
+                        <h3 class="mb-1">
+                            {{ fecha_consultada|date:"d/m/Y" }}
+                        </h3>
+
+                        <p class="text-secondary mb-4">
+                            Disponibilidad de turnos
+                        </p>
+
+
+                        <!-- TURNO DIA -->
+
+                        <div class="border rounded p-4 mb-3">
+
+                            <div class="d-flex justify-content-between align-items-center">
+
+                                <div>
+
+                                    <h4 class="mb-1">
+                                        ☀️ Turno Día
+                                    </h4>
+
+                                </div>
+
+                                <div class="text-end">
+
+                                    {% if turno_dia_disponible %}
+
+                                        <span class="badge text-bg-success fs-6">
+                                            Disponible
+                                        </span>
+
+                                        <div class="mt-2">
+
+                                            <a
+                                                href="{% url 'reservar_sum' %}?fecha={{ fecha_texto }}&turno=dia"
+                                                class="btn btn-success btn-sm"
+                                            >
+                                                Reservar Turno Día
+                                            </a>
+
+                                        </div>
+
+                                    {% else %}
+
+                                        <span class="badge text-bg-danger fs-6">
+                                            Ocupado
+                                        </span>
+
+                                    {% endif %}
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- TURNO NOCHE -->
+
+                        <div class="border rounded p-4">
+
+                            <div class="d-flex justify-content-between align-items-center">
+
+                                <div>
+
+                                    <h4 class="mb-1">
+                                        🌙 Turno Noche
+                                    </h4>
+
+                                </div>
+
+                                <div class="text-end">
+
+                                    {% if turno_noche_disponible %}
+
+                                        <span class="badge text-bg-success fs-6">
+                                            Disponible
+                                        </span>
+
+                                        <div class="mt-2">
+
+                                            <a
+                                                href="{% url 'reservar_sum' %}?fecha={{ fecha_texto }}&turno=noche"
+                                                class="btn btn-success btn-sm"
+                                            >
+                                                Reservar Turno Noche
+                                            </a>
+
+                                        </div>
+
+                                    {% else %}
+
+                                        <span class="badge text-bg-danger fs-6">
+                                            Ocupado
+                                        </span>
+
+                                    {% endif %}
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+
+</html>

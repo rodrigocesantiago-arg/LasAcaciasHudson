@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect
 
@@ -80,18 +82,80 @@ def noticias_view(request):
     )
 
 
+def disponibilidad_sum(request):
+    if not request.user.is_authenticated:
+        return redirect("home")
+
+    lote = request.user.lote
+
+    fecha_texto = request.GET.get("fecha")
+
+    fecha_consultada = None
+    turno_dia_disponible = None
+    turno_noche_disponible = None
+
+    if fecha_texto:
+        try:
+            fecha_consultada = datetime.strptime(
+                fecha_texto,
+                "%Y-%m-%d"
+            ).date()
+
+            turno_dia_ocupado = ReservaSUM.objects.filter(
+                fecha=fecha_consultada,
+                turno="dia"
+            ).exclude(
+                estado="cancelada"
+            ).exists()
+
+            turno_noche_ocupado = ReservaSUM.objects.filter(
+                fecha=fecha_consultada,
+                turno="noche"
+            ).exclude(
+                estado="cancelada"
+            ).exists()
+
+            turno_dia_disponible = not turno_dia_ocupado
+            turno_noche_disponible = not turno_noche_ocupado
+
+        except ValueError:
+            fecha_consultada = None
+
+    return render(
+        request,
+        "core/disponibilidad_sum.html",
+        {
+            "lote": lote,
+            "fecha_consultada": fecha_consultada,
+            "fecha_texto": fecha_texto,
+            "turno_dia_disponible": turno_dia_disponible,
+            "turno_noche_disponible": turno_noche_disponible,
+        }
+    )
+
+
 def reservar_sum(request):
     if not request.user.is_authenticated:
         return redirect("home")
 
     lote = request.user.lote
 
+    # Recibimos la fecha y el turno desde la pantalla
+    # de disponibilidad.
+    fecha_inicial = request.GET.get("fecha")
+    turno_inicial = request.GET.get("turno")
+
     if request.method == "POST":
         form = ReservaSUMForm(request.POST)
 
         if form.is_valid():
             reserva = form.save(commit=False)
+
+            # El lote se obtiene automáticamente
+            # del usuario que inició sesión.
             reserva.lote = lote
+
+            # Toda reserva nueva comienza pendiente.
             reserva.estado = "pendiente"
 
             try:
@@ -110,7 +174,12 @@ def reservar_sum(request):
                 )
 
     else:
-        form = ReservaSUMForm()
+        form = ReservaSUMForm(
+            initial={
+                "fecha": fecha_inicial,
+                "turno": turno_inicial,
+            }
+        )
 
     return render(
         request,
