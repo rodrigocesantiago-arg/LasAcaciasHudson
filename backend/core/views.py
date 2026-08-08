@@ -1,11 +1,11 @@
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 
 from .forms import ReservaSUMForm
-from .models import Noticia, ReservaSUM
+from .models import Integrante, Noticia, ReservaSUM
 
 
 def home(request):
@@ -36,11 +36,73 @@ def login_view(request):
     return render(request, "core/home.html")
 
 
+def obtener_proximos_cumpleanios(limite=None):
+    hoy = timezone.localdate()
+
+    integrantes = Integrante.objects.filter(
+        activo=True
+    )
+
+    cumpleanios = []
+
+    for integrante in integrantes:
+        nacimiento = integrante.fecha_nacimiento
+
+        try:
+            proximo = date(
+                hoy.year,
+                nacimiento.month,
+                nacimiento.day
+            )
+        except ValueError:
+            proximo = date(
+                hoy.year,
+                2,
+                28
+            )
+
+        if proximo < hoy:
+            try:
+                proximo = date(
+                    hoy.year + 1,
+                    nacimiento.month,
+                    nacimiento.day
+                )
+            except ValueError:
+                proximo = date(
+                    hoy.year + 1,
+                    2,
+                    28
+                )
+
+        dias_faltantes = (proximo - hoy).days
+
+        cumpleanios.append(
+            {
+                "integrante": integrante,
+                "fecha": proximo,
+                "dias_faltantes": dias_faltantes,
+            }
+        )
+
+    cumpleanios.sort(
+        key=lambda item: item["fecha"]
+    )
+
+    if limite:
+        cumpleanios = cumpleanios[:limite]
+
+    return cumpleanios
+
+
 def portal(request):
     if not request.user.is_authenticated:
         return redirect("home")
 
     lote = request.user.lote
+    hoy = timezone.localdate()
+
+    # NOTICIAS
 
     noticias = Noticia.objects.filter(
         activa=True
@@ -48,14 +110,14 @@ def portal(request):
         "-fecha_publicacion"
     )[:3]
 
+    # RESERVAS DEL SUM
+
     proximas_reservas = ReservaSUM.objects.filter(
         lote=lote
     ).order_by(
         "-fecha",
         "-fecha_creacion"
     )[:3]
-
-    hoy = timezone.localdate()
 
     for reserva in proximas_reservas:
         fecha_limite_cancelacion = reserva.fecha - timedelta(days=7)
@@ -65,6 +127,19 @@ def portal(request):
             and reserva.estado != "cancelada"
         )
 
+    # CUMPLEAÑOS DEL MES ACTUAL
+
+    cumpleanios_mes = []
+
+    for integrante in Integrante.objects.filter(activo=True):
+
+        if integrante.fecha_nacimiento.month == hoy.month:
+            cumpleanios_mes.append(integrante)
+
+    cumpleanios_mes.sort(
+        key=lambda integrante: integrante.fecha_nacimiento.day
+    )
+
     return render(
         request,
         "core/portal.html",
@@ -72,6 +147,7 @@ def portal(request):
             "lote": lote,
             "noticias": noticias,
             "proximas_reservas": proximas_reservas,
+            "cumpleanios_mes": cumpleanios_mes,
         }
     )
 
@@ -89,7 +165,24 @@ def noticias_view(request):
     return render(
         request,
         "core/noticias.html",
-        {"noticias": noticias}
+        {
+            "noticias": noticias
+        }
+    )
+
+
+def cumpleanios_view(request):
+    if not request.user.is_authenticated:
+        return redirect("home")
+
+    cumpleanios = obtener_proximos_cumpleanios()
+
+    return render(
+        request,
+        "core/cumpleanios.html",
+        {
+            "cumpleanios": cumpleanios,
+        }
     )
 
 
@@ -201,7 +294,9 @@ def reservar_sum(request):
                 return render(
                     request,
                     "core/reserva_sum_ok.html",
-                    {"reserva": reserva}
+                    {
+                        "reserva": reserva
+                    }
                 )
 
             except Exception:
@@ -241,7 +336,9 @@ def cancelar_reserva_sum(request, reserva_id):
     )
 
     if request.method == "POST":
+
         hoy = timezone.localdate()
+
         fecha_limite = reserva.fecha - timedelta(days=7)
 
         if (
@@ -256,4 +353,5 @@ def cancelar_reserva_sum(request, reserva_id):
 
 def logout_view(request):
     logout(request)
+
     return redirect("home")

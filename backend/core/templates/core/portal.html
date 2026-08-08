@@ -218,8 +218,6 @@
                     <hr>
 
 
-                    <!-- MIS RESERVAS -->
-
                     <h5 class="text-success mb-3">
                         Mis reservas
                     </h5>
@@ -320,8 +318,6 @@
                     {% endfor %}
 
 
-                    <!-- VER TODAS LAS RESERVAS -->
-
                     <div class="text-center mt-3">
 
                         <a
@@ -346,27 +342,84 @@
 
             <div class="card h-100 shadow-sm border-0">
 
-                <div class="card-body text-center p-4">
+                <div class="card-body p-4">
 
-                    <div class="fs-1">
-                        🎂
+                    <div class="text-center mb-4">
+
+                        <div class="fs-1">
+                            🎂
+                        </div>
+
+                        <h3 class="mt-2">
+                            Cumpleaños de este mes
+                        </h3>
+
+                        <p class="text-secondary">
+                            Cumpleaños de los vecinos durante el mes en curso.
+                        </p>
+
                     </div>
 
-                    <h3 class="mt-2">
-                        Cumpleaños
-                    </h3>
 
-                    <p class="text-secondary">
-                        Consultá los próximos cumpleaños
-                        de los vecinos.
-                    </p>
+                    {% for integrante in cumpleanios_mes %}
 
-                    <button
-                        class="btn btn-success"
-                        disabled
-                    >
-                        Próximamente
-                    </button>
+                        <div class="border rounded p-3 mb-2">
+
+                            <div class="d-flex justify-content-between align-items-center">
+
+                                <div>
+
+                                    <strong>
+                                        {{ integrante.apellido }}, {{ integrante.nombre }}
+                                    </strong>
+
+                                    <div class="text-secondary small">
+                                        🎂 {{ integrante.fecha_nacimiento|date:"d/m" }}
+                                    </div>
+
+                                </div>
+
+
+                                <div>
+
+                                    {% now "m-d" as hoy_mes_dia %}
+                                    {% with cumple=integrante.fecha_nacimiento|date:"m-d" %}
+
+                                        {% if cumple == hoy_mes_dia %}
+
+                                            <span class="badge text-bg-success">
+                                                🎉 Hoy
+                                            </span>
+
+                                        {% endif %}
+
+                                    {% endwith %}
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    {% empty %}
+
+                        <div class="alert alert-light border">
+                            No hay cumpleaños registrados este mes.
+                        </div>
+
+                    {% endfor %}
+
+
+                    <div class="text-center mt-4">
+
+                        <a
+                            href="{% url 'cumpleanios' %}"
+                            class="btn btn-outline-success"
+                        >
+                            Ver próximos cumpleaños
+                        </a>
+
+                    </div>
 
                 </div>
 
@@ -434,8 +487,7 @@
                         <div>
 
                             <strong>
-                                {{ integrante.nombre }}
-                                {{ integrante.apellido }}
+                                {{ integrante.apellido }}, {{ integrante.nombre }}
                             </strong>
 
                             <div class="text-secondary small">
@@ -539,8 +591,6 @@
 
     </div>
 
-
-    <!-- PIE -->
 
     <div class="text-center text-secondary small mt-4">
         Comunidad360 · Las Acacias Hudson
