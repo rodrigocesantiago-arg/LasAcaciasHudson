@@ -126,7 +126,6 @@
 
                             {% endif %}
 
-
                             <div class="d-flex justify-content-between align-items-start">
 
                                 <h5 class="mb-1">
@@ -143,11 +142,9 @@
 
                             </div>
 
-
                             <p class="mb-2">
                                 {{ noticia.contenido|truncatechars:120 }}
                             </p>
-
 
                             <small class="text-secondary">
                                 {{ noticia.fecha_publicacion|date:"d/m/Y H:i" }}
@@ -162,7 +159,6 @@
                         </div>
 
                     {% endfor %}
-
 
                     <div class="text-center mt-3">
 
@@ -188,27 +184,98 @@
 
             <div class="card h-100 shadow-sm border-0">
 
-                <div class="card-body text-center p-4">
+                <div class="card-body p-4">
 
-                    <div class="fs-1">
-                        📅
+                    <div class="text-center mb-4">
+
+                        <div class="fs-1">
+                            📅
+                        </div>
+
+                        <h3 class="mt-2">
+                            Reservar SUM
+                        </h3>
+
+                        <p class="text-secondary">
+                            Consultá la disponibilidad y reservá
+                            el salón de usos múltiples.
+                        </p>
+
+                        <a
+                            href="{% url 'reservar_sum' %}"
+                            class="btn btn-success"
+                        >
+                            Reservar ahora
+                        </a>
+
                     </div>
 
-                    <h3 class="mt-2">
-                        Reservar SUM
-                    </h3>
 
-                    <p class="text-secondary">
-                        Consultá la disponibilidad y reservá
-                        el salón de usos múltiples.
-                    </p>
+                    <hr>
 
-                    <a
-    href="{% url 'reservar_sum' %}"
-    class="btn btn-success"
->
-    Reservar ahora
-</a>
+
+                    <h5 class="text-success mb-3">
+                        Mis reservas
+                    </h5>
+
+                    {% for reserva in proximas_reservas %}
+
+                        <div class="border rounded p-3 mb-2">
+
+                            <div class="d-flex justify-content-between align-items-start">
+
+                                <div>
+
+                                    <strong>
+                                        {{ reserva.fecha|date:"d/m/Y" }}
+                                    </strong>
+
+                                    <div class="text-secondary small">
+                                        {{ reserva.get_turno_display }}
+                                    </div>
+
+                                </div>
+
+
+                                <div>
+
+                                    {% if reserva.estado == "pendiente" %}
+
+                                        <span class="badge text-bg-warning">
+                                            Pendiente
+                                        </span>
+
+                                    {% elif reserva.estado == "confirmada" %}
+
+                                        <span class="badge text-bg-success">
+                                            Confirmada
+                                        </span>
+
+                                    {% elif reserva.estado == "cancelada" %}
+
+                                        <span class="badge text-bg-danger">
+                                            Cancelada
+                                        </span>
+
+                                    {% endif %}
+
+                                </div>
+
+                            </div>
+
+                            <div class="small text-secondary mt-2">
+                                {{ reserva.cantidad_personas }} personas
+                            </div>
+
+                        </div>
+
+                    {% empty %}
+
+                        <div class="alert alert-light border mb-0">
+                            Todavía no tenés reservas del SUM.
+                        </div>
+
+                    {% endfor %}
 
                 </div>
 
