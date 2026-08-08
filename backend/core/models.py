@@ -4,13 +4,21 @@ from django.db import models
 
 class Lote(models.Model):
     numero = models.PositiveIntegerField(unique=True)
+
     apellido_familia = models.CharField(
         "Apellido de la familia",
         max_length=100
     )
+
     email = models.EmailField(blank=True)
-    telefono = models.CharField(max_length=30, blank=True)
+
+    telefono = models.CharField(
+        max_length=30,
+        blank=True
+    )
+
     activo = models.BooleanField(default=True)
+
     usuario = models.OneToOneField(
         User,
         on_delete=models.SET_NULL,
@@ -31,6 +39,7 @@ class Integrante(models.Model):
     )
 
     nombre = models.CharField(max_length=100)
+
     apellido = models.CharField(max_length=100)
 
     fecha_nacimiento = models.DateField()
@@ -61,6 +70,13 @@ class Noticia(models.Model):
 
     contenido = models.TextField(
         "Contenido"
+    )
+
+    imagen = models.ImageField(
+        "Imagen",
+        upload_to="noticias/",
+        blank=True,
+        null=True
     )
 
     fecha_publicacion = models.DateTimeField(

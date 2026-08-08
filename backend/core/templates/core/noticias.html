@@ -50,6 +50,17 @@
 
         <div class="card shadow-sm border-0 mb-3">
 
+            {% if noticia.imagen %}
+
+    <img
+        src="{{ noticia.imagen.url }}"
+        class="card-img-top"
+        alt="{{ noticia.titulo }}"
+        style="max-height: 350px; object-fit: cover;"
+    >
+
+{% endif %}
+
             <div class="card-body p-4">
 
                 <div class="d-flex justify-content-between align-items-start mb-2">
