@@ -39,9 +39,7 @@ class Integrante(models.Model):
     )
 
     nombre = models.CharField(max_length=100)
-
     apellido = models.CharField(max_length=100)
-
     fecha_nacimiento = models.DateField()
 
     parentesco = models.CharField(
@@ -177,6 +175,7 @@ class ReservaSUM(models.Model):
         constraints = [
             models.UniqueConstraint(
                 fields=["fecha", "turno"],
-                name="reserva_sum_fecha_turno_unico"
+                condition=~models.Q(estado="cancelada"),
+                name="reserva_sum_fecha_turno_activo_unico"
             )
         ]
