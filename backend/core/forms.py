@@ -1,6 +1,7 @@
 from django import forms
 
 from .models import (
+    Reclamo,
     ReservaSUM,
     SolicitudModificacionFamilia,
 )
@@ -160,3 +161,38 @@ class SolicitudModificacionFamiliaForm(forms.ModelForm):
         self.fields["nuevo_email"].required = False
         self.fields["nuevo_telefono"].required = False
         self.fields["detalle"].required = False
+
+
+class ReclamoForm(forms.ModelForm):
+
+    class Meta:
+        model = Reclamo
+
+        fields = [
+            "categoria",
+            "asunto",
+            "descripcion",
+        ]
+
+        widgets = {
+            "categoria": forms.Select(
+                attrs={
+                    "class": "form-select",
+                }
+            ),
+
+            "asunto": forms.TextInput(
+                attrs={
+                    "class": "form-control",
+                    "placeholder": "Ej: Luminaria apagada en calle principal",
+                }
+            ),
+
+            "descripcion": forms.Textarea(
+                attrs={
+                    "class": "form-control",
+                    "rows": 5,
+                    "placeholder": "Describí el problema con el mayor detalle posible...",
+                }
+            ),
+        }

@@ -1,0 +1,196 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Nuevo reclamo - Comunidad360</title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{% static 'core/css/styles.css' %}"
+    >
+</head>
+
+<body>
+
+<div class="container py-4">
+
+    <!-- ENCABEZADO -->
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+            <h1 class="text-success mb-1">
+                📢 Nuevo reclamo
+            </h1>
+
+            <div class="text-secondary">
+                Lote {{ lote.numero }} · Familia {{ lote.apellido_familia }}
+            </div>
+        </div>
+
+        <a
+            href="{% url 'mis_reclamos' %}"
+            class="btn btn-outline-secondary"
+        >
+            Volver a Mis Reclamos
+        </a>
+
+    </div>
+
+
+    <div class="row justify-content-center">
+
+        <div class="col-lg-8">
+
+            <div class="card shadow-sm border-0">
+
+                <div class="card-body p-4">
+
+                    <h3 class="mb-2">
+                        Crear reclamo
+                    </h3>
+
+                    <p class="text-secondary mb-4">
+                        Informá el inconveniente para que Administración
+                        pueda realizar su seguimiento.
+                    </p>
+
+
+                    {% if form.non_field_errors %}
+
+                        <div class="alert alert-danger">
+                            {{ form.non_field_errors }}
+                        </div>
+
+                    {% endif %}
+
+
+                    <form method="POST">
+
+                        {% csrf_token %}
+
+
+                        <!-- CATEGORÍA -->
+
+                        <div class="mb-4">
+
+                            <label class="form-label fw-semibold">
+                                Categoría
+                            </label>
+
+                            {{ form.categoria }}
+
+                            {% for error in form.categoria.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ error }}
+                                </div>
+                            {% endfor %}
+
+                        </div>
+
+
+                        <!-- ASUNTO -->
+
+                        <div class="mb-4">
+
+                            <label class="form-label fw-semibold">
+                                Asunto
+                            </label>
+
+                            {{ form.asunto }}
+
+                            {% for error in form.asunto.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ error }}
+                                </div>
+                            {% endfor %}
+
+                        </div>
+
+
+                        <!-- DESCRIPCIÓN -->
+
+                        <div class="mb-4">
+
+                            <label class="form-label fw-semibold">
+                                Descripción
+                            </label>
+
+                            {{ form.descripcion }}
+
+                            <div class="form-text">
+                                Indicá qué ocurre y, cuando corresponda,
+                                dónde se encuentra el problema.
+                            </div>
+
+                            {% for error in form.descripcion.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ error }}
+                                </div>
+                            {% endfor %}
+
+                        </div>
+
+
+                        <!-- INFORMACIÓN -->
+
+                        <div class="alert alert-light border">
+
+                            <strong>
+                                ¿Qué ocurre después?
+                            </strong>
+
+                            <div class="small mt-2 text-secondary">
+                                El reclamo será enviado a Administración
+                                con estado Pendiente. Desde Mis Reclamos
+                                podrás consultar su avance y la respuesta
+                                de Administración.
+                            </div>
+
+                        </div>
+
+
+                        <!-- BOTONES -->
+
+                        <div class="d-grid gap-2">
+
+                            <button
+                                type="submit"
+                                class="btn btn-success"
+                            >
+                                Enviar reclamo
+                            </button>
+
+                            <a
+                                href="{% url 'mis_reclamos' %}"
+                                class="btn btn-outline-secondary"
+                            >
+                                Cancelar
+                            </a>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

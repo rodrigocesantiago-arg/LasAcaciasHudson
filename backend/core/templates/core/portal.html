@@ -160,6 +160,7 @@
 
                     {% endfor %}
 
+
                     <div class="text-center mt-3">
 
                         <a
@@ -216,6 +217,7 @@
                         Mis reservas
                     </h5>
 
+
                     {% for reserva in proximas_reservas %}
 
                         <div class="border rounded p-3 mb-3">
@@ -264,6 +266,7 @@
                                 {{ reserva.cantidad_personas }} personas
                             </div>
 
+
                             {% if reserva.estado != "cancelada" %}
 
                                 {% if reserva.puede_cancelar %}
@@ -306,6 +309,7 @@
 
                     {% endfor %}
 
+
                     <div class="text-center mt-3">
 
                         <a
@@ -347,6 +351,7 @@
                         </p>
 
                     </div>
+
 
                     {% for integrante in cumpleanios_mes %}
 
@@ -394,6 +399,7 @@
                         </div>
 
                     {% endfor %}
+
 
                     <div class="text-center mt-4">
 
@@ -447,10 +453,58 @@
 
         </div>
 
+
+        <!-- RECLAMOS -->
+
+        <div class="col-md-6">
+
+            <div class="card h-100 shadow-sm border-0">
+
+                <div class="card-body text-center p-4">
+
+                    <div class="fs-1">
+                        📢
+                    </div>
+
+                    <h3 class="mt-2">
+                        Reclamos
+                    </h3>
+
+                    <p class="text-secondary">
+                        Informá inconvenientes del barrio y consultá
+                        el estado de tus reclamos.
+                    </p>
+
+
+                    <div class="d-grid gap-2">
+
+                        <a
+                            href="{% url 'nuevo_reclamo' %}"
+                            class="btn btn-success"
+                        >
+                            Nuevo reclamo
+                        </a>
+
+                        <a
+                            href="{% url 'mis_reclamos' %}"
+                            class="btn btn-outline-success"
+                        >
+                            Mis reclamos
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
     </div>
 
 
-    <!-- INFORMACION DEL LOTE -->
+    <!-- INFORMACIÓN DEL LOTE -->
 
     <div class="card shadow-sm border-0">
 
@@ -474,6 +528,7 @@
 
                 </div>
 
+
                 <div class="col-md-4 mb-3">
 
                     <strong>
@@ -485,6 +540,7 @@
                     </div>
 
                 </div>
+
 
                 <div class="col-md-4 mb-3">
 

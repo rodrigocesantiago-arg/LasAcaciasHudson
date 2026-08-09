@@ -235,8 +235,6 @@ class SolicitudModificacionFamilia(models.Model):
         blank=True
     )
 
-    # CAMPOS PARA MODIFICAR UN INTEGRANTE
-
     campo_modificar = models.CharField(
         "Dato a modificar",
         max_length=30,
@@ -249,8 +247,6 @@ class SolicitudModificacionFamilia(models.Model):
         max_length=255,
         blank=True
     )
-
-    # CAMPOS PARA AGREGAR UN INTEGRANTE
 
     nuevo_nombre = models.CharField(
         "Nombre del nuevo integrante",
@@ -350,10 +346,14 @@ class SolicitudModificacionFamilia(models.Model):
 
         elif self.tipo == "alta":
             if not self.nuevo_nombre:
-                errores["nuevo_nombre"] = "Debe indicar el nombre."
+                errores["nuevo_nombre"] = (
+                    "Debe indicar el nombre."
+                )
 
             if not self.nuevo_apellido:
-                errores["nuevo_apellido"] = "Debe indicar el apellido."
+                errores["nuevo_apellido"] = (
+                    "Debe indicar el apellido."
+                )
 
             if not self.nueva_fecha_nacimiento:
                 errores["nueva_fecha_nacimiento"] = (
@@ -438,3 +438,79 @@ class SolicitudModificacionFamilia(models.Model):
         ordering = ["-fecha_creacion"]
         verbose_name = "Solicitud de modificación familiar"
         verbose_name_plural = "Solicitudes de modificación familiar"
+
+
+class Reclamo(models.Model):
+
+    CATEGORIAS = [
+        ("iluminacion", "Iluminación"),
+        ("seguridad", "Seguridad"),
+        ("calles", "Calles y circulación"),
+        ("espacios_comunes", "Espacios comunes"),
+        ("residuos", "Residuos"),
+        ("mantenimiento", "Mantenimiento"),
+        ("administracion", "Administración"),
+        ("otro", "Otro"),
+    ]
+
+    ESTADOS = [
+        ("pendiente", "Pendiente"),
+        ("en_proceso", "En proceso"),
+        ("resuelto", "Resuelto"),
+        ("rechazado", "Rechazado"),
+    ]
+
+    lote = models.ForeignKey(
+        Lote,
+        on_delete=models.CASCADE,
+        related_name="reclamos"
+    )
+
+    categoria = models.CharField(
+        "Categoría",
+        max_length=30,
+        choices=CATEGORIAS
+    )
+
+    asunto = models.CharField(
+        "Asunto",
+        max_length=150
+    )
+
+    descripcion = models.TextField(
+        "Descripción"
+    )
+
+    estado = models.CharField(
+        "Estado",
+        max_length=20,
+        choices=ESTADOS,
+        default="pendiente"
+    )
+
+    fecha_creacion = models.DateTimeField(
+        "Fecha de creación",
+        auto_now_add=True
+    )
+
+    fecha_actualizacion = models.DateTimeField(
+        "Última actualización",
+        auto_now=True
+    )
+
+    respuesta_administracion = models.TextField(
+        "Respuesta de Administración",
+        blank=True
+    )
+
+    def __str__(self):
+        return (
+            f"Reclamo #{self.id} - "
+            f"Lote {self.lote.numero} - "
+            f"{self.asunto}"
+        )
+
+    class Meta:
+        ordering = ["-fecha_creacion"]
+        verbose_name = "Reclamo"
+        verbose_name_plural = "Reclamos"

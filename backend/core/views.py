@@ -5,6 +5,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 
 from .forms import (
+    ReclamoForm,
     ReservaSUMForm,
     SolicitudModificacionFamiliaForm,
 )
@@ -12,6 +13,7 @@ from .forms import (
 from .models import (
     Integrante,
     Noticia,
+    Reclamo,
     ReservaSUM,
     SolicitudModificacionFamilia,
 )
@@ -126,7 +128,6 @@ def portal(request):
         "-fecha_publicacion"
     )[:3]
 
-
     # RESERVAS DEL SUM
 
     proximas_reservas = ReservaSUM.objects.filter(
@@ -147,7 +148,6 @@ def portal(request):
             and reserva.estado != "cancelada"
         )
 
-
     # CUMPLEAÑOS DEL MES
 
     cumpleanios_mes = []
@@ -165,7 +165,6 @@ def portal(request):
         key=lambda integrante:
         integrante.fecha_nacimiento.day
     )
-
 
     return render(
         request,
@@ -212,6 +211,10 @@ def cumpleanios_view(request):
         }
     )
 
+
+# -------------------------------------------------
+# RESERVAS SUM
+# -------------------------------------------------
 
 def mis_reservas_sum(request):
     if not request.user.is_authenticated:
@@ -401,7 +404,6 @@ def cancelar_reserva_sum(
         ):
 
             reserva.estado = "cancelada"
-
             reserva.save()
 
     return redirect("portal")
@@ -416,10 +418,6 @@ def mi_familia(request):
         return redirect("home")
 
     lote = request.user.lote
-
-    # Solamente mostramos integrantes ACTIVOS.
-    # Los integrantes dados de baja permanecen
-    # guardados en la base para conservar historial.
 
     integrantes = Integrante.objects.filter(
         lote=lote,
@@ -487,6 +485,73 @@ def solicitar_modificacion_familia(request):
     return render(
         request,
         "core/solicitar_modificacion_familia.html",
+        {
+            "form": form,
+            "lote": lote,
+        }
+    )
+
+
+# -------------------------------------------------
+# RECLAMOS
+# -------------------------------------------------
+
+def mis_reclamos(request):
+    if not request.user.is_authenticated:
+        return redirect("home")
+
+    lote = request.user.lote
+
+    reclamos = Reclamo.objects.filter(
+        lote=lote
+    ).order_by(
+        "-fecha_creacion"
+    )
+
+    return render(
+        request,
+        "core/mis_reclamos.html",
+        {
+            "lote": lote,
+            "reclamos": reclamos,
+        }
+    )
+
+
+def nuevo_reclamo(request):
+    if not request.user.is_authenticated:
+        return redirect("home")
+
+    lote = request.user.lote
+
+    if request.method == "POST":
+
+        form = ReclamoForm(
+            request.POST
+        )
+
+        if form.is_valid():
+
+            reclamo = form.save(
+                commit=False
+            )
+
+            reclamo.lote = lote
+            reclamo.estado = "pendiente"
+
+            reclamo.save()
+
+            return redirect(
+                "mis_reclamos"
+            )
+
+    else:
+
+        form = ReclamoForm()
+
+    return render(
+        request,
+        "core/nuevo_reclamo.html",
         {
             "form": form,
             "lote": lote,

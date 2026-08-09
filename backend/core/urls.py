@@ -66,6 +66,18 @@ urlpatterns = [
     ),
 
     path(
+        "reclamos/",
+        views.mis_reclamos,
+        name="mis_reclamos"
+    ),
+
+    path(
+        "reclamos/nuevo/",
+        views.nuevo_reclamo,
+        name="nuevo_reclamo"
+    ),
+
+    path(
         "logout/",
         views.logout_view,
         name="logout"

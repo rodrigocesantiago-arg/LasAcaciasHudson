@@ -4,10 +4,15 @@ from .models import (
     Integrante,
     Lote,
     Noticia,
+    Reclamo,
     ReservaSUM,
     SolicitudModificacionFamilia,
 )
 
+
+# -------------------------------------------------
+# LOTES
+# -------------------------------------------------
 
 @admin.register(Lote)
 class LoteAdmin(admin.ModelAdmin):
@@ -23,6 +28,14 @@ class LoteAdmin(admin.ModelAdmin):
         "apellido_familia",
     )
 
+    list_filter = (
+        "activo",
+    )
+
+
+# -------------------------------------------------
+# INTEGRANTES
+# -------------------------------------------------
 
 @admin.register(Integrante)
 class IntegranteAdmin(admin.ModelAdmin):
@@ -42,8 +55,14 @@ class IntegranteAdmin(admin.ModelAdmin):
     search_fields = (
         "nombre",
         "apellido",
+        "lote__numero",
+        "lote__apellido_familia",
     )
 
+
+# -------------------------------------------------
+# NOTICIAS
+# -------------------------------------------------
 
 @admin.register(Noticia)
 class NoticiaAdmin(admin.ModelAdmin):
@@ -69,6 +88,10 @@ class NoticiaAdmin(admin.ModelAdmin):
         "fecha_publicacion",
     )
 
+
+# -------------------------------------------------
+# RESERVAS SUM
+# -------------------------------------------------
 
 @admin.register(ReservaSUM)
 class ReservaSUMAdmin(admin.ModelAdmin):
@@ -96,6 +119,10 @@ class ReservaSUMAdmin(admin.ModelAdmin):
         "fecha_creacion",
     )
 
+
+# -------------------------------------------------
+# SOLICITUDES DE MODIFICACIÓN DE FAMILIA
+# -------------------------------------------------
 
 @admin.register(SolicitudModificacionFamilia)
 class SolicitudModificacionFamiliaAdmin(admin.ModelAdmin):
@@ -130,7 +157,95 @@ class SolicitudModificacionFamiliaAdmin(admin.ModelAdmin):
     )
 
     def save_model(self, request, obj, form, change):
-        super().save_model(request, obj, form, change)
+        super().save_model(
+            request,
+            obj,
+            form,
+            change
+        )
 
-        if obj.estado == "aprobada" and not obj.aplicada:
+        if (
+            obj.estado == "aprobada"
+            and not obj.aplicada
+        ):
             obj.aplicar_cambio()
+
+
+# -------------------------------------------------
+# RECLAMOS
+# -------------------------------------------------
+
+@admin.register(Reclamo)
+class ReclamoAdmin(admin.ModelAdmin):
+
+    list_display = (
+        "id",
+        "fecha_creacion",
+        "lote",
+        "categoria",
+        "asunto",
+        "estado",
+        "fecha_actualizacion",
+    )
+
+    list_editable = (
+        "estado",
+    )
+
+    list_filter = (
+        "estado",
+        "categoria",
+        "fecha_creacion",
+    )
+
+    search_fields = (
+        "asunto",
+        "descripcion",
+        "lote__numero",
+        "lote__apellido_familia",
+    )
+
+    readonly_fields = (
+        "lote",
+        "categoria",
+        "asunto",
+        "descripcion",
+        "fecha_creacion",
+        "fecha_actualizacion",
+    )
+
+    fieldsets = (
+        (
+            "Datos del reclamo",
+            {
+                "fields": (
+                    "lote",
+                    "categoria",
+                    "asunto",
+                    "descripcion",
+                    "fecha_creacion",
+                )
+            },
+        ),
+        (
+            "Respuesta de Administración",
+            {
+                "fields": (
+                    "estado",
+                    "respuesta_administracion",
+                ),
+                "description": (
+                    "Actualizá el estado y escribí aquí la respuesta "
+                    "que verá el vecino en su portal."
+                ),
+            },
+        ),
+        (
+            "Seguimiento",
+            {
+                "fields": (
+                    "fecha_actualizacion",
+                )
+            },
+        ),
+    )
