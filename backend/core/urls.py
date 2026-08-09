@@ -94,6 +94,12 @@ urlpatterns = [
     ),
 
     path(
+    "contactos-utiles/",
+    views.contactos_utiles,
+    name="contactos_utiles"
+    ),
+
+    path(
         "logout/",
         views.logout_view,
         name="logout"

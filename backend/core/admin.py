@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.utils import timezone
 
 from .models import (
+    ContactoUtil,
     Documento,
     Encomienda,
     Integrante,
@@ -397,6 +398,74 @@ class DocumentoAdmin(admin.ModelAdmin):
                 "description": (
                     "Si el documento está activo, será visible "
                     "para los vecinos en Comunidad360."
+                ),
+            },
+        ),
+    )
+
+
+# -------------------------------------------------
+# CONTACTOS ÚTILES
+# -------------------------------------------------
+
+@admin.register(ContactoUtil)
+class ContactoUtilAdmin(admin.ModelAdmin):
+    list_display = (
+        "nombre",
+        "categoria",
+        "telefono",
+        "whatsapp",
+        "orden",
+        "activo",
+    )
+
+    list_editable = (
+        "orden",
+        "activo",
+    )
+
+    list_filter = (
+        "categoria",
+        "activo",
+    )
+
+    search_fields = (
+        "nombre",
+        "descripcion",
+        "telefono",
+        "whatsapp",
+    )
+
+    fieldsets = (
+        (
+            "Datos del contacto",
+            {
+                "fields": (
+                    "categoria",
+                    "nombre",
+                    "descripcion",
+                )
+            },
+        ),
+        (
+            "Contacto",
+            {
+                "fields": (
+                    "telefono",
+                    "whatsapp",
+                )
+            },
+        ),
+        (
+            "Publicación",
+            {
+                "fields": (
+                    "orden",
+                    "activo",
+                ),
+                "description": (
+                    "El campo Orden define la posición del contacto "
+                    "en el listado. Los números más bajos aparecen primero."
                 ),
             },
         ),

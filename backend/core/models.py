@@ -625,3 +625,65 @@ class Documento(models.Model):
         ordering = ["-fecha_publicacion"]
         verbose_name = "Documento"
         verbose_name_plural = "Documentos"
+
+
+class ContactoUtil(models.Model):
+
+    CATEGORIAS = [
+        ("seguridad", "Seguridad"),
+        ("emergencias", "Emergencias"),
+        ("administracion", "Administración"),
+        ("mantenimiento", "Mantenimiento"),
+        ("servicios", "Servicios"),
+        ("otro", "Otro"),
+    ]
+
+    categoria = models.CharField(
+        "Categoría",
+        max_length=30,
+        choices=CATEGORIAS
+    )
+
+    nombre = models.CharField(
+        "Nombre",
+        max_length=150
+    )
+
+    descripcion = models.CharField(
+        "Descripción",
+        max_length=255,
+        blank=True
+    )
+
+    telefono = models.CharField(
+        "Teléfono",
+        max_length=50
+    )
+
+    whatsapp = models.CharField(
+        "WhatsApp",
+        max_length=50,
+        blank=True
+    )
+
+    orden = models.PositiveIntegerField(
+        "Orden",
+        default=0
+    )
+
+    activo = models.BooleanField(
+        "Visible para los vecinos",
+        default=True
+    )
+
+    def __str__(self):
+        return f"{self.get_categoria_display()} - {self.nombre}"
+
+    class Meta:
+        ordering = [
+            "orden",
+            "categoria",
+            "nombre",
+        ]
+        verbose_name = "Contacto útil"
+        verbose_name_plural = "Contactos útiles"

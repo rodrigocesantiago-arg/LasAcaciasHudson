@@ -11,6 +11,7 @@ from .forms import (
 )
 
 from .models import (
+    ContactoUtil,
     Documento,
     Encomienda,
     Integrante,
@@ -672,6 +673,48 @@ def documentos_view(request):
         "core/documentos.html",
         {
             "documentos": documentos,
+            "categorias": categorias,
+        }
+    )
+
+
+# -------------------------------------------------
+# CONTACTOS ÚTILES
+# -------------------------------------------------
+
+def contactos_utiles(request):
+    if not request.user.is_authenticated:
+        return redirect("home")
+
+    contactos = ContactoUtil.objects.filter(
+        activo=True
+    ).order_by(
+        "orden",
+        "categoria",
+        "nombre"
+    )
+
+    categorias = []
+
+    for codigo, nombre in ContactoUtil.CATEGORIAS:
+
+        contactos_categoria = contactos.filter(
+            categoria=codigo
+        )
+
+        if contactos_categoria.exists():
+            categorias.append(
+                {
+                    "codigo": codigo,
+                    "nombre": nombre,
+                    "contactos": contactos_categoria,
+                }
+            )
+
+    return render(
+        request,
+        "core/contactos_utiles.html",
+        {
             "categorias": categorias,
         }
     )
