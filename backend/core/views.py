@@ -4,8 +4,16 @@ from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 
-from .forms import ReservaSUMForm
-from .models import Integrante, Noticia, ReservaSUM
+from .forms import (
+    ReservaSUMForm,
+    SolicitudModificacionFamiliaForm,
+)
+from .models import (
+    Integrante,
+    Noticia,
+    ReservaSUM,
+    SolicitudModificacionFamilia,
+)
 
 
 def home(request):
@@ -102,15 +110,11 @@ def portal(request):
     lote = request.user.lote
     hoy = timezone.localdate()
 
-    # NOTICIAS
-
     noticias = Noticia.objects.filter(
         activa=True
     ).order_by(
         "-fecha_publicacion"
     )[:3]
-
-    # RESERVAS DEL SUM
 
     proximas_reservas = ReservaSUM.objects.filter(
         lote=lote
@@ -127,12 +131,9 @@ def portal(request):
             and reserva.estado != "cancelada"
         )
 
-    # CUMPLEAÑOS DEL MES ACTUAL
-
     cumpleanios_mes = []
 
     for integrante in Integrante.objects.filter(activo=True):
-
         if integrante.fecha_nacimiento.month == hoy.month:
             cumpleanios_mes.append(integrante)
 
@@ -223,7 +224,6 @@ def disponibilidad_sum(request):
         return redirect("home")
 
     lote = request.user.lote
-
     fecha_texto = request.GET.get("fecha")
 
     fecha_consultada = None
@@ -284,7 +284,6 @@ def reservar_sum(request):
 
         if form.is_valid():
             reserva = form.save(commit=False)
-
             reserva.lote = lote
             reserva.estado = "pendiente"
 
@@ -338,7 +337,6 @@ def cancelar_reserva_sum(request, reserva_id):
     if request.method == "POST":
 
         hoy = timezone.localdate()
-
         fecha_limite = reserva.fecha - timedelta(days=7)
 
         if (
@@ -351,7 +349,71 @@ def cancelar_reserva_sum(request, reserva_id):
     return redirect("portal")
 
 
+def mi_familia(request):
+    if not request.user.is_authenticated:
+        return redirect("home")
+
+    lote = request.user.lote
+
+    integrantes = Integrante.objects.filter(
+        lote=lote
+    ).order_by(
+        "apellido",
+        "nombre"
+    )
+
+    solicitudes = SolicitudModificacionFamilia.objects.filter(
+        lote=lote
+    ).order_by(
+        "-fecha_creacion"
+    )
+
+    return render(
+        request,
+        "core/mi_familia.html",
+        {
+            "lote": lote,
+            "integrantes": integrantes,
+            "solicitudes": solicitudes,
+        }
+    )
+
+
+def solicitar_modificacion_familia(request):
+    if not request.user.is_authenticated:
+        return redirect("home")
+
+    lote = request.user.lote
+
+    if request.method == "POST":
+        form = SolicitudModificacionFamiliaForm(
+            request.POST,
+            lote=lote
+        )
+
+        if form.is_valid():
+            solicitud = form.save(commit=False)
+            solicitud.lote = lote
+            solicitud.estado = "pendiente"
+            solicitud.save()
+
+            return redirect("mi_familia")
+
+    else:
+        form = SolicitudModificacionFamiliaForm(
+            lote=lote
+        )
+
+    return render(
+        request,
+        "core/solicitar_modificacion_familia.html",
+        {
+            "form": form,
+            "lote": lote,
+        }
+    )
+
+
 def logout_view(request):
     logout(request)
-
     return redirect("home")

@@ -1,5 +1,12 @@
 from django.contrib import admin
-from .models import Integrante, Lote, Noticia, ReservaSUM
+
+from .models import (
+    Integrante,
+    Lote,
+    Noticia,
+    ReservaSUM,
+    SolicitudModificacionFamilia,
+)
 
 
 @admin.register(Lote)
@@ -20,8 +27,8 @@ class LoteAdmin(admin.ModelAdmin):
 @admin.register(Integrante)
 class IntegranteAdmin(admin.ModelAdmin):
     list_display = (
-        "nombre",
         "apellido",
+        "nombre",
         "lote",
         "parentesco",
         "activo",
@@ -88,3 +95,42 @@ class ReservaSUMAdmin(admin.ModelAdmin):
     readonly_fields = (
         "fecha_creacion",
     )
+
+
+@admin.register(SolicitudModificacionFamilia)
+class SolicitudModificacionFamiliaAdmin(admin.ModelAdmin):
+    list_display = (
+        "fecha_creacion",
+        "lote",
+        "tipo",
+        "integrante",
+        "estado",
+        "aplicada",
+    )
+
+    list_filter = (
+        "tipo",
+        "estado",
+        "aplicada",
+        "fecha_creacion",
+    )
+
+    search_fields = (
+        "lote__numero",
+        "lote__apellido_familia",
+        "integrante__nombre",
+        "integrante__apellido",
+        "detalle",
+        "nuevo_valor",
+    )
+
+    readonly_fields = (
+        "fecha_creacion",
+        "aplicada",
+    )
+
+    def save_model(self, request, obj, form, change):
+        super().save_model(request, obj, form, change)
+
+        if obj.estado == "aprobada" and not obj.aplicada:
+            obj.aplicar_cambio()

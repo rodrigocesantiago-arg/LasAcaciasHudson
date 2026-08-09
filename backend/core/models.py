@@ -1,5 +1,8 @@
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
+from django.core.validators import validate_email
 from django.db import models
+from django.utils.dateparse import parse_date
 
 
 class Lote(models.Model):
@@ -39,7 +42,9 @@ class Integrante(models.Model):
     )
 
     nombre = models.CharField(max_length=100)
+
     apellido = models.CharField(max_length=100)
+
     fecha_nacimiento = models.DateField()
 
     parentesco = models.CharField(
@@ -57,7 +62,7 @@ class Integrante(models.Model):
     activo = models.BooleanField(default=True)
 
     def __str__(self):
-        return f"{self.nombre} {self.apellido}"
+        return f"{self.apellido}, {self.nombre}"
 
 
 class Noticia(models.Model):
@@ -179,3 +184,257 @@ class ReservaSUM(models.Model):
                 name="reserva_sum_fecha_turno_activo_unico"
             )
         ]
+
+
+class SolicitudModificacionFamilia(models.Model):
+
+    TIPOS = [
+        ("modificar", "Modificar datos"),
+        ("alta", "Agregar integrante"),
+        ("baja", "Dar de baja integrante"),
+        ("otro", "Otro"),
+    ]
+
+    ESTADOS = [
+        ("pendiente", "Pendiente"),
+        ("aprobada", "Aprobada"),
+        ("rechazada", "Rechazada"),
+    ]
+
+    CAMPOS_MODIFICABLES = [
+        ("nombre", "Nombre"),
+        ("apellido", "Apellido"),
+        ("fecha_nacimiento", "Fecha de nacimiento"),
+        ("parentesco", "Parentesco"),
+        ("email", "Email"),
+        ("telefono", "Teléfono"),
+    ]
+
+    lote = models.ForeignKey(
+        Lote,
+        on_delete=models.CASCADE,
+        related_name="solicitudes_familia"
+    )
+
+    integrante = models.ForeignKey(
+        Integrante,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="solicitudes_modificacion"
+    )
+
+    tipo = models.CharField(
+        "Tipo de solicitud",
+        max_length=20,
+        choices=TIPOS
+    )
+
+    detalle = models.TextField(
+        "Detalle / comentario",
+        blank=True
+    )
+
+    # CAMPOS PARA MODIFICAR UN INTEGRANTE
+
+    campo_modificar = models.CharField(
+        "Dato a modificar",
+        max_length=30,
+        choices=CAMPOS_MODIFICABLES,
+        blank=True
+    )
+
+    nuevo_valor = models.CharField(
+        "Nuevo valor",
+        max_length=255,
+        blank=True
+    )
+
+    # CAMPOS PARA AGREGAR UN INTEGRANTE
+
+    nuevo_nombre = models.CharField(
+        "Nombre del nuevo integrante",
+        max_length=100,
+        blank=True
+    )
+
+    nuevo_apellido = models.CharField(
+        "Apellido del nuevo integrante",
+        max_length=100,
+        blank=True
+    )
+
+    nueva_fecha_nacimiento = models.DateField(
+        "Fecha de nacimiento del nuevo integrante",
+        null=True,
+        blank=True
+    )
+
+    nuevo_parentesco = models.CharField(
+        "Parentesco del nuevo integrante",
+        max_length=30,
+        blank=True
+    )
+
+    nuevo_email = models.EmailField(
+        "Email del nuevo integrante",
+        blank=True
+    )
+
+    nuevo_telefono = models.CharField(
+        "Teléfono del nuevo integrante",
+        max_length=30,
+        blank=True
+    )
+
+    estado = models.CharField(
+        "Estado",
+        max_length=20,
+        choices=ESTADOS,
+        default="pendiente"
+    )
+
+    fecha_creacion = models.DateTimeField(
+        "Fecha de creación",
+        auto_now_add=True
+    )
+
+    respuesta_administracion = models.TextField(
+        "Respuesta de administración",
+        blank=True
+    )
+
+    aplicada = models.BooleanField(
+        "Modificación aplicada",
+        default=False
+    )
+
+    def clean(self):
+        errores = {}
+
+        if self.tipo == "modificar":
+            if not self.integrante:
+                errores["integrante"] = (
+                    "Debe seleccionar el integrante a modificar."
+                )
+
+            if not self.campo_modificar:
+                errores["campo_modificar"] = (
+                    "Debe indicar qué dato desea modificar."
+                )
+
+            if not self.nuevo_valor:
+                errores["nuevo_valor"] = (
+                    "Debe indicar el nuevo valor."
+                )
+
+            if (
+                self.campo_modificar == "email"
+                and self.nuevo_valor
+            ):
+                try:
+                    validate_email(self.nuevo_valor)
+                except ValidationError:
+                    errores["nuevo_valor"] = (
+                        "Ingrese una dirección de email válida."
+                    )
+
+            if (
+                self.campo_modificar == "fecha_nacimiento"
+                and self.nuevo_valor
+                and parse_date(self.nuevo_valor) is None
+            ):
+                errores["nuevo_valor"] = (
+                    "Para la fecha use el formato AAAA-MM-DD."
+                )
+
+        elif self.tipo == "alta":
+            if not self.nuevo_nombre:
+                errores["nuevo_nombre"] = "Debe indicar el nombre."
+
+            if not self.nuevo_apellido:
+                errores["nuevo_apellido"] = "Debe indicar el apellido."
+
+            if not self.nueva_fecha_nacimiento:
+                errores["nueva_fecha_nacimiento"] = (
+                    "Debe indicar la fecha de nacimiento."
+                )
+
+            if not self.nuevo_parentesco:
+                errores["nuevo_parentesco"] = (
+                    "Debe indicar el parentesco."
+                )
+
+        elif self.tipo == "baja":
+            if not self.integrante:
+                errores["integrante"] = (
+                    "Debe seleccionar el integrante a dar de baja."
+                )
+
+        if errores:
+            raise ValidationError(errores)
+
+    def aplicar_cambio(self):
+        if self.aplicada:
+            return
+
+        if self.estado != "aprobada":
+            return
+
+        if self.tipo == "modificar":
+            integrante = self.integrante
+
+            if self.campo_modificar == "fecha_nacimiento":
+                valor = parse_date(self.nuevo_valor)
+            else:
+                valor = self.nuevo_valor
+
+            setattr(
+                integrante,
+                self.campo_modificar,
+                valor
+            )
+
+            integrante.save()
+
+        elif self.tipo == "alta":
+            integrante = Integrante.objects.create(
+                lote=self.lote,
+                nombre=self.nuevo_nombre,
+                apellido=self.nuevo_apellido,
+                fecha_nacimiento=self.nueva_fecha_nacimiento,
+                parentesco=self.nuevo_parentesco,
+                email=self.nuevo_email,
+                telefono=self.nuevo_telefono,
+                activo=True
+            )
+
+            self.integrante = integrante
+
+        elif self.tipo == "baja":
+            self.integrante.activo = False
+            self.integrante.save()
+
+        elif self.tipo == "otro":
+            return
+
+        self.aplicada = True
+
+        self.save(
+            update_fields=[
+                "aplicada",
+                "integrante",
+            ]
+        )
+
+    def __str__(self):
+        return (
+            f"Lote {self.lote.numero} - "
+            f"{self.get_tipo_display()} - "
+            f"{self.get_estado_display()}"
+        )
+
+    class Meta:
+        ordering = ["-fecha_creacion"]
+        verbose_name = "Solicitud de modificación familiar"
+        verbose_name_plural = "Solicitudes de modificación familiar"

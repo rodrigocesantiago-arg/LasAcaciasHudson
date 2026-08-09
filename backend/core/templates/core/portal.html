@@ -126,7 +126,6 @@
 
                             {% endif %}
 
-
                             <div class="d-flex justify-content-between align-items-start">
 
                                 <h5 class="mb-1">
@@ -143,11 +142,9 @@
 
                             </div>
 
-
                             <p class="mb-2">
                                 {{ noticia.contenido|truncatechars:120 }}
                             </p>
-
 
                             <small class="text-secondary">
                                 {{ noticia.fecha_publicacion|date:"d/m/Y H:i" }}
@@ -162,7 +159,6 @@
                         </div>
 
                     {% endfor %}
-
 
                     <div class="text-center mt-3">
 
@@ -214,14 +210,11 @@
 
                     </div>
 
-
                     <hr>
-
 
                     <h5 class="text-success mb-3">
                         Mis reservas
                     </h5>
-
 
                     {% for reserva in proximas_reservas %}
 
@@ -240,7 +233,6 @@
                                     </div>
 
                                 </div>
-
 
                                 <div>
 
@@ -268,11 +260,9 @@
 
                             </div>
 
-
                             <div class="small text-secondary mt-2">
                                 {{ reserva.cantidad_personas }} personas
                             </div>
-
 
                             {% if reserva.estado != "cancelada" %}
 
@@ -308,7 +298,6 @@
 
                         </div>
 
-
                     {% empty %}
 
                         <div class="alert alert-light border">
@@ -316,7 +305,6 @@
                         </div>
 
                     {% endfor %}
-
 
                     <div class="text-center mt-3">
 
@@ -360,7 +348,6 @@
 
                     </div>
 
-
                     {% for integrante in cumpleanios_mes %}
 
                         <div class="border rounded p-3 mb-2">
@@ -378,7 +365,6 @@
                                     </div>
 
                                 </div>
-
 
                                 <div>
 
@@ -408,7 +394,6 @@
                         </div>
 
                     {% endfor %}
-
 
                     <div class="text-center mt-4">
 
@@ -450,69 +435,13 @@
                     </p>
 
                     <a
-                        href="#familia"
+                        href="{% url 'mi_familia' %}"
                         class="btn btn-success"
                     >
-                        Ver familia
+                        Ver mi familia
                     </a>
 
                 </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-
-    <!-- INTEGRANTES -->
-
-    <div
-        id="familia"
-        class="card shadow-sm border-0 mb-4"
-    >
-
-        <div class="card-body p-4">
-
-            <h3 class="text-success mb-3">
-                👨‍👩‍👧‍👦 Integrantes del lote
-            </h3>
-
-            <div class="list-group">
-
-                {% for integrante in lote.integrantes.all %}
-
-                    <div class="list-group-item d-flex justify-content-between align-items-center">
-
-                        <div>
-
-                            <strong>
-                                {{ integrante.apellido }}, {{ integrante.nombre }}
-                            </strong>
-
-                            <div class="text-secondary small">
-                                {{ integrante.parentesco }}
-                            </div>
-
-                        </div>
-
-                        {% if integrante.activo %}
-
-                            <span class="badge text-bg-success">
-                                Activo
-                            </span>
-
-                        {% endif %}
-
-                    </div>
-
-                {% empty %}
-
-                    <div class="alert alert-info mb-0">
-                        No hay integrantes registrados.
-                    </div>
-
-                {% endfor %}
 
             </div>
 
@@ -545,7 +474,6 @@
 
                 </div>
 
-
                 <div class="col-md-4 mb-3">
 
                     <strong>
@@ -557,7 +485,6 @@
                     </div>
 
                 </div>
-
 
                 <div class="col-md-4 mb-3">
 

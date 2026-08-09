@@ -30,6 +30,18 @@ urlpatterns = [
     ),
 
     path(
+        "mi-familia/",
+        views.mi_familia,
+        name="mi_familia"
+    ),
+
+    path(
+        "mi-familia/solicitar-modificacion/",
+        views.solicitar_modificacion_familia,
+        name="solicitar_modificacion_familia"
+    ),
+
+    path(
         "mis-reservas-sum/",
         views.mis_reservas_sum,
         name="mis_reservas_sum"
