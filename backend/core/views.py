@@ -11,6 +11,7 @@ from .forms import (
 )
 
 from .models import (
+    Encomienda,
     Integrante,
     Noticia,
     Reclamo,
@@ -166,6 +167,23 @@ def portal(request):
         integrante.fecha_nacimiento.day
     )
 
+    # ENCOMIENDAS PENDIENTES DEL LOTE
+
+    encomiendas_pendientes = Encomienda.objects.filter(
+        lote=lote,
+        estado="pendiente"
+    ).order_by(
+        "-fecha_recepcion"
+    )
+
+    cantidad_encomiendas_pendientes = (
+        encomiendas_pendientes.count()
+    )
+
+    ultimas_encomiendas_pendientes = (
+        encomiendas_pendientes[:3]
+    )
+
     return render(
         request,
         "core/portal.html",
@@ -174,6 +192,10 @@ def portal(request):
             "noticias": noticias,
             "proximas_reservas": proximas_reservas,
             "cumpleanios_mes": cumpleanios_mes,
+            "cantidad_encomiendas_pendientes":
+                cantidad_encomiendas_pendientes,
+            "ultimas_encomiendas_pendientes":
+                ultimas_encomiendas_pendientes,
         }
     )
 
@@ -555,6 +577,39 @@ def nuevo_reclamo(request):
         {
             "form": form,
             "lote": lote,
+        }
+    )
+
+
+# -------------------------------------------------
+# ENCOMIENDAS
+# -------------------------------------------------
+
+def mis_encomiendas(request):
+    if not request.user.is_authenticated:
+        return redirect("home")
+
+    lote = request.user.lote
+
+    encomiendas = Encomienda.objects.filter(
+        lote=lote
+    ).order_by(
+        "-fecha_recepcion"
+    )
+
+    pendientes = encomiendas.filter(
+        estado="pendiente"
+    )
+
+    cantidad_pendientes = pendientes.count()
+
+    return render(
+        request,
+        "core/mis_encomiendas.html",
+        {
+            "lote": lote,
+            "encomiendas": encomiendas,
+            "cantidad_pendientes": cantidad_pendientes,
         }
     )
 

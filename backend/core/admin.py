@@ -1,6 +1,8 @@
 from django.contrib import admin
+from django.utils import timezone
 
 from .models import (
+    Encomienda,
     Integrante,
     Lote,
     Noticia,
@@ -177,7 +179,6 @@ class SolicitudModificacionFamiliaAdmin(admin.ModelAdmin):
 
 @admin.register(Reclamo)
 class ReclamoAdmin(admin.ModelAdmin):
-
     list_display = (
         "id",
         "fecha_creacion",
@@ -249,3 +250,95 @@ class ReclamoAdmin(admin.ModelAdmin):
             },
         ),
     )
+
+
+# -------------------------------------------------
+# ENCOMIENDAS
+# -------------------------------------------------
+
+@admin.register(Encomienda)
+class EncomiendaAdmin(admin.ModelAdmin):
+    list_display = (
+        "id",
+        "fecha_recepcion",
+        "lote",
+        "remitente",
+        "estado",
+        "retirado_por",
+        "fecha_entrega",
+    )
+
+    list_editable = (
+        "estado",
+    )
+
+    list_filter = (
+        "estado",
+        "fecha_recepcion",
+    )
+
+    search_fields = (
+        "lote__numero",
+        "lote__apellido_familia",
+        "remitente",
+        "descripcion",
+        "retirado_por",
+    )
+
+    readonly_fields = (
+        "fecha_recepcion",
+        "fecha_entrega",
+    )
+
+    fieldsets = (
+        (
+            "Datos de la encomienda",
+            {
+                "fields": (
+                    "lote",
+                    "remitente",
+                    "descripcion",
+                    "fecha_recepcion",
+                )
+            },
+        ),
+        (
+            "Entrega",
+            {
+                "fields": (
+                    "estado",
+                    "retirado_por",
+                    "fecha_entrega",
+                ),
+                "description": (
+                    "Cuando la encomienda pase a estado Entregada, "
+                    "la fecha y hora de entrega se completarán automáticamente."
+                ),
+            },
+        ),
+        (
+            "Observaciones",
+            {
+                "fields": (
+                    "observaciones",
+                )
+            },
+        ),
+    )
+
+    def save_model(self, request, obj, form, change):
+
+        if obj.estado == "entregada":
+
+            if not obj.fecha_entrega:
+                obj.fecha_entrega = timezone.now()
+
+        else:
+            obj.fecha_entrega = None
+
+        super().save_model(
+            request,
+            obj,
+            form,
+            change
+        )

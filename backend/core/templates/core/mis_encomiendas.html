@@ -1,0 +1,311 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Mis encomiendas - Comunidad360</title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{% static 'core/css/styles.css' %}"
+    >
+</head>
+
+<body>
+
+<div class="container py-4">
+
+    <!-- ENCABEZADO -->
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+            <h1 class="text-success mb-1">
+                📦 Mis encomiendas
+            </h1>
+
+            <div class="text-secondary">
+                Lote {{ lote.numero }} · Familia {{ lote.apellido_familia }}
+            </div>
+        </div>
+
+        <a
+            href="{% url 'portal' %}"
+            class="btn btn-outline-secondary"
+        >
+            Volver al portal
+        </a>
+
+    </div>
+
+
+    <!-- RESUMEN -->
+
+    {% if cantidad_pendientes > 0 %}
+
+        <div class="alert alert-warning border mb-4">
+
+            <h5 class="mb-1">
+                📦 Tenés encomiendas pendientes de retiro
+            </h5>
+
+            <div>
+                Actualmente tenés
+                <strong>{{ cantidad_pendientes }}</strong>
+                {% if cantidad_pendientes == 1 %}
+                    encomienda pendiente.
+                {% else %}
+                    encomiendas pendientes.
+                {% endif %}
+            </div>
+
+        </div>
+
+    {% else %}
+
+        <div class="alert alert-success border mb-4">
+            ✅ No tenés encomiendas pendientes de retiro.
+        </div>
+
+    {% endif %}
+
+
+    <!-- ENCOMIENDAS PENDIENTES -->
+
+    <div class="card shadow-sm border-0 mb-4">
+
+        <div class="card-body p-4">
+
+            <h3 class="text-success mb-4">
+                📦 Pendientes de retiro
+            </h3>
+
+            {% for encomienda in encomiendas %}
+
+                {% if encomienda.estado == "pendiente" %}
+
+                    <div class="border rounded p-3 mb-3">
+
+                        <div class="d-flex justify-content-between align-items-start">
+
+                            <div>
+
+                                <div class="text-secondary small">
+                                    Encomienda #{{ encomienda.id }}
+                                </div>
+
+                                <h5 class="mb-1">
+                                    {{ encomienda.remitente }}
+                                </h5>
+
+                                {% if encomienda.descripcion %}
+
+                                    <div class="text-secondary">
+                                        {{ encomienda.descripcion }}
+                                    </div>
+
+                                {% endif %}
+
+                            </div>
+
+                            <span class="badge text-bg-warning">
+                                Pendiente de retiro
+                            </span>
+
+                        </div>
+
+                        <hr>
+
+                        <div class="small">
+
+                            <strong>
+                                Recibida:
+                            </strong>
+
+                            {{ encomienda.fecha_recepcion|date:"d/m/Y H:i" }}
+
+                        </div>
+
+                        {% if encomienda.observaciones %}
+
+                            <div class="small mt-2">
+
+                                <strong>
+                                    Observaciones:
+                                </strong>
+
+                                {{ encomienda.observaciones }}
+
+                            </div>
+
+                        {% endif %}
+
+                    </div>
+
+                {% endif %}
+
+            {% empty %}
+
+                <div class="text-secondary">
+                    No hay encomiendas registradas.
+                </div>
+
+            {% endfor %}
+
+
+            {% if cantidad_pendientes == 0 %}
+
+                <div class="text-secondary">
+                    No hay encomiendas pendientes de retiro.
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+
+    <!-- HISTORIAL -->
+
+    <div class="card shadow-sm border-0">
+
+        <div class="card-body p-4">
+
+            <h3 class="mb-4">
+                Historial de encomiendas
+            </h3>
+
+            {% for encomienda in encomiendas %}
+
+                {% if encomienda.estado == "entregada" %}
+
+                    <div class="border rounded p-3 mb-3">
+
+                        <div class="d-flex justify-content-between align-items-start">
+
+                            <div>
+
+                                <div class="text-secondary small">
+                                    Encomienda #{{ encomienda.id }}
+                                </div>
+
+                                <h5 class="mb-1">
+                                    {{ encomienda.remitente }}
+                                </h5>
+
+                                {% if encomienda.descripcion %}
+
+                                    <div class="text-secondary">
+                                        {{ encomienda.descripcion }}
+                                    </div>
+
+                                {% endif %}
+
+                            </div>
+
+                            <span class="badge text-bg-success">
+                                Entregada
+                            </span>
+
+                        </div>
+
+                        <hr>
+
+                        <div class="row">
+
+                            <div class="col-md-6 mb-2">
+
+                                <strong>
+                                    Recibida
+                                </strong>
+
+                                <div class="text-secondary">
+                                    {{ encomienda.fecha_recepcion|date:"d/m/Y H:i" }}
+                                </div>
+
+                            </div>
+
+                            <div class="col-md-6 mb-2">
+
+                                <strong>
+                                    Entregada
+                                </strong>
+
+                                <div class="text-secondary">
+
+                                    {% if encomienda.fecha_entrega %}
+
+                                        {{ encomienda.fecha_entrega|date:"d/m/Y H:i" }}
+
+                                    {% else %}
+
+                                        -
+
+                                    {% endif %}
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        {% if encomienda.retirado_por %}
+
+                            <div class="mt-2">
+
+                                <strong>
+                                    Retirada por:
+                                </strong>
+
+                                {{ encomienda.retirado_por }}
+
+                            </div>
+
+                        {% endif %}
+
+
+                        {% if encomienda.observaciones %}
+
+                            <div class="mt-2">
+
+                                <strong>
+                                    Observaciones:
+                                </strong>
+
+                                {{ encomienda.observaciones }}
+
+                            </div>
+
+                        {% endif %}
+
+                    </div>
+
+                {% endif %}
+
+            {% empty %}
+
+                <div class="text-secondary">
+                    Todavía no hay historial de encomiendas.
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

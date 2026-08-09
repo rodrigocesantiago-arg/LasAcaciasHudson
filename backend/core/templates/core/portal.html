@@ -81,6 +81,46 @@
     </div>
 
 
+    <!-- AVISO DE ENCOMIENDAS -->
+
+    {% if cantidad_encomiendas_pendientes > 0 %}
+
+        <div class="alert alert-warning shadow-sm mb-4">
+
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+
+                <div>
+
+                    <h5 class="mb-1">
+                        📦 Tenés
+                        {{ cantidad_encomiendas_pendientes }}
+                        {% if cantidad_encomiendas_pendientes == 1 %}
+                            encomienda pendiente de retiro
+                        {% else %}
+                            encomiendas pendientes de retiro
+                        {% endif %}
+                    </h5>
+
+                    <div>
+                        Hay paquetes esperando para tu lote.
+                    </div>
+
+                </div>
+
+                <a
+                    href="{% url 'mis_encomiendas' %}"
+                    class="btn btn-warning"
+                >
+                    Ver encomiendas
+                </a>
+
+            </div>
+
+        </div>
+
+    {% endif %}
+
+
     <!-- ACCESOS PRINCIPALES -->
 
     <div class="row g-4 mb-4">
@@ -475,7 +515,6 @@
                         el estado de tus reclamos.
                     </p>
 
-
                     <div class="d-grid gap-2">
 
                         <a
@@ -501,6 +540,104 @@
         </div>
 
 
+        <!-- ENCOMIENDAS -->
+
+        <div class="col-md-6">
+
+            <div class="card h-100 shadow-sm border-0">
+
+                <div class="card-body p-4">
+
+                    <div class="text-center">
+
+                        <div class="fs-1">
+                            📦
+                        </div>
+
+                        <h3 class="mt-2">
+                            Encomiendas
+                        </h3>
+
+                        {% if cantidad_encomiendas_pendientes > 0 %}
+
+                            <div class="alert alert-warning mt-3">
+
+                                <strong>
+                                    Tenés
+                                    {{ cantidad_encomiendas_pendientes }}
+                                    {% if cantidad_encomiendas_pendientes == 1 %}
+                                        encomienda pendiente
+                                    {% else %}
+                                        encomiendas pendientes
+                                    {% endif %}
+                                    de retiro.
+                                </strong>
+
+                            </div>
+
+
+                            {% for encomienda in ultimas_encomiendas_pendientes %}
+
+                                <div class="border rounded p-3 mb-2 text-start">
+
+                                    <div class="d-flex justify-content-between align-items-start">
+
+                                        <div>
+
+                                            <strong>
+                                                {{ encomienda.remitente }}
+                                            </strong>
+
+                                            {% if encomienda.descripcion %}
+
+                                                <div class="text-secondary small">
+                                                    {{ encomienda.descripcion }}
+                                                </div>
+
+                                            {% endif %}
+
+                                        </div>
+
+                                        <span class="badge text-bg-warning">
+                                            Pendiente
+                                        </span>
+
+                                    </div>
+
+                                    <div class="small text-secondary mt-2">
+                                        Recibida:
+                                        {{ encomienda.fecha_recepcion|date:"d/m/Y H:i" }}
+                                    </div>
+
+                                </div>
+
+                            {% endfor %}
+
+                        {% else %}
+
+                            <p class="text-secondary mt-3">
+                                No tenés encomiendas pendientes de retiro.
+                            </p>
+
+                        {% endif %}
+
+
+                        <a
+                            href="{% url 'mis_encomiendas' %}"
+                            class="btn btn-success mt-3"
+                        >
+                            Ver mis encomiendas
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
     </div>
 
 
@@ -511,7 +648,7 @@
         <div class="card-body p-4">
 
             <h4 class="text-success">
-                🏠 Información de mi lote
+                🏡 Información de mi lote
             </h4>
 
             <div class="row mt-3">

@@ -514,3 +514,69 @@ class Reclamo(models.Model):
         ordering = ["-fecha_creacion"]
         verbose_name = "Reclamo"
         verbose_name_plural = "Reclamos"
+
+
+class Encomienda(models.Model):
+
+    ESTADOS = [
+        ("pendiente", "Pendiente de retiro"),
+        ("entregada", "Entregada"),
+    ]
+
+    lote = models.ForeignKey(
+        Lote,
+        on_delete=models.CASCADE,
+        related_name="encomiendas"
+    )
+
+    remitente = models.CharField(
+        "Empresa / Remitente",
+        max_length=150
+    )
+
+    descripcion = models.CharField(
+        "Descripción del paquete",
+        max_length=255,
+        blank=True
+    )
+
+    fecha_recepcion = models.DateTimeField(
+        "Fecha y hora de recepción",
+        auto_now_add=True
+    )
+
+    estado = models.CharField(
+        "Estado",
+        max_length=20,
+        choices=ESTADOS,
+        default="pendiente"
+    )
+
+    fecha_entrega = models.DateTimeField(
+        "Fecha y hora de entrega",
+        null=True,
+        blank=True
+    )
+
+    retirado_por = models.CharField(
+        "Retirado por",
+        max_length=150,
+        blank=True
+    )
+
+    observaciones = models.TextField(
+        "Observaciones",
+        blank=True
+    )
+
+    def __str__(self):
+        return (
+            f"Encomienda #{self.id} - "
+            f"Lote {self.lote.numero} - "
+            f"{self.remitente}"
+        )
+
+    class Meta:
+        ordering = ["-fecha_recepcion"]
+        verbose_name = "Encomienda"
+        verbose_name_plural = "Encomiendas"

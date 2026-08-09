@@ -3,7 +3,11 @@ from . import views
 
 
 urlpatterns = [
-    path("", views.home, name="home"),
+    path(
+        "",
+        views.home,
+        name="home"
+    ),
 
     path(
         "login/",
@@ -75,6 +79,12 @@ urlpatterns = [
         "reclamos/nuevo/",
         views.nuevo_reclamo,
         name="nuevo_reclamo"
+    ),
+
+    path(
+        "mis-encomiendas/",
+        views.mis_encomiendas,
+        name="mis_encomiendas"
     ),
 
     path(
