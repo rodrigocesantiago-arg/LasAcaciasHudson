@@ -11,6 +11,7 @@ from .forms import (
 )
 
 from .models import (
+    Documento,
     Encomienda,
     Integrante,
     Noticia,
@@ -19,6 +20,10 @@ from .models import (
     SolicitudModificacionFamilia,
 )
 
+
+# -------------------------------------------------
+# HOME Y LOGIN
+# -------------------------------------------------
 
 def home(request):
     return render(request, "core/home.html")
@@ -49,6 +54,10 @@ def login_view(request):
 
     return render(request, "core/home.html")
 
+
+# -------------------------------------------------
+# CUMPLEAÑOS - FUNCIÓN AUXILIAR
+# -------------------------------------------------
 
 def obtener_proximos_cumpleanios(limite=None):
     hoy = timezone.localdate()
@@ -113,6 +122,10 @@ def obtener_proximos_cumpleanios(limite=None):
 
     return cumpleanios
 
+
+# -------------------------------------------------
+# PORTAL
+# -------------------------------------------------
 
 def portal(request):
     if not request.user.is_authenticated:
@@ -200,6 +213,10 @@ def portal(request):
     )
 
 
+# -------------------------------------------------
+# NOTICIAS
+# -------------------------------------------------
+
 def noticias_view(request):
     if not request.user.is_authenticated:
         return redirect("home")
@@ -218,6 +235,10 @@ def noticias_view(request):
         }
     )
 
+
+# -------------------------------------------------
+# CUMPLEAÑOS
+# -------------------------------------------------
 
 def cumpleanios_view(request):
     if not request.user.is_authenticated:
@@ -613,6 +634,52 @@ def mis_encomiendas(request):
         }
     )
 
+
+# -------------------------------------------------
+# DOCUMENTOS
+# -------------------------------------------------
+
+def documentos_view(request):
+    if not request.user.is_authenticated:
+        return redirect("home")
+
+    documentos = Documento.objects.filter(
+        activo=True
+    ).order_by(
+        "categoria",
+        "-fecha_publicacion"
+    )
+
+    categorias = []
+
+    for codigo, nombre in Documento.CATEGORIAS:
+
+        documentos_categoria = documentos.filter(
+            categoria=codigo
+        )
+
+        if documentos_categoria.exists():
+            categorias.append(
+                {
+                    "codigo": codigo,
+                    "nombre": nombre,
+                    "documentos": documentos_categoria,
+                }
+            )
+
+    return render(
+        request,
+        "core/documentos.html",
+        {
+            "documentos": documentos,
+            "categorias": categorias,
+        }
+    )
+
+
+# -------------------------------------------------
+# LOGOUT
+# -------------------------------------------------
 
 def logout_view(request):
     logout(request)

@@ -94,6 +94,7 @@
                     <h5 class="mb-1">
                         📦 Tenés
                         {{ cantidad_encomiendas_pendientes }}
+
                         {% if cantidad_encomiendas_pendientes == 1 %}
                             encomienda pendiente de retiro
                         {% else %}
@@ -145,7 +146,8 @@
                         </h3>
 
                         <p class="text-secondary">
-                            Enterate de las novedades y comunicados importantes del barrio.
+                            Enterate de las novedades y comunicados
+                            importantes del barrio.
                         </p>
 
                     </div>
@@ -166,6 +168,7 @@
 
                             {% endif %}
 
+
                             <div class="d-flex justify-content-between align-items-start">
 
                                 <h5 class="mb-1">
@@ -181,6 +184,7 @@
                                 {% endif %}
 
                             </div>
+
 
                             <p class="mb-2">
                                 {{ noticia.contenido|truncatechars:120 }}
@@ -276,6 +280,7 @@
 
                                 </div>
 
+
                                 <div>
 
                                     {% if reserva.estado == "pendiente" %}
@@ -301,6 +306,7 @@
                                 </div>
 
                             </div>
+
 
                             <div class="small text-secondary mt-2">
                                 {{ reserva.cantidad_personas }} personas
@@ -411,6 +417,7 @@
 
                                 </div>
 
+
                                 <div>
 
                                     {% now "m-d" as hoy_mes_dia %}
@@ -515,6 +522,7 @@
                         el estado de tus reclamos.
                     </p>
 
+
                     <div class="d-grid gap-2">
 
                         <a
@@ -558,6 +566,7 @@
                             Encomiendas
                         </h3>
 
+
                         {% if cantidad_encomiendas_pendientes > 0 %}
 
                             <div class="alert alert-warning mt-3">
@@ -565,11 +574,13 @@
                                 <strong>
                                     Tenés
                                     {{ cantidad_encomiendas_pendientes }}
+
                                     {% if cantidad_encomiendas_pendientes == 1 %}
                                         encomienda pendiente
                                     {% else %}
                                         encomiendas pendientes
                                     {% endif %}
+
                                     de retiro.
                                 </strong>
 
@@ -598,11 +609,13 @@
 
                                         </div>
 
+
                                         <span class="badge text-bg-warning">
                                             Pendiente
                                         </span>
 
                                     </div>
+
 
                                     <div class="small text-secondary mt-2">
                                         Recibida:
@@ -638,6 +651,41 @@
         </div>
 
 
+        <!-- DOCUMENTOS -->
+
+        <div class="col-md-6">
+
+            <div class="card h-100 shadow-sm border-0">
+
+                <div class="card-body text-center p-4">
+
+                    <div class="fs-1">
+                        📄
+                    </div>
+
+                    <h3 class="mt-2">
+                        Documentos
+                    </h3>
+
+                    <p class="text-secondary">
+                        Consultá reglamentos, expensas, seguridad
+                        y documentación importante del barrio.
+                    </p>
+
+                    <a
+                        href="{% url 'documentos' %}"
+                        class="btn btn-success"
+                    >
+                        Ver documentos
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
     </div>
 
 
@@ -652,6 +700,7 @@
             </h4>
 
             <div class="row mt-3">
+
 
                 <div class="col-md-4 mb-3">
 
@@ -704,6 +753,7 @@
                     </div>
 
                 </div>
+
 
             </div>
 

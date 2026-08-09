@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.utils import timezone
 
 from .models import (
+    Documento,
     Encomienda,
     Integrante,
     Lote,
@@ -329,10 +330,8 @@ class EncomiendaAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
 
         if obj.estado == "entregada":
-
             if not obj.fecha_entrega:
                 obj.fecha_entrega = timezone.now()
-
         else:
             obj.fecha_entrega = None
 
@@ -342,3 +341,63 @@ class EncomiendaAdmin(admin.ModelAdmin):
             form,
             change
         )
+
+
+# -------------------------------------------------
+# DOCUMENTOS
+# -------------------------------------------------
+
+@admin.register(Documento)
+class DocumentoAdmin(admin.ModelAdmin):
+    list_display = (
+        "titulo",
+        "categoria",
+        "fecha_publicacion",
+        "activo",
+    )
+
+    list_editable = (
+        "activo",
+    )
+
+    list_filter = (
+        "categoria",
+        "activo",
+        "fecha_publicacion",
+    )
+
+    search_fields = (
+        "titulo",
+        "descripcion",
+    )
+
+    readonly_fields = (
+        "fecha_publicacion",
+    )
+
+    fieldsets = (
+        (
+            "Datos del documento",
+            {
+                "fields": (
+                    "titulo",
+                    "descripcion",
+                    "categoria",
+                    "archivo",
+                )
+            },
+        ),
+        (
+            "Publicación",
+            {
+                "fields": (
+                    "activo",
+                    "fecha_publicacion",
+                ),
+                "description": (
+                    "Si el documento está activo, será visible "
+                    "para los vecinos en Comunidad360."
+                ),
+            },
+        ),
+    )

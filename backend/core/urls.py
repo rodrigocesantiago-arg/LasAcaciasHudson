@@ -88,6 +88,12 @@ urlpatterns = [
     ),
 
     path(
+        "documentos/",
+        views.documentos_view,
+        name="documentos"
+    ),
+
+    path(
         "logout/",
         views.logout_view,
         name="logout"

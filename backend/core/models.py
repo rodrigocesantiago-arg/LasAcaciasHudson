@@ -42,9 +42,7 @@ class Integrante(models.Model):
     )
 
     nombre = models.CharField(max_length=100)
-
     apellido = models.CharField(max_length=100)
-
     fecha_nacimiento = models.DateField()
 
     parentesco = models.CharField(
@@ -173,7 +171,6 @@ class ReservaSUM(models.Model):
 
     class Meta:
         ordering = ["fecha", "turno"]
-
         verbose_name = "Reserva del SUM"
         verbose_name_plural = "Reservas del SUM"
 
@@ -346,14 +343,10 @@ class SolicitudModificacionFamilia(models.Model):
 
         elif self.tipo == "alta":
             if not self.nuevo_nombre:
-                errores["nuevo_nombre"] = (
-                    "Debe indicar el nombre."
-                )
+                errores["nuevo_nombre"] = "Debe indicar el nombre."
 
             if not self.nuevo_apellido:
-                errores["nuevo_apellido"] = (
-                    "Debe indicar el apellido."
-                )
+                errores["nuevo_apellido"] = "Debe indicar el apellido."
 
             if not self.nueva_fecha_nacimiento:
                 errores["nueva_fecha_nacimiento"] = (
@@ -580,3 +573,55 @@ class Encomienda(models.Model):
         ordering = ["-fecha_recepcion"]
         verbose_name = "Encomienda"
         verbose_name_plural = "Encomiendas"
+
+
+class Documento(models.Model):
+
+    CATEGORIAS = [
+        ("reglamento", "Reglamento"),
+        ("administracion", "Administración"),
+        ("sum", "SUM"),
+        ("seguridad", "Seguridad"),
+        ("obras", "Obras"),
+        ("expensas", "Expensas"),
+        ("otro", "Otro"),
+    ]
+
+    titulo = models.CharField(
+        "Título",
+        max_length=200
+    )
+
+    descripcion = models.TextField(
+        "Descripción",
+        blank=True
+    )
+
+    categoria = models.CharField(
+        "Categoría",
+        max_length=30,
+        choices=CATEGORIAS
+    )
+
+    archivo = models.FileField(
+        "Archivo",
+        upload_to="documentos/"
+    )
+
+    fecha_publicacion = models.DateTimeField(
+        "Fecha de publicación",
+        auto_now_add=True
+    )
+
+    activo = models.BooleanField(
+        "Visible para los vecinos",
+        default=True
+    )
+
+    def __str__(self):
+        return self.titulo
+
+    class Meta:
+        ordering = ["-fecha_publicacion"]
+        verbose_name = "Documento"
+        verbose_name_plural = "Documentos"
