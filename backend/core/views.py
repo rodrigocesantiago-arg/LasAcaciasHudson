@@ -8,6 +8,7 @@ from .forms import (
     ReservaSUMForm,
     SolicitudModificacionFamiliaForm,
 )
+
 from .models import (
     Integrante,
     Noticia,
@@ -38,7 +39,9 @@ def login_view(request):
         return render(
             request,
             "core/home.html",
-            {"error": "Número de lote o contraseña incorrectos."}
+            {
+                "error": "Número de lote o contraseña incorrectos."
+            }
         )
 
     return render(request, "core/home.html")
@@ -62,6 +65,7 @@ def obtener_proximos_cumpleanios(limite=None):
                 nacimiento.month,
                 nacimiento.day
             )
+
         except ValueError:
             proximo = date(
                 hoy.year,
@@ -70,12 +74,14 @@ def obtener_proximos_cumpleanios(limite=None):
             )
 
         if proximo < hoy:
+
             try:
                 proximo = date(
                     hoy.year + 1,
                     nacimiento.month,
                     nacimiento.day
                 )
+
             except ValueError:
                 proximo = date(
                     hoy.year + 1,
@@ -83,7 +89,9 @@ def obtener_proximos_cumpleanios(limite=None):
                     28
                 )
 
-        dias_faltantes = (proximo - hoy).days
+        dias_faltantes = (
+            proximo - hoy
+        ).days
 
         cumpleanios.append(
             {
@@ -110,11 +118,16 @@ def portal(request):
     lote = request.user.lote
     hoy = timezone.localdate()
 
+    # NOTICIAS
+
     noticias = Noticia.objects.filter(
         activa=True
     ).order_by(
         "-fecha_publicacion"
     )[:3]
+
+
+    # RESERVAS DEL SUM
 
     proximas_reservas = ReservaSUM.objects.filter(
         lote=lote
@@ -124,22 +137,35 @@ def portal(request):
     )[:3]
 
     for reserva in proximas_reservas:
-        fecha_limite_cancelacion = reserva.fecha - timedelta(days=7)
+
+        fecha_limite_cancelacion = (
+            reserva.fecha - timedelta(days=7)
+        )
 
         reserva.puede_cancelar = (
             hoy <= fecha_limite_cancelacion
             and reserva.estado != "cancelada"
         )
 
+
+    # CUMPLEAÑOS DEL MES
+
     cumpleanios_mes = []
 
-    for integrante in Integrante.objects.filter(activo=True):
+    integrantes_activos = Integrante.objects.filter(
+        activo=True
+    )
+
+    for integrante in integrantes_activos:
+
         if integrante.fecha_nacimiento.month == hoy.month:
             cumpleanios_mes.append(integrante)
 
     cumpleanios_mes.sort(
-        key=lambda integrante: integrante.fecha_nacimiento.day
+        key=lambda integrante:
+        integrante.fecha_nacimiento.day
     )
+
 
     return render(
         request,
@@ -202,7 +228,10 @@ def mis_reservas_sum(request):
     )
 
     for reserva in reservas:
-        fecha_limite_cancelacion = reserva.fecha - timedelta(days=7)
+
+        fecha_limite_cancelacion = (
+            reserva.fecha - timedelta(days=7)
+        )
 
         reserva.puede_cancelar = (
             hoy <= fecha_limite_cancelacion
@@ -224,6 +253,7 @@ def disponibilidad_sum(request):
         return redirect("home")
 
     lote = request.user.lote
+
     fecha_texto = request.GET.get("fecha")
 
     fecha_consultada = None
@@ -231,7 +261,9 @@ def disponibilidad_sum(request):
     turno_noche_disponible = None
 
     if fecha_texto:
+
         try:
+
             fecha_consultada = datetime.strptime(
                 fecha_texto,
                 "%Y-%m-%d"
@@ -251,8 +283,13 @@ def disponibilidad_sum(request):
                 estado="cancelada"
             ).exists()
 
-            turno_dia_disponible = not turno_dia_ocupado
-            turno_noche_disponible = not turno_noche_ocupado
+            turno_dia_disponible = (
+                not turno_dia_ocupado
+            )
+
+            turno_noche_disponible = (
+                not turno_noche_ocupado
+            )
 
         except ValueError:
             fecha_consultada = None
@@ -280,14 +317,22 @@ def reservar_sum(request):
     turno_inicial = request.GET.get("turno")
 
     if request.method == "POST":
-        form = ReservaSUMForm(request.POST)
+
+        form = ReservaSUMForm(
+            request.POST
+        )
 
         if form.is_valid():
-            reserva = form.save(commit=False)
+
+            reserva = form.save(
+                commit=False
+            )
+
             reserva.lote = lote
             reserva.estado = "pendiente"
 
             try:
+
                 reserva.save()
 
                 return render(
@@ -299,12 +344,17 @@ def reservar_sum(request):
                 )
 
             except Exception:
+
                 form.add_error(
                     None,
-                    "Ese turno ya está reservado para la fecha seleccionada."
+                    (
+                        "Ese turno ya está reservado "
+                        "para la fecha seleccionada."
+                    )
                 )
 
     else:
+
         form = ReservaSUMForm(
             initial={
                 "fecha": fecha_inicial,
@@ -322,7 +372,10 @@ def reservar_sum(request):
     )
 
 
-def cancelar_reserva_sum(request, reserva_id):
+def cancelar_reserva_sum(
+    request,
+    reserva_id
+):
     if not request.user.is_authenticated:
         return redirect("home")
 
@@ -337,17 +390,26 @@ def cancelar_reserva_sum(request, reserva_id):
     if request.method == "POST":
 
         hoy = timezone.localdate()
-        fecha_limite = reserva.fecha - timedelta(days=7)
+
+        fecha_limite = (
+            reserva.fecha - timedelta(days=7)
+        )
 
         if (
             hoy <= fecha_limite
             and reserva.estado != "cancelada"
         ):
+
             reserva.estado = "cancelada"
+
             reserva.save()
 
     return redirect("portal")
 
+
+# -------------------------------------------------
+# MI FAMILIA
+# -------------------------------------------------
 
 def mi_familia(request):
     if not request.user.is_authenticated:
@@ -355,17 +417,26 @@ def mi_familia(request):
 
     lote = request.user.lote
 
+    # Solamente mostramos integrantes ACTIVOS.
+    # Los integrantes dados de baja permanecen
+    # guardados en la base para conservar historial.
+
     integrantes = Integrante.objects.filter(
-        lote=lote
+        lote=lote,
+        activo=True
     ).order_by(
         "apellido",
         "nombre"
     )
 
-    solicitudes = SolicitudModificacionFamilia.objects.filter(
-        lote=lote
-    ).order_by(
-        "-fecha_creacion"
+    solicitudes = (
+        SolicitudModificacionFamilia.objects
+        .filter(
+            lote=lote
+        )
+        .order_by(
+            "-fecha_creacion"
+        )
     )
 
     return render(
@@ -386,20 +457,29 @@ def solicitar_modificacion_familia(request):
     lote = request.user.lote
 
     if request.method == "POST":
+
         form = SolicitudModificacionFamiliaForm(
             request.POST,
             lote=lote
         )
 
         if form.is_valid():
-            solicitud = form.save(commit=False)
+
+            solicitud = form.save(
+                commit=False
+            )
+
             solicitud.lote = lote
             solicitud.estado = "pendiente"
+
             solicitud.save()
 
-            return redirect("mi_familia")
+            return redirect(
+                "mi_familia"
+            )
 
     else:
+
         form = SolicitudModificacionFamiliaForm(
             lote=lote
         )
@@ -416,4 +496,5 @@ def solicitar_modificacion_familia(request):
 
 def logout_view(request):
     logout(request)
+
     return redirect("home")
