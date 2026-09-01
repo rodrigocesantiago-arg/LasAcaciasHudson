@@ -685,10 +685,74 @@
 
         </div>
 
-        <!-- DOCUMENTOS -->
+        <!-- VISITAS -->
 
         <div class="col-md-6">
-            ...
+
+            <div class="card h-100 shadow-sm border-0">
+
+                <div class="card-body text-center p-4">
+
+                    <div class="fs-1">
+                        🚗
+                    </div>
+
+                    <h3 class="mt-2">
+                        Visitas
+                    </h3>
+
+                    <p class="text-secondary">
+                        Autorizá ingresos, consultá tu agenda y administrá
+                        las visitas de tu lote.
+                    </p>
+
+                    <div class="d-grid gap-2">
+
+                        <a
+                            href="{% url 'autorizar_visita' %}"
+                            class="btn btn-success"
+                        >
+                            Autorizar visita
+                        </a>
+
+                        <a
+                            href="{% url 'agenda_visitas' %}"
+                            class="btn btn-outline-success"
+                        >
+                            Agenda
+                        </a>
+
+                        <a
+                            href="{% url 'historial_visitas' %}"
+                            class="btn btn-outline-success"
+                        >
+                            Historial
+                        </a>
+
+                        <a
+                            href="{% url 'carga_masiva_visitas' %}"
+                            class="btn btn-outline-success"
+                        >
+                            Carga masiva
+                        </a>
+
+                    </div>
+
+                    <div class="mt-3">
+
+                        <a
+                            href="{% url 'invitados_frecuentes' %}"
+                            class="text-success text-decoration-none"
+                        >
+                            ⭐ Invitados frecuentes
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
         </div>
 
 
