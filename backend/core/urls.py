@@ -94,9 +94,55 @@ urlpatterns = [
     ),
 
     path(
-    "contactos-utiles/",
-    views.contactos_utiles,
-    name="contactos_utiles"
+        "contactos-utiles/",
+        views.contactos_utiles,
+        name="contactos_utiles"
+    ),
+
+    # -------------------------------------------------
+    # VISITAS
+    # -------------------------------------------------
+
+    path(
+        "visitas/",
+        views.visitas_view,
+        name="visitas"
+    ),
+
+    path(
+        "visitas/autorizar/",
+        views.autorizar_visita,
+        name="autorizar_visita"
+    ),
+
+    path(
+        "visitas/historial/",
+        views.historial_visitas,
+        name="historial_visitas"
+    ),
+
+    path(
+        "visitas/agenda/",
+        views.agenda_visitas,
+        name="agenda_visitas"
+    ),
+
+    path(
+        "visitas/invitados-frecuentes/",
+        views.invitados_frecuentes,
+        name="invitados_frecuentes"
+    ),
+
+    path(
+        "visitas/invitados-frecuentes/nuevo/",
+        views.nuevo_invitado_frecuente,
+        name="nuevo_invitado_frecuente"
+    ),
+
+    path(
+        "visitas/<int:visita_id>/cancelar/",
+        views.cancelar_visita,
+        name="cancelar_visita"
     ),
 
     path(

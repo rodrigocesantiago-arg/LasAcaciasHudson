@@ -1,9 +1,11 @@
 from django import forms
 
 from .models import (
+    InvitadoFrecuente,
     Reclamo,
     ReservaSUM,
     SolicitudModificacionFamilia,
+    Visita,
 )
 
 
@@ -44,7 +46,7 @@ class ReservaSUMForm(forms.ModelForm):
                 attrs={
                     "class": "form-control",
                     "rows": 3,
-                    "placeholder": "Información adicional sobre la reserva..."
+                    "placeholder": "Información adicional sobre la reserva...",
                 }
             ),
         }
@@ -196,3 +198,135 @@ class ReclamoForm(forms.ModelForm):
                 }
             ),
         }
+
+
+class InvitadoFrecuenteForm(forms.ModelForm):
+
+    class Meta:
+        model = InvitadoFrecuente
+
+        fields = [
+            "nombre",
+            "apellido",
+            "dni",
+            "patente",
+            "observaciones",
+        ]
+
+        widgets = {
+            "nombre": forms.TextInput(
+                attrs={
+                    "class": "form-control",
+                }
+            ),
+
+            "apellido": forms.TextInput(
+                attrs={
+                    "class": "form-control",
+                }
+            ),
+
+            "dni": forms.TextInput(
+                attrs={
+                    "class": "form-control",
+                }
+            ),
+
+            "patente": forms.TextInput(
+                attrs={
+                    "class": "form-control",
+                }
+            ),
+
+            "observaciones": forms.Textarea(
+                attrs={
+                    "class": "form-control",
+                    "rows": 3,
+                }
+            ),
+        }
+
+
+class VisitaForm(forms.ModelForm):
+
+    class Meta:
+        model = Visita
+
+        fields = [
+            "invitado",
+            "nombre",
+            "apellido",
+            "dni",
+            "patente",
+            "fecha",
+            "evento",
+            "observaciones",
+        ]
+
+        widgets = {
+            "invitado": forms.Select(
+                attrs={
+                    "class": "form-select",
+                }
+            ),
+
+            "nombre": forms.TextInput(
+                attrs={
+                    "class": "form-control",
+                }
+            ),
+
+            "apellido": forms.TextInput(
+                attrs={
+                    "class": "form-control",
+                }
+            ),
+
+            "dni": forms.TextInput(
+                attrs={
+                    "class": "form-control",
+                }
+            ),
+
+            "patente": forms.TextInput(
+                attrs={
+                    "class": "form-control",
+                }
+            ),
+
+            "fecha": forms.DateInput(
+                attrs={
+                    "type": "date",
+                    "class": "form-control",
+                }
+            ),
+
+            "evento": forms.TextInput(
+                attrs={
+                    "class": "form-control",
+                    "placeholder": "Ej: Cumpleaños, visita familiar, proveedor",
+                }
+            ),
+
+            "observaciones": forms.Textarea(
+                attrs={
+                    "class": "form-control",
+                    "rows": 3,
+                }
+            ),
+        }
+
+    def __init__(self, *args, **kwargs):
+        lote = kwargs.pop("lote", None)
+
+        super().__init__(*args, **kwargs)
+
+        if lote is not None:
+            self.fields["invitado"].queryset = (
+                InvitadoFrecuente.objects.filter(
+                    lote=lote,
+                    activo=True,
+                )
+            )
+
+        self.fields["invitado"].required = False

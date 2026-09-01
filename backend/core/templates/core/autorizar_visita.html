@@ -1,0 +1,320 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Autorizar Visita - Comunidad360</title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{% static 'core/css/styles.css' %}"
+    >
+</head>
+
+<body>
+
+<div class="container py-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+            <h1 class="text-success mb-1">
+                🚗 Autorizar Visita
+            </h1>
+
+            <div class="text-secondary">
+                Lote {{ lote.numero }} · Familia {{ lote.apellido_familia }}
+            </div>
+        </div>
+
+        <a
+            href="{% url 'visitas' %}"
+            class="btn btn-outline-secondary"
+        >
+            Volver a Visitas
+        </a>
+
+    </div>
+
+
+    <div class="row justify-content-center">
+
+        <div class="col-lg-8">
+
+            <div class="card shadow-sm border-0">
+
+                <div class="card-body p-4">
+
+                    <h3 class="mb-4">
+                        Nueva visita
+                    </h3>
+
+
+                    {% if form.non_field_errors %}
+
+                        <div class="alert alert-danger">
+                            {{ form.non_field_errors }}
+                        </div>
+
+                    {% endif %}
+
+
+                    <form method="POST">
+
+                        {% csrf_token %}
+
+
+                        <div class="mb-4">
+
+                            <label class="form-label">
+                                Invitado frecuente
+                            </label>
+
+                            {{ form.invitado }}
+
+                            {% for error in form.invitado.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ error }}
+                                </div>
+                            {% endfor %}
+
+                            <div class="form-text">
+                                Opcional. Al seleccionar un invitado frecuente,
+                                sus datos se completarán automáticamente.
+                            </div>
+
+                        </div>
+
+
+                        <hr class="mb-4">
+
+
+                        <div class="row">
+
+                            <div class="col-md-6 mb-3">
+
+                                <label class="form-label">
+                                    Nombre
+                                </label>
+
+                                {{ form.nombre }}
+
+                                {% for error in form.nombre.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {{ error }}
+                                    </div>
+                                {% endfor %}
+
+                            </div>
+
+
+                            <div class="col-md-6 mb-3">
+
+                                <label class="form-label">
+                                    Apellido
+                                </label>
+
+                                {{ form.apellido }}
+
+                                {% for error in form.apellido.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {{ error }}
+                                    </div>
+                                {% endfor %}
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="row">
+
+                            <div class="col-md-6 mb-3">
+
+                                <label class="form-label">
+                                    DNI
+                                </label>
+
+                                {{ form.dni }}
+
+                                {% for error in form.dni.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {{ error }}
+                                    </div>
+                                {% endfor %}
+
+                            </div>
+
+
+                            <div class="col-md-6 mb-3">
+
+                                <label class="form-label">
+                                    Patente
+                                </label>
+
+                                {{ form.patente }}
+
+                                {% for error in form.patente.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {{ error }}
+                                    </div>
+                                {% endfor %}
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="row">
+
+                            <div class="col-md-6 mb-3">
+
+                                <label class="form-label">
+                                    Fecha de visita
+                                </label>
+
+                                {{ form.fecha }}
+
+                                {% for error in form.fecha.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {{ error }}
+                                    </div>
+                                {% endfor %}
+
+                            </div>
+
+
+                            <div class="col-md-6 mb-3">
+
+                                <label class="form-label">
+                                    Evento / Motivo
+                                </label>
+
+                                {{ form.evento }}
+
+                                {% for error in form.evento.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {{ error }}
+                                    </div>
+                                {% endfor %}
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="mb-4">
+
+                            <label class="form-label">
+                                Observaciones
+                            </label>
+
+                            {{ form.observaciones }}
+
+                            {% for error in form.observaciones.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ error }}
+                                </div>
+                            {% endfor %}
+
+                        </div>
+
+
+                        <div class="alert alert-light border">
+
+                            <strong>
+                                La visita quedará autorizada para la fecha seleccionada.
+                            </strong>
+
+                            <div class="small text-secondary mt-1">
+                                Podrás consultarla posteriormente desde la
+                                agenda o el historial de visitas.
+                            </div>
+
+                        </div>
+
+
+                        <button
+                            type="submit"
+                            class="btn btn-success w-100"
+                        >
+                            Autorizar visita
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+    const invitados = {
+        {% for invitado in form.fields.invitado.queryset %}
+        "{{ invitado.id }}": {
+            nombre: "{{ invitado.nombre|escapejs }}",
+            apellido: "{{ invitado.apellido|escapejs }}",
+            dni: "{{ invitado.dni|escapejs }}",
+            patente: "{{ invitado.patente|escapejs }}"
+        },
+        {% endfor %}
+    };
+
+
+    const selectInvitado =
+        document.getElementById("id_invitado");
+
+
+    if (selectInvitado) {
+
+        selectInvitado.addEventListener(
+            "change",
+            function () {
+
+                const invitado =
+                    invitados[this.value];
+
+                if (!invitado) {
+                    return;
+                }
+
+                document.getElementById(
+                    "id_nombre"
+                ).value = invitado.nombre;
+
+                document.getElementById(
+                    "id_apellido"
+                ).value = invitado.apellido;
+
+                document.getElementById(
+                    "id_dni"
+                ).value = invitado.dni;
+
+                document.getElementById(
+                    "id_patente"
+                ).value = invitado.patente;
+
+            }
+        );
+
+    }
+</script>
+
+</body>
+
+</html>

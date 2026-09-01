@@ -5,9 +5,11 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 
 from .forms import (
+    InvitadoFrecuenteForm,
     ReclamoForm,
     ReservaSUMForm,
     SolicitudModificacionFamiliaForm,
+    VisitaForm,
 )
 
 from .models import (
@@ -15,10 +17,12 @@ from .models import (
     Documento,
     Encomienda,
     Integrante,
+    InvitadoFrecuente,
     Noticia,
     Reclamo,
     ReservaSUM,
     SolicitudModificacionFamilia,
+    Visita,
 )
 
 
@@ -717,6 +721,229 @@ def contactos_utiles(request):
         {
             "categorias": categorias,
         }
+    )
+
+    # -------------------------------------------------
+# VISITAS
+# -------------------------------------------------
+
+def visitas_view(request):
+    if not request.user.is_authenticated:
+        return redirect("home")
+
+    lote = request.user.lote
+
+    proximas_visitas = Visita.objects.filter(
+        lote=lote,
+        fecha__gte=timezone.localdate(),
+        estado="autorizada",
+    ).order_by(
+        "fecha",
+        "apellido",
+        "nombre",
+    )[:10]
+
+    return render(
+        request,
+        "core/visitas.html",
+        {
+            "lote": lote,
+            "proximas_visitas": proximas_visitas,
+        }
+    )
+
+
+def autorizar_visita(request):
+    if not request.user.is_authenticated:
+        return redirect("home")
+
+    lote = request.user.lote
+
+    if request.method == "POST":
+
+        form = VisitaForm(
+            request.POST,
+            lote=lote,
+        )
+
+        if form.is_valid():
+
+            visita = form.save(
+                commit=False
+            )
+
+            visita.lote = lote
+            visita.estado = "autorizada"
+
+            if visita.invitado:
+
+                visita.nombre = visita.invitado.nombre
+                visita.apellido = visita.invitado.apellido
+                visita.dni = visita.invitado.dni
+
+                if not visita.patente:
+                    visita.patente = visita.invitado.patente
+
+            visita.save()
+
+            return redirect(
+                "historial_visitas"
+            )
+
+    else:
+
+        form = VisitaForm(
+            lote=lote
+        )
+
+    return render(
+        request,
+        "core/autorizar_visita.html",
+        {
+            "form": form,
+            "lote": lote,
+        }
+    )
+
+
+def historial_visitas(request):
+    if not request.user.is_authenticated:
+        return redirect("home")
+
+    lote = request.user.lote
+
+    visitas = Visita.objects.filter(
+        lote=lote
+    ).order_by(
+        "-fecha",
+        "-fecha_creacion",
+    )
+
+    return render(
+        request,
+        "core/historial_visitas.html",
+        {
+            "lote": lote,
+            "visitas": visitas,
+        }
+    )
+
+
+def agenda_visitas(request):
+    if not request.user.is_authenticated:
+        return redirect("home")
+
+    lote = request.user.lote
+    hoy = timezone.localdate()
+
+    visitas = Visita.objects.filter(
+        lote=lote,
+        fecha__gte=hoy,
+        estado="autorizada",
+    ).order_by(
+        "fecha",
+        "apellido",
+        "nombre",
+    )
+
+    return render(
+        request,
+        "core/agenda_visitas.html",
+        {
+            "lote": lote,
+            "visitas": visitas,
+            "hoy": hoy,
+        }
+    )
+
+
+def invitados_frecuentes(request):
+    if not request.user.is_authenticated:
+        return redirect("home")
+
+    lote = request.user.lote
+
+    invitados = InvitadoFrecuente.objects.filter(
+        lote=lote,
+        activo=True,
+    ).order_by(
+        "apellido",
+        "nombre",
+    )
+
+    return render(
+        request,
+        "core/invitados_frecuentes.html",
+        {
+            "lote": lote,
+            "invitados": invitados,
+        }
+    )
+
+
+def nuevo_invitado_frecuente(request):
+    if not request.user.is_authenticated:
+        return redirect("home")
+
+    lote = request.user.lote
+
+    if request.method == "POST":
+
+        form = InvitadoFrecuenteForm(
+            request.POST
+        )
+
+        if form.is_valid():
+
+            invitado = form.save(
+                commit=False
+            )
+
+            invitado.lote = lote
+            invitado.activo = True
+
+            invitado.save()
+
+            return redirect(
+                "invitados_frecuentes"
+            )
+
+    else:
+
+        form = InvitadoFrecuenteForm()
+
+    return render(
+        request,
+        "core/nuevo_invitado_frecuente.html",
+        {
+            "form": form,
+            "lote": lote,
+        }
+    )
+
+
+def cancelar_visita(
+    request,
+    visita_id
+):
+    if not request.user.is_authenticated:
+        return redirect("home")
+
+    lote = request.user.lote
+
+    visita = get_object_or_404(
+        Visita,
+        id=visita_id,
+        lote=lote,
+    )
+
+    if request.method == "POST":
+
+        visita.estado = "cancelada"
+        visita.save()
+
+    return redirect(
+        "historial_visitas"
     )
 
 

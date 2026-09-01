@@ -1,0 +1,215 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Visitas - Comunidad360</title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{% static 'core/css/styles.css' %}"
+    >
+</head>
+
+<body>
+
+<div class="container py-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+            <h1 class="text-success mb-1">
+                🚗 Visitas
+            </h1>
+
+            <div class="text-secondary">
+                Lote {{ lote.numero }} · Familia {{ lote.apellido_familia }}
+            </div>
+        </div>
+
+        <a
+            href="{% url 'portal' %}"
+            class="btn btn-outline-secondary"
+        >
+            Volver al portal
+        </a>
+
+    </div>
+
+
+    <div class="row g-3 mb-4">
+
+        <div class="col-md-6 col-lg-3">
+            <a
+                href="{% url 'autorizar_visita' %}"
+                class="text-decoration-none"
+            >
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-body">
+                        <h4 class="text-success">
+                            ➕ Autorizar visita
+                        </h4>
+
+                        <p class="text-secondary mb-0">
+                            Registrar una nueva visita autorizada.
+                        </p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+
+        <div class="col-md-6 col-lg-3">
+            <a
+                href="{% url 'agenda_visitas' %}"
+                class="text-decoration-none"
+            >
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-body">
+                        <h4 class="text-success">
+                            📅 Agenda
+                        </h4>
+
+                        <p class="text-secondary mb-0">
+                            Consultar las próximas visitas programadas.
+                        </p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+
+        <div class="col-md-6 col-lg-3">
+            <a
+                href="{% url 'historial_visitas' %}"
+                class="text-decoration-none"
+            >
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-body">
+                        <h4 class="text-success">
+                            📋 Historial
+                        </h4>
+
+                        <p class="text-secondary mb-0">
+                            Consultar las visitas registradas.
+                        </p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+
+        <div class="col-md-6 col-lg-3">
+            <a
+                href="{% url 'invitados_frecuentes' %}"
+                class="text-decoration-none"
+            >
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-body">
+                        <h4 class="text-success">
+                            ⭐ Invitados frecuentes
+                        </h4>
+
+                        <p class="text-secondary mb-0">
+                            Administrar las personas habituales del lote.
+                        </p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+    </div>
+
+
+    <div class="card shadow-sm border-0">
+
+        <div class="card-body p-4">
+
+            <h3 class="mb-4">
+                Próximas visitas
+            </h3>
+
+            {% if proximas_visitas %}
+
+                <div class="table-responsive">
+
+                    <table class="table table-hover align-middle">
+
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Invitado</th>
+                                <th>DNI</th>
+                                <th>Patente</th>
+                                <th>Evento / Motivo</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            {% for visita in proximas_visitas %}
+
+                                <tr>
+                                    <td>
+                                        {{ visita.fecha|date:"d/m/Y" }}
+                                    </td>
+
+                                    <td>
+                                        {{ visita.apellido }}, {{ visita.nombre }}
+                                    </td>
+
+                                    <td>
+                                        {{ visita.dni }}
+                                    </td>
+
+                                    <td>
+                                        {% if visita.patente %}
+                                            {{ visita.patente }}
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+
+                                    <td>
+                                        {% if visita.evento %}
+                                            {{ visita.evento }}
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            {% else %}
+
+                <div class="alert alert-light border mb-0">
+                    No hay próximas visitas registradas.
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+
+</html>
