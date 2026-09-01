@@ -1,4 +1,4 @@
-from datetime import date, datetime, timedelta
+﻿from datetime import date, datetime, timedelta
 
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import get_object_or_404, redirect, render
@@ -1415,6 +1415,54 @@ def descargar_plantilla_visitas(request):
 
     return respuesta
 
+
+
+
+# -------------------------------------------------
+# SEGURIDAD / PORTERÍA - CONSULTA DE VISITAS
+# -------------------------------------------------
+
+def seguridad_visitas(request):
+    from django.db.models import Q
+
+    if not request.user.is_authenticated:
+        return redirect("home")
+
+    if not request.user.is_staff:
+        return redirect("portal")
+
+    hoy = timezone.localdate()
+    busqueda = request.GET.get("q", "").strip()
+
+    visitas = Visita.objects.filter(
+        estado="autorizada",
+        fecha__gte=hoy,
+    ).select_related(
+        "lote"
+    )
+
+    if busqueda:
+        visitas = visitas.filter(
+            Q(dni__icontains=busqueda)
+            | Q(patente__icontains=busqueda)
+            | Q(apellido__icontains=busqueda)
+        )
+
+    visitas = visitas.order_by(
+        "fecha",
+        "apellido",
+        "nombre",
+    )[:100]
+
+    return render(
+        request,
+        "core/seguridad_visitas.html",
+        {
+            "visitas": visitas,
+            "busqueda": busqueda,
+            "hoy": hoy,
+        }
+    )
 
 # -------------------------------------------------
 # LOGOUT

@@ -167,6 +167,16 @@ urlpatterns = [
         name="descargar_plantilla_visitas"
     ),
 
+    # -------------------------------------------------
+    # SEGURIDAD / PORTERÍA
+    # -------------------------------------------------
+
+    path(
+        "seguridad/visitas/",
+        views.seguridad_visitas,
+        name="seguridad_visitas"
+    ),
+
     path(
         "logout/",
         views.logout_view,
