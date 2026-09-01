@@ -145,6 +145,28 @@ urlpatterns = [
         name="cancelar_visita"
     ),
 
+    # -------------------------------------------------
+    # CARGA MASIVA DE VISITAS
+    # -------------------------------------------------
+
+    path(
+        "visitas/carga-masiva/",
+        views.carga_masiva_visitas,
+        name="carga_masiva_visitas"
+    ),
+
+    path(
+        "visitas/carga-masiva/confirmar/",
+        views.confirmar_carga_masiva_visitas,
+        name="confirmar_carga_masiva_visitas"
+    ),
+
+    path(
+        "visitas/carga-masiva/plantilla/",
+        views.descargar_plantilla_visitas,
+        name="descargar_plantilla_visitas"
+    ),
+
     path(
         "logout/",
         views.logout_view,

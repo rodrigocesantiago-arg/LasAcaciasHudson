@@ -948,6 +948,475 @@ def cancelar_visita(
 
 
 # -------------------------------------------------
+# CARGA MASIVA DE VISITAS
+# -------------------------------------------------
+
+def carga_masiva_visitas(request):
+    if not request.user.is_authenticated:
+        return redirect("home")
+
+    from datetime import date as fecha_clase
+    from datetime import datetime as fecha_hora
+
+    import openpyxl
+
+    lote = request.user.lote
+    errores = []
+    visitas_preview = []
+
+    if request.method == "POST":
+        archivo = request.FILES.get("archivo")
+
+        if not archivo:
+            errores.append(
+                "Debés seleccionar un archivo Excel."
+            )
+
+        elif not archivo.name.lower().endswith(
+            (".xlsx", ".xlsm")
+        ):
+            errores.append(
+                "El archivo debe estar en formato Excel (.xlsx)."
+            )
+
+        else:
+            try:
+                workbook = openpyxl.load_workbook(
+                    archivo,
+                    data_only=True
+                )
+
+                if "Visitas" in workbook.sheetnames:
+                    hoja = workbook["Visitas"]
+                else:
+                    hoja = workbook.active
+
+                encabezados_esperados = [
+                    "Nombre",
+                    "Apellido",
+                    "DNI",
+                    "Patente",
+                    "Fecha",
+                    "Evento",
+                    "Observaciones",
+                ]
+
+                encabezados = []
+
+                for celda in hoja[1]:
+                    valor = celda.value
+
+                    if valor is None:
+                        encabezados.append("")
+                    else:
+                        encabezados.append(
+                            str(valor).strip()
+                        )
+
+                if encabezados[:7] != encabezados_esperados:
+                    errores.append(
+                        "La estructura del archivo no es correcta. "
+                        "Descargá y utilizá la plantilla oficial."
+                    )
+
+                else:
+                    for numero_fila, fila in enumerate(
+                        hoja.iter_rows(
+                            min_row=2,
+                            values_only=True
+                        ),
+                        start=2
+                    ):
+                        valores = list(fila[:7])
+
+                        while len(valores) < 7:
+                            valores.append(None)
+
+                        (
+                            nombre,
+                            apellido,
+                            dni,
+                            patente,
+                            fecha_visita,
+                            evento,
+                            observaciones,
+                        ) = valores
+
+                        fila_vacia = not any(
+                            valor not in (None, "")
+                            for valor in valores
+                        )
+
+                        if fila_vacia:
+                            continue
+
+                        nombre = (
+                            str(nombre).strip()
+                            if nombre is not None
+                            else ""
+                        )
+
+                        apellido = (
+                            str(apellido).strip()
+                            if apellido is not None
+                            else ""
+                        )
+
+                        dni = (
+                            str(dni).strip()
+                            if dni is not None
+                            else ""
+                        )
+
+                        if dni.endswith(".0"):
+                            dni = dni[:-2]
+
+                        patente = (
+                            str(patente).strip().upper()
+                            if patente is not None
+                            else ""
+                        )
+
+                        evento = (
+                            str(evento).strip()
+                            if evento is not None
+                            else ""
+                        )
+
+                        observaciones = (
+                            str(observaciones).strip()
+                            if observaciones is not None
+                            else ""
+                        )
+
+                        errores_fila = []
+
+                        if not nombre:
+                            errores_fila.append(
+                                "Falta el nombre."
+                            )
+
+                        if not apellido:
+                            errores_fila.append(
+                                "Falta el apellido."
+                            )
+
+                        if not dni:
+                            errores_fila.append(
+                                "Falta el DNI."
+                            )
+
+                        fecha_convertida = None
+
+                        if isinstance(
+                            fecha_visita,
+                            fecha_hora
+                        ):
+                            fecha_convertida = fecha_visita.date()
+
+                        elif isinstance(
+                            fecha_visita,
+                            fecha_clase
+                        ):
+                            fecha_convertida = fecha_visita
+
+                        elif fecha_visita:
+                            texto_fecha = str(
+                                fecha_visita
+                            ).strip()
+
+                            formatos = [
+                                "%d/%m/%Y",
+                                "%d-%m-%Y",
+                                "%Y-%m-%d",
+                            ]
+
+                            for formato in formatos:
+                                try:
+                                    fecha_convertida = (
+                                        fecha_hora.strptime(
+                                            texto_fecha,
+                                            formato
+                                        ).date()
+                                    )
+                                    break
+                                except ValueError:
+                                    pass
+
+                        if not fecha_convertida:
+                            errores_fila.append(
+                                "La fecha no es válida."
+                            )
+
+                        if errores_fila:
+                            errores.append(
+                                "Fila "
+                                + str(numero_fila)
+                                + ": "
+                                + " ".join(errores_fila)
+                            )
+                            continue
+
+                        visitas_preview.append(
+                            {
+                                "nombre": nombre,
+                                "apellido": apellido,
+                                "dni": dni,
+                                "patente": patente,
+                                "fecha": fecha_convertida.isoformat(),
+                                "evento": evento,
+                                "observaciones": observaciones,
+                            }
+                        )
+
+                    if (
+                        not errores
+                        and not visitas_preview
+                    ):
+                        errores.append(
+                            "El archivo no contiene visitas para importar."
+                        )
+
+                    if visitas_preview:
+                        request.session[
+                            "visitas_carga_masiva"
+                        ] = visitas_preview
+
+            except Exception as error:
+                errores.append(
+                    "No se pudo leer el archivo Excel. "
+                    "Verificá que el archivo sea válido."
+                )
+
+                print(
+                    "Error carga masiva:",
+                    error
+                )
+
+    return render(
+        request,
+        "core/carga_masiva_visitas.html",
+        {
+            "lote": lote,
+            "errores": errores,
+            "visitas_preview": visitas_preview,
+        }
+    )
+
+
+def confirmar_carga_masiva_visitas(request):
+    if not request.user.is_authenticated:
+        return redirect("home")
+
+    from datetime import date as fecha_clase
+
+    lote = request.user.lote
+
+    if request.method != "POST":
+        return redirect(
+            "carga_masiva_visitas"
+        )
+
+    datos = request.session.get(
+        "visitas_carga_masiva",
+        []
+    )
+
+    if not datos:
+        return redirect(
+            "carga_masiva_visitas"
+        )
+
+    visitas = []
+
+    for dato in datos:
+        visitas.append(
+            Visita(
+                lote=lote,
+                nombre=dato["nombre"],
+                apellido=dato["apellido"],
+                dni=dato["dni"],
+                patente=dato.get(
+                    "patente",
+                    ""
+                ),
+                fecha=fecha_clase.fromisoformat(
+                    dato["fecha"]
+                ),
+                evento=dato.get(
+                    "evento",
+                    ""
+                ),
+                observaciones=dato.get(
+                    "observaciones",
+                    ""
+                ),
+                estado="autorizada",
+            )
+        )
+
+    Visita.objects.bulk_create(
+        visitas
+    )
+
+    if "visitas_carga_masiva" in request.session:
+        del request.session[
+            "visitas_carga_masiva"
+        ]
+
+    return render(
+        request,
+        "core/carga_masiva_visitas_ok.html",
+        {
+            "lote": lote,
+            "cantidad": len(visitas),
+        }
+    )
+
+
+def descargar_plantilla_visitas(request):
+    if not request.user.is_authenticated:
+        return redirect("home")
+
+    from io import BytesIO
+
+    import openpyxl
+
+    from django.http import HttpResponse
+    from openpyxl.styles import Alignment
+    from openpyxl.styles import Font
+    from openpyxl.styles import PatternFill
+
+    workbook = openpyxl.Workbook()
+
+    hoja = workbook.active
+    hoja.title = "Visitas"
+
+    encabezados = [
+        "Nombre",
+        "Apellido",
+        "DNI",
+        "Patente",
+        "Fecha",
+        "Evento",
+        "Observaciones",
+    ]
+
+    hoja.append(encabezados)
+
+    for celda in hoja[1]:
+        celda.font = Font(
+            bold=True
+        )
+
+        celda.fill = PatternFill(
+            fill_type="solid",
+            fgColor="D9EAD3"
+        )
+
+        celda.alignment = Alignment(
+            horizontal="center"
+        )
+
+    anchos = {
+        "A": 20,
+        "B": 20,
+        "C": 18,
+        "D": 15,
+        "E": 15,
+        "F": 30,
+        "G": 40,
+    }
+
+    for columna, ancho in anchos.items():
+        hoja.column_dimensions[
+            columna
+        ].width = ancho
+
+    hoja.freeze_panes = "A2"
+
+    instrucciones = workbook.create_sheet(
+        "Instrucciones"
+    )
+
+    instrucciones["A1"] = "Carga Masiva de Visitas"
+    instrucciones["A1"].font = Font(
+        bold=True,
+        size=14
+    )
+
+    instrucciones["A3"] = (
+        "Completá una persona por fila "
+        "en la hoja 'Visitas'."
+    )
+
+    instrucciones["A4"] = (
+        "No modifiques los nombres "
+        "de las columnas."
+    )
+
+    instrucciones["A5"] = (
+        "Nombre, Apellido, DNI y Fecha "
+        "son obligatorios."
+    )
+
+    instrucciones["A6"] = (
+        "Patente, Evento y Observaciones "
+        "son opcionales."
+    )
+
+    instrucciones["A7"] = (
+        "La fecha puede cargarse como "
+        "DD/MM/AAAA."
+    )
+
+    instrucciones["A9"] = "Ejemplo:"
+
+    instrucciones["A10"] = "Nombre"
+    instrucciones["B10"] = "Apellido"
+    instrucciones["C10"] = "DNI"
+    instrucciones["D10"] = "Patente"
+    instrucciones["E10"] = "Fecha"
+    instrucciones["F10"] = "Evento"
+    instrucciones["G10"] = "Observaciones"
+
+    instrucciones["A11"] = "Juan"
+    instrucciones["B11"] = "Pérez"
+    instrucciones["C11"] = "30123456"
+    instrucciones["D11"] = "AB123CD"
+    instrucciones["E11"] = "15/09/2026"
+    instrucciones["F11"] = "Cumpleaños"
+    instrucciones["G11"] = "Invitado de ejemplo"
+
+    for columna, ancho in anchos.items():
+        instrucciones.column_dimensions[
+            columna
+        ].width = ancho
+
+    archivo = BytesIO()
+    workbook.save(archivo)
+    archivo.seek(0)
+
+    respuesta = HttpResponse(
+        archivo.getvalue(),
+        content_type=(
+            "application/"
+            "vnd.openxmlformats-officedocument."
+            "spreadsheetml.sheet"
+        )
+    )
+
+    respuesta[
+        "Content-Disposition"
+    ] = (
+        'attachment; '
+        'filename="Plantilla_Carga_Visitas.xlsx"'
+    )
+
+    return respuesta
+
+
+# -------------------------------------------------
 # LOGOUT
 # -------------------------------------------------
 
