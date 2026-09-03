@@ -31,7 +31,7 @@
 
                 <div>
                     <h1 class="text-success mb-1">
-                        🛡️ Seguridad / Portería
+                        ðŸ›¡ï¸ Seguridad / PorterÃ­a
                     </h1>
 
                     <div class="text-secondary">
@@ -52,11 +52,115 @@
                         href="{% url 'logout' %}"
                         class="btn btn-outline-secondary btn-sm mt-2"
                     >
-                        Cerrar sesión
+                        Cerrar sesiÃ³n
                     </a>
                 </div>
 
             </div>
+
+        </div>
+    </div>
+
+
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body">
+
+            <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                <div>
+                    <h4 class="mb-1">Personas actualmente dentro</h4>
+                    <div class="text-secondary small">
+                        Visitantes con ingreso registrado y salida pendiente.
+                    </div>
+                </div>
+
+                <span class="badge text-bg-warning">
+                    {{ personas_dentro|length }} dentro
+                </span>
+            </div>
+
+            {% if personas_dentro %}
+
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Visitante</th>
+                                <th>DNI</th>
+                                <th>Patente</th>
+                                <th>Lote</th>
+                                <th>Ingreso</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {% for visita in personas_dentro %}
+                                <tr>
+                                    <td class="fw-bold">
+                                        {{ visita.apellido }}, {{ visita.nombre }}
+                                    </td>
+
+                                    <td>{{ visita.dni }}</td>
+
+                                    <td>
+                                        {% if visita.patente %}
+                                            <span class="badge text-bg-dark">
+                                                {{ visita.patente }}
+                                            </span>
+                                        {% else %}
+                                            <span class="text-secondary">—</span>
+                                        {% endif %}
+                                    </td>
+
+                                    <td>
+                                        <span class="fw-bold">
+                                            {{ visita.lote.numero }}
+                                        </span>
+
+                                        {% if visita.lote.apellido_familia %}
+                                            <div class="small text-secondary">
+                                                {{ visita.lote.apellido_familia }}
+                                            </div>
+                                        {% endif %}
+                                    </td>
+
+                                    <td>
+                                        <div class="fw-bold">
+                                            {{ visita.fecha_hora_ingreso|date:"H:i" }}
+                                        </div>
+                                        <div class="small text-secondary">
+                                            {{ visita.fecha_hora_ingreso|date:"d/m/Y" }}
+                                        </div>
+                                    </td>
+
+                                    <td>
+                                        <form
+                                            method="post"
+                                            action="{% url 'registrar_salida' visita.id %}"
+                                            class="m-0"
+                                        >
+                                            {% csrf_token %}
+                                            <button
+                                                type="submit"
+                                                class="btn btn-danger btn-sm"
+                                            >
+                                                Registrar salida
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+            {% else %}
+
+                <div class="alert alert-light border mb-0">
+                    No hay visitantes actualmente dentro.
+                </div>
+
+            {% endif %}
 
         </div>
     </div>
@@ -81,7 +185,7 @@
                             name="q"
                             value="{{ busqueda }}"
                             class="form-control form-control-lg"
-                            placeholder="Ingresá DNI, patente o apellido"
+                            placeholder="IngresÃ¡ DNI, patente o apellido"
                             autofocus
                         >
 
@@ -93,7 +197,7 @@
                             type="submit"
                             class="btn btn-success btn-lg"
                         >
-                            🔎 Buscar
+                            ðŸ”Ž Buscar
                         </button>
 
                     </div>
@@ -110,7 +214,7 @@
                         href="{% url 'seguridad_visitas' %}"
                         class="btn btn-outline-secondary btn-sm"
                     >
-                        Limpiar búsqueda
+                        Limpiar bÃºsqueda
                     </a>
 
                 </div>
@@ -131,7 +235,7 @@
                 <h4 class="mb-0">
 
                     {% if busqueda %}
-                        Resultados para “{{ busqueda }}”
+                        Resultados para â€œ{{ busqueda }}â€
                     {% else %}
                         Visitas autorizadas
                     {% endif %}
@@ -163,7 +267,7 @@
                                 <th>Ingreso</th>
                                 <th>Salida</th>
                                 <th>Estado</th>
-                                <th>Acción</th>
+                                <th>AcciÃ³n</th>
                             </tr>
 
                         </thead>
@@ -193,7 +297,7 @@
                                             </span>
                                         {% else %}
                                             <span class="text-secondary">
-                                                —
+                                                â€”
                                             </span>
                                         {% endif %}
                                     </td>
@@ -215,7 +319,7 @@
                                             {{ visita.evento }}
                                         {% else %}
                                             <span class="text-secondary">
-                                                —
+                                                â€”
                                             </span>
                                         {% endif %}
                                     </td>
@@ -232,7 +336,7 @@
                                             </div>
                                         {% else %}
                                             <span class="text-secondary">
-                                                —
+                                                â€”
                                             </span>
                                         {% endif %}
                                     </td>
@@ -249,7 +353,7 @@
                                             </div>
                                         {% else %}
                                             <span class="text-secondary">
-                                                —
+                                                â€”
                                             </span>
                                         {% endif %}
                                     </td>
@@ -260,7 +364,7 @@
                                         {% if visita.fecha_hora_salida %}
 
                                             <span class="badge text-bg-secondary">
-                                                Salió
+                                                SaliÃ³
                                             </span>
 
                                         {% elif visita.fecha_hora_ingreso %}

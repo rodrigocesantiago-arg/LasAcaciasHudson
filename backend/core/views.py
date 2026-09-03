@@ -1434,6 +1434,16 @@ def seguridad_visitas(request):
     hoy = timezone.localdate()
     busqueda = request.GET.get("q", "").strip()
 
+    personas_dentro = Visita.objects.filter(
+        estado="autorizada",
+        fecha_hora_ingreso__isnull=False,
+        fecha_hora_salida__isnull=True,
+    ).select_related(
+        "lote"
+    ).order_by(
+        "fecha_hora_ingreso"
+    )
+
     visitas = Visita.objects.filter(
         Q(fecha__gte=hoy)
         | Q(
@@ -1463,6 +1473,7 @@ def seguridad_visitas(request):
         "core/seguridad_visitas.html",
         {
             "visitas": visitas,
+            "personas_dentro": personas_dentro,
             "busqueda": busqueda,
             "hoy": hoy,
         }
