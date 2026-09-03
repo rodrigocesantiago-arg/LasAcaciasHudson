@@ -1,0 +1,194 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portería - Comunidad360</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'core/css/styles.css' %}">
+</head>
+
+<body>
+<div class="container py-4">
+
+    <!-- ENCABEZADO -->
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                <div>
+                    <h1 class="text-success mb-1">🛡️ Comunidad360 · Portería</h1>
+                    <div class="text-secondary">
+                        Las Acacias Hudson · {{ hoy|date:"d/m/Y" }}
+                    </div>
+                </div>
+
+                <a href="{% url 'logout' %}" class="btn btn-outline-secondary">
+                    Cerrar sesión
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- RESUMEN OPERATIVO -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-lg-3">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body text-center">
+                    <div class="fs-2">🟢</div>
+                    <div class="display-6 fw-bold text-success">{{ personas_dentro }}</div>
+                    <div class="text-secondary">Personas dentro</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-6 col-lg-3">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body text-center">
+                    <div class="fs-2">🚗</div>
+                    <div class="display-6 fw-bold">{{ visitas_hoy_pendientes }}</div>
+                    <div class="text-secondary">Visitas pendientes hoy</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-6 col-lg-3">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body text-center">
+                    <div class="fs-2">📅</div>
+                    <div class="display-6 fw-bold">{{ proximas_visitas }}</div>
+                    <div class="text-secondary">Próximas visitas</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-6 col-lg-3">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body text-center">
+                    <div class="fs-2">📦</div>
+                    <div class="display-6 fw-bold">{{ encomiendas_pendientes }}</div>
+                    <div class="text-secondary">Encomiendas pendientes</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ESTADO DEL SUM -->
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body p-4">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+                <div>
+                    <h3 class="mb-1">🏠 SUM hoy</h3>
+                    <div class="text-secondary">{{ hoy|date:"d/m/Y" }}</div>
+                </div>
+
+                {% if reservas_sum_hoy %}
+                    <span class="badge text-bg-warning fs-6">Reservado</span>
+                {% else %}
+                    <span class="badge text-bg-success fs-6">Libre</span>
+                {% endif %}
+            </div>
+
+            {% if reservas_sum_hoy %}
+                <div class="row g-3">
+                    {% for reserva in reservas_sum_hoy %}
+                        <div class="col-md-6">
+                            <div class="border rounded p-3 h-100">
+                                <div class="fw-bold fs-5">
+                                    {{ reserva.get_turno_display }}
+                                </div>
+
+                                <div class="mt-2">
+                                    <strong>Lote {{ reserva.lote.numero }}</strong>
+                                    · {{ reserva.lote.apellido_familia }}
+                                </div>
+
+                                <div class="text-secondary mt-1">
+                                    Estado: {{ reserva.get_estado_display }}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-success fw-semibold">
+                    El SUM no tiene reservas para hoy.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- ACCIONES -->
+    <div class="row g-4">
+
+        <div class="col-md-6">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body p-4 text-center">
+                    <div class="fs-1">🚗</div>
+                    <h3>Control de visitas</h3>
+                    <p class="text-secondary">
+                        Consultá autorizaciones, registrá ingresos y salidas
+                        y verificá quién se encuentra dentro del barrio.
+                    </p>
+                    <a href="{% url 'seguridad_visitas' %}" class="btn btn-success w-100">
+                        Ir a visitas
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body p-4 text-center">
+                    <div class="fs-1">📦</div>
+                    <h3>Encomiendas</h3>
+                    <p class="text-secondary">
+                        Registrá paquetes recibidos y dejá asentado
+                        quién los retira.
+                    </p>
+                    <a href="{% url 'seguridad_encomiendas' %}" class="btn btn-success w-100">
+                        Ir a encomiendas
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body p-4 text-center">
+                    <div class="fs-1">🚶</div>
+                    <h3>Visita espontánea</h3>
+                    <p class="text-secondary">
+                        Registrá rápidamente el ingreso de una persona
+                        que no fue autorizada previamente.
+                    </p>
+                    <a href="{% url 'visita_espontanea' %}" class="btn btn-outline-success w-100">
+                        Registrar visita espontánea
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body p-4 text-center">
+                    <div class="fs-1">📋</div>
+                    <h3>Historial de movimientos</h3>
+                    <p class="text-secondary">
+                        Consultá ingresos y salidas registrados,
+                        con búsqueda y filtros por fecha.
+                    </p>
+                    <a href="{% url 'historial_seguridad' %}" class="btn btn-outline-success w-100">
+                        Ver historial
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+</body>
+</html>

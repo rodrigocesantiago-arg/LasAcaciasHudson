@@ -50,6 +50,10 @@ def login_view(request):
 
         if usuario is not None:
             login(request, usuario)
+
+            if usuario.is_staff:
+                return redirect("seguridad_dashboard")
+
             return redirect("portal")
 
         return render(
@@ -138,6 +142,9 @@ def obtener_proximos_cumpleanios(limite=None):
 def portal(request):
     if not request.user.is_authenticated:
         return redirect("home")
+
+    if request.user.is_staff:
+        return redirect("seguridad_dashboard")
 
     lote = request.user.lote
     hoy = timezone.localdate()
@@ -1419,6 +1426,63 @@ def descargar_plantilla_visitas(request):
     return respuesta
 
 
+
+
+# -------------------------------------------------
+# SEGURIDAD / PORTERÍA - DASHBOARD
+# -------------------------------------------------
+
+def seguridad_dashboard(request):
+    if not request.user.is_authenticated:
+        return redirect("home")
+
+    if not request.user.is_staff:
+        return redirect("portal")
+
+    hoy = timezone.localdate()
+
+    personas_dentro = Visita.objects.filter(
+        estado="autorizada",
+        fecha_hora_ingreso__isnull=False,
+        fecha_hora_salida__isnull=True,
+    ).count()
+
+    visitas_hoy_pendientes = Visita.objects.filter(
+        estado="autorizada",
+        fecha=hoy,
+        fecha_hora_ingreso__isnull=True,
+    ).count()
+
+    proximas_visitas = Visita.objects.filter(
+        estado="autorizada",
+        fecha__gt=hoy,
+        fecha_hora_ingreso__isnull=True,
+    ).count()
+
+    encomiendas_pendientes = Encomienda.objects.filter(
+        estado="pendiente"
+    ).count()
+
+    reservas_sum_hoy = ReservaSUM.objects.filter(
+        fecha=hoy
+    ).exclude(
+        estado="cancelada"
+    ).select_related(
+        "lote"
+    ).order_by("turno")
+
+    return render(
+        request,
+        "core/seguridad_dashboard.html",
+        {
+            "hoy": hoy,
+            "personas_dentro": personas_dentro,
+            "visitas_hoy_pendientes": visitas_hoy_pendientes,
+            "proximas_visitas": proximas_visitas,
+            "encomiendas_pendientes": encomiendas_pendientes,
+            "reservas_sum_hoy": reservas_sum_hoy,
+        }
+    )
 
 
 # -------------------------------------------------

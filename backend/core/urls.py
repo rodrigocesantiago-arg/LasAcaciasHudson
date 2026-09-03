@@ -35,6 +35,7 @@ urlpatterns = [
     path("visitas/carga-masiva/plantilla/", views.descargar_plantilla_visitas, name="descargar_plantilla_visitas"),
 
     # SEGURIDAD / PORTERÍA
+    path("seguridad/", views.seguridad_dashboard, name="seguridad_dashboard"),
     path("seguridad/visitas/", views.seguridad_visitas, name="seguridad_visitas"),
     path("seguridad/historial/", views.historial_seguridad, name="historial_seguridad"),
     path("seguridad/visita-espontanea/", views.visita_espontanea, name="visita_espontanea"),
