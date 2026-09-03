@@ -1,439 +1,189 @@
 {% load static %}
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Comunidad360 - Mi Portal</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Las Acacias - Comunidad360</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'core/css/styles.css' %}">
+<style>
+:root{
+  --green:#2f6b3c;--green-dark:#174d2b;--green-soft:#edf5ee;
+  --text:#1f2923;--muted:#68736c;--line:#e4e9e5;--page:#f5f7f5;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--page);color:var(--text);font-family:"Segoe UI",Inter,Arial,sans-serif}
+.shell{max-width:1480px;margin:0 auto;padding:14px 18px 34px}
+.topbar{background:#fff;border:1px solid var(--line);border-radius:20px;padding:13px 22px;margin-bottom:14px;box-shadow:0 5px 18px rgba(25,55,35,.05)}
+.logo{width:68px;height:58px;object-fit:contain}
+.brand{font-size:1.55rem;font-weight:800;color:var(--green-dark);line-height:1}
+.sub{font-size:.92rem;color:var(--muted);font-weight:600;margin-top:6px}
+.hero{position:relative;min-height:385px;border-radius:22px;overflow:hidden;margin-bottom:22px;background-color:#dfe7df;background-image:url("{% static 'core/img/las_acacias_portada.png' %}");background-repeat:no-repeat;background-position:center center;background-size:96% auto;box-shadow:0 12px 30px rgba(22,55,34,.12)}
+.hero::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(12,31,20,.16),rgba(12,31,20,.03) 55%,transparent)}
+.hero-content{position:relative;z-index:2;min-height:385px;display:flex;align-items:center;padding-left:8%}
+.hero-panel{width:min(390px,88%);background:rgba(10,25,16,.80);border:1px solid rgba(255,255,255,.14);border-radius:15px;padding:19px 21px;color:#fff;box-shadow:0 12px 28px rgba(0,0,0,.18)}
+.kicker{display:inline-flex;align-items:center;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:6px 10px;font-size:.76rem;margin-bottom:12px}
+.hero h1{font-size:clamp(1.55rem,2.5vw,2.15rem);font-weight:800;line-height:1.08;margin:0 0 12px;color:#fff}
+.hero p{font-size:.9rem;line-height:1.5;color:rgba(255,255,255,.94);margin:0 0 15px}
+.pill{display:inline-flex;align-items:center;background:#fff;color:var(--green-dark);border-radius:999px;padding:8px 13px;font-size:.86rem;font-weight:800}
+.notice{position:relative;z-index:4;border:0;border-left:4px solid #dba52d;border-radius:14px;box-shadow:0 8px 20px rgba(45,49,46,.08)}
+.dashboard-row{position:relative;z-index:3;margin:0 4.5% 16px}
+.feature{height:auto;min-height:100%;background:#fff;border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:0 7px 20px rgba(25,55,35,.07)}
+.feature-head{display:flex;justify-content:space-between;align-items:center;padding:14px 17px 8px}
+.feature-head h3{font-size:1.1rem;font-weight:800;color:var(--green-dark);margin:0}
+.feature-body{padding:8px 17px 16px}
+.sumimg{width:100%;height:175px;object-fit:cover;border-radius:11px}
+.mini{border-bottom:1px solid var(--line);padding:9px 0}
+.mini:last-child{border-bottom:0}
+.btn-a{background:var(--green);color:#fff;border:0}
+.btn-a:hover{background:var(--green-dark);color:#fff}
+.btn-oa{border:1px solid var(--green);color:var(--green);background:#fff}
+.btn-oa:hover{background:var(--green);color:#fff}
+.title{display:flex;justify-content:space-between;align-items:end;gap:12px;margin:24px 4.5% 12px}
+.title h2{font-size:1.3rem;font-weight:800;color:var(--green-dark);margin:0}
+.title p{font-size:.86rem;color:var(--muted);margin:3px 0 0}
+.quick-grid{margin:0 4.5%}
+.service{height:100%;display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 13px;text-decoration:none;color:inherit;box-shadow:0 4px 13px rgba(30,55,38,.045);transition:.15s}
+.service:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(30,55,38,.09);color:inherit}
+.icon{flex:0 0 43px;width:43px;height:43px;border-radius:12px;display:grid;place-items:center;font-size:1.45rem;background:var(--green-soft)}
+.service h3{font-size:.94rem;font-weight:800;color:var(--green-dark);margin:0 0 3px}
+.service p{font-size:.76rem;line-height:1.35;color:var(--muted);margin:0}
+.meta{display:none}
+.news{height:100%;background:#fff;border:1px solid var(--line);border-radius:15px;overflow:hidden}
+.newsimg{width:100%;height:155px;object-fit:cover}
+.newsbody{padding:14px}
+.newsbody h4{font-size:.96rem;font-weight:800}
+.body{padding:18px}
+.body h3{font-size:1.15rem;font-weight:800;color:var(--green-dark)}
+.lot{background:var(--green-dark);color:#fff;border-radius:16px;padding:20px;margin:24px 4.5% 0}
+.lab{color:rgba(255,255,255,.65);font-size:.72rem;text-transform:uppercase}
+.val{font-weight:700;margin-top:3px}
+.foot{text-align:center;color:var(--muted);font-size:.78rem;margin-top:20px}
+@media(max-width:900px){
+ .hero{background-size:cover;background-position:center;min-height:390px;margin-bottom:14px}
+ .hero-content{min-height:390px;padding:20px;align-items:flex-end}
+ .dashboard-row{margin:0 0 16px}
+ .title,.quick-grid,.lot{margin-left:0;margin-right:0}
+}
+@media(max-width:600px){
+ .shell{padding:9px}
+ .topbar{padding:10px 12px}.logo{width:52px;height:46px}.brand{font-size:1.18rem}.sub{font-size:.78rem}
+ .hero-panel{width:100%;padding:17px}.hero h1{font-size:1.65rem}
+ .service{padding:11px 10px}.icon{width:38px;height:38px;flex-basis:38px;font-size:1.2rem}
+}
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'core/css/styles.css' %}">
+.activity-package .feature{min-height:0}
+.activity-package .body{padding-bottom:20px}
+
+
+/* V8 - ajuste visual de secciones inferiores */
+.empty-state{
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:15px;
+    overflow:hidden;
+    box-shadow:0 4px 13px rgba(30,55,38,.045);
+}
+.empty-state-inner{
+    display:flex;
+    align-items:center;
+    gap:18px;
+    padding:14px;
+}
+.empty-state-img{
+    width:150px;
+    height:92px;
+    object-fit:cover;
+    border-radius:11px;
+    flex:0 0 auto;
+}
+.empty-state-icon{
+    width:54px;
+    height:54px;
+    border-radius:14px;
+    display:grid;
+    place-items:center;
+    background:var(--green-soft);
+    font-size:1.7rem;
+    flex:0 0 auto;
+}
+.empty-state h4{
+    color:var(--green-dark);
+    font-size:1rem;
+    font-weight:800;
+    margin:0 0 4px;
+}
+.empty-state p{
+    color:var(--muted);
+    font-size:.84rem;
+    margin:0;
+}
+.lower-section{margin-top:18px}
+@media(max-width:600px){
+    .empty-state-inner{align-items:flex-start}
+    .empty-state-img{width:105px;height:82px}
+}
+
+</style>
 </head>
-
-<body>
-<div class="container py-4">
-
-    <!-- ENCABEZADO -->
-    <div class="card shadow-sm border-0 mb-4">
-        <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <h1 class="text-success mb-1">🏡 Comunidad360</h1>
-                    <div class="text-secondary">Las Acacias Hudson</div>
-                </div>
-
-                <div class="text-end">
-                    <div class="fw-bold">Lote {{ lote.numero }}</div>
-                    <a href="{% url 'logout' %}" class="btn btn-outline-secondary btn-sm mt-2">
-                        Cerrar sesión
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- BIENVENIDA -->
-    <div class="card shadow-sm border-0 mb-4">
-        <div class="card-body text-center py-4">
-            <h2 class="text-success">Buen día, familia {{ lote.apellido_familia }} 👋</h2>
-            <p class="text-secondary mb-0">Bienvenidos al portal de Las Acacias Hudson.</p>
-        </div>
-    </div>
-
-    <!-- AVISO DE ENCOMIENDAS -->
-    {% if cantidad_encomiendas_pendientes > 0 %}
-        <div class="alert alert-warning shadow-sm mb-4">
-            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
-                <div>
-                    <h5 class="mb-1">
-                        📦 Tenés {{ cantidad_encomiendas_pendientes }}
-                        {% if cantidad_encomiendas_pendientes == 1 %}
-                            encomienda pendiente de retiro
-                        {% else %}
-                            encomiendas pendientes de retiro
-                        {% endif %}
-                    </h5>
-                    <div>Hay paquetes esperando para tu lote.</div>
-                </div>
-
-                <a href="{% url 'mis_encomiendas' %}" class="btn btn-warning">
-                    Ver encomiendas
-                </a>
-            </div>
-        </div>
-    {% endif %}
-
-    <!-- ACCESOS PRINCIPALES -->
-    <div class="row g-4 mb-4">
-
-        <!-- NOTICIAS -->
-        <div class="col-md-6">
-            <div class="card h-100 shadow-sm border-0">
-                <div class="card-body p-4">
-                    <div class="text-center mb-3">
-                        <div class="fs-1">📰</div>
-                        <h3 class="mt-2">Noticias</h3>
-                        <p class="text-secondary">
-                            Enterate de las novedades y comunicados importantes del barrio.
-                        </p>
-                    </div>
-
-                    {% for noticia in noticias %}
-                        <div class="border rounded p-3 mb-3">
-                            {% if noticia.imagen %}
-                                <img
-                                    src="{{ noticia.imagen.url }}"
-                                    alt="{{ noticia.titulo }}"
-                                    class="img-fluid rounded mb-3"
-                                    style="width: 100%; height: 160px; object-fit: cover;"
-                                >
-                            {% endif %}
-
-                            <div class="d-flex justify-content-between align-items-start">
-                                <h5 class="mb-1">{{ noticia.titulo }}</h5>
-
-                                {% if noticia.destacada %}
-                                    <span class="badge text-bg-warning">Destacada</span>
-                                {% endif %}
-                            </div>
-
-                            <p class="mb-2">{{ noticia.contenido|truncatechars:120 }}</p>
-                            <small class="text-secondary">
-                                {{ noticia.fecha_publicacion|date:"d/m/Y H:i" }}
-                            </small>
-                        </div>
-                    {% empty %}
-                        <div class="alert alert-light border">No hay noticias publicadas.</div>
-                    {% endfor %}
-
-                    <div class="text-center mt-3">
-                        <a href="{% url 'noticias' %}" class="btn btn-outline-success">
-                            Ver todas las noticias
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- RESERVA SUM -->
-        <div class="col-md-6">
-            <div class="card h-100 shadow-sm border-0">
-                <div class="card-body p-4">
-                    <div class="text-center mb-4">
-                        <div class="fs-1">📅</div>
-                        <h3 class="mt-2">Reservar SUM</h3>
-                        <p class="text-secondary">
-                            Consultá la disponibilidad y reservá el salón de usos múltiples.
-                        </p>
-                        <a href="{% url 'disponibilidad_sum' %}" class="btn btn-success">
-                            Consultar disponibilidad
-                        </a>
-                    </div>
-
-                    <hr>
-                    <h5 class="text-success mb-3">Mis reservas</h5>
-
-                    {% for reserva in proximas_reservas %}
-                        <div class="border rounded p-3 mb-3">
-                            <div class="d-flex justify-content-between align-items-start">
-                                <div>
-                                    <strong>{{ reserva.fecha|date:"d/m/Y" }}</strong>
-                                    <div class="text-secondary small">{{ reserva.get_turno_display }}</div>
-                                </div>
-
-                                <div>
-                                    {% if reserva.estado == "pendiente" %}
-                                        <span class="badge text-bg-warning">Pendiente</span>
-                                    {% elif reserva.estado == "confirmada" %}
-                                        <span class="badge text-bg-success">Confirmada</span>
-                                    {% elif reserva.estado == "cancelada" %}
-                                        <span class="badge text-bg-danger">Cancelada</span>
-                                    {% endif %}
-                                </div>
-                            </div>
-
-                            <div class="small text-secondary mt-2">
-                                {{ reserva.cantidad_personas }} personas
-                            </div>
-
-                            {% if reserva.estado != "cancelada" %}
-                                {% if reserva.puede_cancelar %}
-                                    <form
-                                        method="POST"
-                                        action="{% url 'cancelar_reserva_sum' reserva.id %}"
-                                        class="mt-3"
-                                    >
-                                        {% csrf_token %}
-                                        <button type="submit" class="btn btn-outline-danger btn-sm">
-                                            Cancelar reserva
-                                        </button>
-                                    </form>
-                                {% else %}
-                                    <div class="small text-secondary mt-3">
-                                        Cancelación no disponible.
-                                        Solo puede cancelarse hasta 7 días antes del evento.
-                                    </div>
-                                {% endif %}
-                            {% endif %}
-                        </div>
-                    {% empty %}
-                        <div class="alert alert-light border">
-                            Todavía no tenés reservas del SUM.
-                        </div>
-                    {% endfor %}
-
-                    <div class="text-center mt-3">
-                        <a href="{% url 'mis_reservas_sum' %}" class="btn btn-outline-success">
-                            Ver todas mis reservas
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- CUMPLEAÑOS -->
-        <div class="col-md-6">
-            <div class="card h-100 shadow-sm border-0">
-                <div class="card-body p-4">
-                    <div class="text-center mb-4">
-                        <div class="fs-1">🎂</div>
-                        <h3 class="mt-2">Cumpleaños de este mes</h3>
-                        <p class="text-secondary">
-                            Cumpleaños de los vecinos durante el mes en curso.
-                        </p>
-                    </div>
-
-                    {% for integrante in cumpleanios_mes %}
-                        <div class="border rounded p-3 mb-2">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <strong>{{ integrante.apellido }}, {{ integrante.nombre }}</strong>
-                                    <div class="text-secondary small">
-                                        🎂 {{ integrante.fecha_nacimiento|date:"d/m" }}
-                                    </div>
-                                </div>
-
-                                <div>
-                                    {% now "m-d" as hoy_mes_dia %}
-                                    {% with cumple=integrante.fecha_nacimiento|date:"m-d" %}
-                                        {% if cumple == hoy_mes_dia %}
-                                            <span class="badge text-bg-success">🎉 Hoy</span>
-                                        {% endif %}
-                                    {% endwith %}
-                                </div>
-                            </div>
-                        </div>
-                    {% empty %}
-                        <div class="alert alert-light border">
-                            No hay cumpleaños registrados este mes.
-                        </div>
-                    {% endfor %}
-
-                    <div class="text-center mt-4">
-                        <a href="{% url 'cumpleanios' %}" class="btn btn-outline-success">
-                            Ver próximos cumpleaños
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- MI FAMILIA -->
-        <div class="col-md-6">
-            <div class="card h-100 shadow-sm border-0">
-                <div class="card-body text-center p-4">
-                    <div class="fs-1">👨‍👩‍👧‍👦</div>
-                    <h3 class="mt-2">Mi familia</h3>
-                    <p class="text-secondary">
-                        Consultá los integrantes registrados en tu lote.
-                    </p>
-                    <a href="{% url 'mi_familia' %}" class="btn btn-success">
-                        Ver mi familia
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        <!-- RECLAMOS -->
-        <div class="col-md-6">
-            <div class="card h-100 shadow-sm border-0">
-                <div class="card-body text-center p-4">
-                    <div class="fs-1">📢</div>
-                    <h3 class="mt-2">Reclamos</h3>
-                    <p class="text-secondary">
-                        Informá inconvenientes del barrio y consultá el estado de tus reclamos.
-                    </p>
-
-                    <div class="d-grid gap-2">
-                        <a href="{% url 'nuevo_reclamo' %}" class="btn btn-success">
-                            Nuevo reclamo
-                        </a>
-                        <a href="{% url 'mis_reclamos' %}" class="btn btn-outline-success">
-                            Mis reclamos
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ENCOMIENDAS -->
-        <div class="col-md-6">
-            <div class="card h-100 shadow-sm border-0">
-                <div class="card-body p-4">
-                    <div class="text-center">
-                        <div class="fs-1">📦</div>
-                        <h3 class="mt-2">Encomiendas</h3>
-
-                        {% if cantidad_encomiendas_pendientes > 0 %}
-                            <div class="alert alert-warning mt-3">
-                                <strong>
-                                    Tenés {{ cantidad_encomiendas_pendientes }}
-                                    {% if cantidad_encomiendas_pendientes == 1 %}
-                                        encomienda pendiente
-                                    {% else %}
-                                        encomiendas pendientes
-                                    {% endif %}
-                                    de retiro.
-                                </strong>
-                            </div>
-
-                            {% for encomienda in ultimas_encomiendas_pendientes %}
-                                <div class="border rounded p-3 mb-2 text-start">
-                                    <div class="d-flex justify-content-between align-items-start">
-                                        <div>
-                                            <strong>{{ encomienda.remitente }}</strong>
-                                            {% if encomienda.descripcion %}
-                                                <div class="text-secondary small">
-                                                    {{ encomienda.descripcion }}
-                                                </div>
-                                            {% endif %}
-                                        </div>
-                                        <span class="badge text-bg-warning">Pendiente</span>
-                                    </div>
-
-                                    <div class="small text-secondary mt-2">
-                                        Recibida: {{ encomienda.fecha_recepcion|date:"d/m/Y H:i" }}
-                                    </div>
-                                </div>
-                            {% endfor %}
-                        {% else %}
-                            <p class="text-secondary mt-3">
-                                No tenés encomiendas pendientes de retiro.
-                            </p>
-                        {% endif %}
-
-                        <a href="{% url 'mis_encomiendas' %}" class="btn btn-success mt-3">
-                            Ver mis encomiendas
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- DOCUMENTOS -->
-        <div class="col-md-6">
-            <div class="card h-100 shadow-sm border-0">
-                <div class="card-body text-center p-4">
-                    <div class="fs-1">📄</div>
-                    <h3 class="mt-2">Documentos</h3>
-                    <p class="text-secondary">
-                        Consultá reglamentos, expensas, seguridad y documentación importante del barrio.
-                    </p>
-                    <a href="{% url 'documentos' %}" class="btn btn-success">
-                        Ver documentos
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        <!-- VISITAS -->
-        <div class="col-md-6">
-            <div class="card h-100 shadow-sm border-0">
-                <div class="card-body text-center p-4">
-                    <div class="fs-1">🚗</div>
-                    <h3 class="mt-2">Visitas</h3>
-                    <p class="text-secondary">
-                        Autorizá ingresos, consultá tu agenda y administrá las visitas de tu lote.
-                    </p>
-
-                    <div class="d-grid gap-2">
-                        <a href="{% url 'autorizar_visita' %}" class="btn btn-success">
-                            Autorizar visita
-                        </a>
-                        <a href="{% url 'agenda_visitas' %}" class="btn btn-outline-success">
-                            Agenda
-                        </a>
-                        <a href="{% url 'historial_visitas' %}" class="btn btn-outline-success">
-                            Historial
-                        </a>
-                        <a href="{% url 'carga_masiva_visitas' %}" class="btn btn-outline-success">
-                            Carga masiva
-                        </a>
-                    </div>
-
-                    <div class="mt-3">
-                        <a href="{% url 'invitados_frecuentes' %}" class="text-success text-decoration-none">
-                            ⭐ Invitados frecuentes
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- CONTACTOS ÚTILES -->
-        <div class="col-md-6">
-            <div class="card h-100 shadow-sm border-0">
-                <div class="card-body text-center p-4">
-                    <div class="fs-1">📞</div>
-                    <h3 class="mt-2">Contactos útiles</h3>
-                    <p class="text-secondary">
-                        Accedé rápidamente a teléfonos de seguridad, emergencias,
-                        administración y servicios del barrio.
-                    </p>
-                    <a href="{% url 'contactos_utiles' %}" class="btn btn-success">
-                        Ver contactos
-                    </a>
-                </div>
-            </div>
-        </div>
-
-    </div>
-
-    <!-- INFORMACIÓN DEL LOTE -->
-    <div class="card shadow-sm border-0">
-        <div class="card-body p-4">
-            <h4 class="text-success">🏡 Información de mi lote</h4>
-
-            <div class="row mt-3">
-                <div class="col-md-4 mb-3">
-                    <strong>Lote</strong>
-                    <div>{{ lote.numero }}</div>
-                </div>
-
-                <div class="col-md-4 mb-3">
-                    <strong>Familia</strong>
-                    <div>{{ lote.apellido_familia }}</div>
-                </div>
-
-                <div class="col-md-4 mb-3">
-                    <strong>Estado</strong>
-                    <div>
-                        {% if lote.activo %}
-                            <span class="text-success">● Activo</span>
-                        {% else %}
-                            <span class="text-danger">● Inactivo</span>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="text-center text-secondary small mt-4">
-        Comunidad360 · Las Acacias Hudson
-    </div>
-
+<body><div class="shell">
+<div class="topbar d-flex justify-content-between align-items-center gap-3"><div class="d-flex align-items-center gap-3"><img src="{% static 'core/img/las_acacias_logo.png' %}" alt="Las Acacias" class="logo"><div><div class="brand">Las Acacias</div><div class="sub">Comunidad360 · Portal de vecinos</div></div></div><div class="d-flex align-items-center gap-2"><span class="badge rounded-pill text-bg-light border d-none d-sm-inline">Lote {{ lote.numero }}</span><a href="{% url 'logout' %}" class="btn btn-outline-secondary btn-sm">Cerrar sesión</a></div></div>
+<section class="hero">
+<div class="hero-content">
+  <div class="hero-panel">
+    <div class="kicker">🌿 Las Acacias Hudson</div>
+    <h1>Buen día, familia {{ lote.apellido_familia }}</h1>
+    <p>Todo lo importante del barrio, en un solo lugar. Gestioná visitas, reservas, encomiendas y mucho más.</p>
+    <div class="pill">🏡 Lote {{ lote.numero }}</div>
+  </div>
 </div>
-</body>
-</html>
+</section>
+{% if cantidad_encomiendas_pendientes > 0 %}<div class="alert alert-warning notice mb-4"><div class="d-flex justify-content-between align-items-center flex-wrap gap-3"><div><div class="fw-bold fs-5">📦 Tenés {{ cantidad_encomiendas_pendientes }} {% if cantidad_encomiendas_pendientes == 1 %}encomienda pendiente{% else %}encomiendas pendientes{% endif %}</div><div class="small mt-1">Hay paquetes esperando para tu lote.</div></div><a href="{% url 'mis_encomiendas' %}" class="btn btn-warning fw-semibold">Ver encomiendas</a></div></div>{% endif %}
+<div class="title"><div><h2>Accesos rápidos</h2><p>Las funciones que más usás, siempre a mano.</p></div></div>
+<div class="row g-2 quick-grid">
+<div class="col-12 col-sm-6 col-lg-3"><a href="{% url 'visitas' %}" class="service"><div class="icon">🚗</div><h3>Visitas</h3><p>Autorizaciones, agenda e historial.</p><div class="meta">Gestionar →</div></a></div>
+<div class="col-12 col-sm-6 col-lg-3"><a href="{% url 'disponibilidad_sum' %}" class="service"><div class="icon">📅</div><h3>SUM</h3><p>Disponibilidad y reservas.</p><div class="meta">Reservar →</div></a></div>
+<div class="col-12 col-sm-6 col-lg-3"><a href="{% url 'mi_familia' %}" class="service"><div class="icon">👨‍👩‍👧‍👦</div><h3>Mi familia</h3><p>Integrantes registrados en tu lote.</p><div class="meta">Consultar →</div></a></div>
+<div class="col-12 col-sm-6 col-lg-3"><a href="{% url 'mis_encomiendas' %}" class="service"><div class="icon">📦</div><h3>Encomiendas</h3><p>{% if cantidad_encomiendas_pendientes > 0 %}{{ cantidad_encomiendas_pendientes }} pendiente{% if cantidad_encomiendas_pendientes != 1 %}s{% endif %}.{% else %}No tenés retiros pendientes.{% endif %}</p><div class="meta">Ver estado →</div></a></div>
+<div class="col-12 col-sm-6 col-lg-3"><a href="{% url 'mis_reclamos' %}" class="service"><div class="icon">📢</div><h3>Reclamos</h3><p>Seguimiento y nuevos reportes.</p><div class="meta">Ingresar →</div></a></div>
+<div class="col-12 col-sm-6 col-lg-3"><a href="{% url 'documentos' %}" class="service"><div class="icon">📄</div><h3>Documentos</h3><p>Reglamentos e información útil.</p><div class="meta">Abrir →</div></a></div>
+<div class="col-12 col-sm-6 col-lg-3"><a href="{% url 'contactos_utiles' %}" class="service"><div class="icon">📞</div><h3>Contactos</h3><p>Seguridad, administración y servicios.</p><div class="meta">Consultar →</div></a></div>
+<div class="col-12 col-sm-6 col-lg-3"><a href="{% url 'cumpleanios' %}" class="service"><div class="icon">🎂</div><h3>Cumpleaños</h3><p>Próximos cumpleaños del barrio.</p><div class="meta">Ver fechas →</div></a></div>
+</div>
+
+<div class="row g-3 dashboard-row"><div class="col-lg-7"><div class="feature"><div class="feature-head"><h3>📅 Reservas del SUM</h3><a href="{% url 'disponibilidad_sum' %}" class="btn btn-a btn-sm">Nueva reserva</a></div><div class="feature-body"><img src="{% static 'core/img/las_acacias_sum.png' %}" alt="SUM" class="sumimg mb-2">
+{% for reserva in proximas_reservas %}<div class="mini"><div class="d-flex justify-content-between align-items-start gap-3"><div><strong>{{ reserva.fecha|date:"d/m/Y" }}</strong><div class="small text-secondary">{{ reserva.get_turno_display }}</div><div class="small text-secondary mt-1">{{ reserva.cantidad_personas }} personas</div></div><div>{% if reserva.estado == "pendiente" %}<span class="badge text-bg-warning">Pendiente</span>{% elif reserva.estado == "confirmada" %}<span class="badge text-bg-success">Confirmada</span>{% elif reserva.estado == "cancelada" %}<span class="badge text-bg-danger">Cancelada</span>{% endif %}</div></div>{% if reserva.estado != "cancelada" %}{% if reserva.puede_cancelar %}<form method="POST" action="{% url 'cancelar_reserva_sum' reserva.id %}" class="mt-3">{% csrf_token %}<button class="btn btn-outline-danger btn-sm">Cancelar reserva</button></form>{% else %}<div class="small text-secondary mt-3">La cancelación solo está disponible hasta 7 días antes del evento.</div>{% endif %}{% endif %}</div>{% empty %}<div class="mini text-secondary">Todavía no tenés próximas reservas del SUM.</div>{% endfor %}
+<a href="{% url 'mis_reservas_sum' %}" class="btn btn-oa mt-2">Ver todas mis reservas</a></div></div></div>
+<div class="col-lg-5 activity-package"><div class="feature"><div class="body"><div class="icon">📦</div><h3>Encomiendas</h3>{% if cantidad_encomiendas_pendientes > 0 %}<p class="text-secondary">Tenés <strong>{{ cantidad_encomiendas_pendientes }}</strong> {% if cantidad_encomiendas_pendientes == 1 %}encomienda esperando retiro.{% else %}encomiendas esperando retiro.{% endif %}</p>{% for encomienda in ultimas_encomiendas_pendientes %}<div class="mini"><div class="d-flex justify-content-between align-items-start gap-2"><div><strong>{{ encomienda.remitente }}</strong>{% if encomienda.descripcion %}<div class="small text-secondary">{{ encomienda.descripcion }}</div>{% endif %}</div><span class="badge text-bg-warning">Pendiente</span></div><div class="small text-secondary mt-2">Recibida: {{ encomienda.fecha_recepcion|date:"d/m/Y H:i" }}</div></div>{% endfor %}{% else %}<div class="mini text-secondary">No tenés encomiendas pendientes de retiro.</div>{% endif %}<a href="{% url 'mis_encomiendas' %}" class="btn btn-a mt-2">Ver mis encomiendas</a></div></div></div></div>
+<div class="title"><div><h2>Novedades del barrio</h2><p>Comunicados y noticias recientes de Las Acacias.</p></div><a href="{% url 'noticias' %}" class="btn btn-oa btn-sm">Ver todas</a></div>
+<div class="row g-3">{% for noticia in noticias %}<div class="col-md-6 col-lg-4"><article class="news">{% if noticia.imagen %}<img src="{{ noticia.imagen.url }}" alt="{{ noticia.titulo }}" class="newsimg">{% else %}<img src="{% static 'core/img/las_acacias_juegos.png' %}" alt="Las Acacias" class="newsimg">{% endif %}<div class="newsbody"><div class="d-flex justify-content-between align-items-start gap-2"><h4>{{ noticia.titulo }}</h4>{% if noticia.destacada %}<span class="badge text-bg-warning">Destacada</span>{% endif %}</div><p class="text-secondary small mb-2">{{ noticia.contenido|truncatechars:125 }}</p><div class="small text-secondary">{{ noticia.fecha_publicacion|date:"d/m/Y H:i" }}</div></div></article></div>{% empty %}
+<div class="col-12">
+  <div class="empty-state">
+    <div class="empty-state-inner">
+      <img src="{% static 'core/img/las_acacias_juegos.png' %}" alt="Espacios de Las Acacias" class="empty-state-img">
+      <div>
+        <h4>No hay novedades publicadas</h4>
+        <p>Cuando haya nuevos comunicados o noticias del barrio, los vas a encontrar acá.</p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endfor %}</div>
+<div class="title lower-section"><div><h2>Cumpleaños del mes</h2><p>Fechas para compartir y celebrar en comunidad.</p></div></div><div class="row g-3">{% for integrante in cumpleanios_mes %}<div class="col-md-6 col-lg-4"><div class="service"><div class="d-flex align-items-center gap-3"><div class="icon mb-0">🎂</div><div><h3 class="mb-1">{{ integrante.apellido }}, {{ integrante.nombre }}</h3><div class="text-secondary small">{{ integrante.fecha_nacimiento|date:"d/m" }}</div></div><div class="ms-auto">{% now "m-d" as hoy_mes_dia %}{% with cumple=integrante.fecha_nacimiento|date:"m-d" %}{% if cumple == hoy_mes_dia %}<span class="badge text-bg-success">🎉 Hoy</span>{% endif %}{% endwith %}</div></div></div></div>{% empty %}
+<div class="col-12">
+  <div class="empty-state">
+    <div class="empty-state-inner">
+      <div class="empty-state-icon">🎂</div>
+      <div>
+        <h4>No hay cumpleaños registrados este mes</h4>
+        <p>Los próximos cumpleaños de vecinos aparecerán en esta sección.</p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endfor %}</div>
+<div class="title lower-section"><div><h2>Más gestiones</h2><p>Accesos directos para resolver tareas puntuales.</p></div></div><div class="row g-3"><div class="col-md-4"><a href="{% url 'autorizar_visita' %}" class="service"><div class="icon">✅</div><h3>Autorizar visita</h3><p>Cargá una nueva autorización de ingreso.</p></a></div><div class="col-md-4"><a href="{% url 'nuevo_reclamo' %}" class="service"><div class="icon">🛠️</div><h3>Nuevo reclamo</h3><p>Informá un inconveniente del barrio.</p></a></div><div class="col-md-4"><a href="{% url 'invitados_frecuentes' %}" class="service"><div class="icon">⭐</div><h3>Invitados frecuentes</h3><p>Administrá tus visitas habituales.</p></a></div></div>
+<section class="lot"><div class="row g-4 align-items-center"><div class="col-md-5"><h3 class="fw-bold mb-1">Las Acacias · Tu hogar</h3><div style="color:rgba(255,255,255,.72)">Información registrada para tu acceso a Comunidad360.</div></div><div class="col-4 col-md"><div class="lab">Lote</div><div class="val">{{ lote.numero }}</div></div><div class="col-4 col-md"><div class="lab">Familia</div><div class="val">{{ lote.apellido_familia }}</div></div><div class="col-4 col-md"><div class="lab">Estado</div><div class="val">{% if lote.activo %}● Activo{% else %}● Inactivo{% endif %}</div></div></div></section>
+<div class="foot">Las Acacias Hudson · Comunidad360</div>
+</div></body></html>
