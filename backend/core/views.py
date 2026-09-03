@@ -11,6 +11,8 @@ from .forms import (
     SolicitudModificacionFamiliaForm,
     VisitaForm,
     VisitaEspontaneaForm,
+    EncomiendaForm,
+    EntregaEncomiendaForm,
 )
 
 from .models import (
@@ -1582,6 +1584,148 @@ def visita_espontanea(request):
         request,
         "core/visita_espontanea.html",
         {
+            "form": form,
+        }
+    )
+
+
+# -------------------------------------------------
+# SEGURIDAD / PORTERÍA - ENCOMIENDAS
+# -------------------------------------------------
+
+def seguridad_encomiendas(request):
+    from django.db.models import Q
+
+    if not request.user.is_authenticated:
+        return redirect("home")
+
+    if not request.user.is_staff:
+        return redirect("portal")
+
+    busqueda = request.GET.get("q", "").strip()
+
+    pendientes = Encomienda.objects.filter(
+        estado="pendiente"
+    ).select_related(
+        "lote"
+    ).order_by(
+        "-fecha_recepcion"
+    )
+
+    recientes = Encomienda.objects.filter(
+        estado="entregada"
+    ).select_related(
+        "lote"
+    ).order_by(
+        "-fecha_entrega"
+    )
+
+    if busqueda:
+        filtro = (
+            Q(lote__numero__icontains=busqueda)
+            | Q(lote__apellido_familia__icontains=busqueda)
+            | Q(remitente__icontains=busqueda)
+            | Q(descripcion__icontains=busqueda)
+        )
+
+        pendientes = pendientes.filter(filtro)
+        recientes = recientes.filter(filtro)
+
+    recientes = recientes[:50]
+
+    return render(
+        request,
+        "core/seguridad_encomiendas.html",
+        {
+            "pendientes": pendientes,
+            "recientes": recientes,
+            "busqueda": busqueda,
+        }
+    )
+
+
+def registrar_encomienda(request):
+    if not request.user.is_authenticated:
+        return redirect("home")
+
+    if not request.user.is_staff:
+        return redirect("portal")
+
+    if request.method == "POST":
+        form = EncomiendaForm(request.POST)
+
+        if form.is_valid():
+            encomienda = form.save(commit=False)
+            encomienda.estado = "pendiente"
+            encomienda.save()
+
+            return redirect("seguridad_encomiendas")
+
+    else:
+        form = EncomiendaForm()
+
+    return render(
+        request,
+        "core/registrar_encomienda.html",
+        {
+            "form": form,
+        }
+    )
+
+
+def entregar_encomienda(request, encomienda_id):
+    if not request.user.is_authenticated:
+        return redirect("home")
+
+    if not request.user.is_staff:
+        return redirect("portal")
+
+    encomienda = get_object_or_404(
+        Encomienda,
+        id=encomienda_id,
+        estado="pendiente",
+    )
+
+    if request.method == "POST":
+        form = EntregaEncomiendaForm(
+            request.POST,
+            lote=encomienda.lote,
+        )
+
+        if form.is_valid():
+            tipo_retiro = form.cleaned_data["tipo_retiro"]
+
+            if tipo_retiro == "familia":
+                integrante = form.cleaned_data["integrante"]
+                retirado_por = (
+                    f"{integrante.apellido}, {integrante.nombre}"
+                )
+            else:
+                retirado_por = form.cleaned_data["otro_nombre"].strip()
+
+            encomienda.estado = "entregada"
+            encomienda.fecha_entrega = timezone.now()
+            encomienda.retirado_por = retirado_por
+            encomienda.save(
+                update_fields=[
+                    "estado",
+                    "fecha_entrega",
+                    "retirado_por",
+                ]
+            )
+
+            return redirect("seguridad_encomiendas")
+
+    else:
+        form = EntregaEncomiendaForm(
+            lote=encomienda.lote,
+        )
+
+    return render(
+        request,
+        "core/entregar_encomienda.html",
+        {
+            "encomienda": encomienda,
             "form": form,
         }
     )

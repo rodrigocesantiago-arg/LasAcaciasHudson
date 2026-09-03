@@ -1,6 +1,8 @@
 from django import forms
 
 from .models import (
+    Encomienda,
+    Integrante,
     InvitadoFrecuente,
     Lote,
     Reclamo,
@@ -342,3 +344,136 @@ class VisitaEspontaneaForm(forms.ModelForm):
 
     def clean_patente(self):
         return self.cleaned_data.get("patente", "").strip().upper()
+
+
+
+class EncomiendaForm(forms.ModelForm):
+
+    class Meta:
+        model = Encomienda
+
+        fields = [
+            "lote",
+            "remitente",
+            "descripcion",
+            "observaciones",
+        ]
+
+        labels = {
+            "lote": "Lote destinatario",
+            "remitente": "Empresa / Remitente",
+            "descripcion": "Descripción del paquete",
+            "observaciones": "Observaciones",
+        }
+
+        widgets = {
+            "lote": forms.Select(
+                attrs={
+                    "class": "form-select form-select-lg",
+                }
+            ),
+            "remitente": forms.TextInput(
+                attrs={
+                    "class": "form-control",
+                    "placeholder": "Ej: Mercado Libre, Correo Argentino, Andreani",
+                    "autocomplete": "off",
+                }
+            ),
+            "descripcion": forms.TextInput(
+                attrs={
+                    "class": "form-control",
+                    "placeholder": "Ej: Caja mediana, sobre, paquete",
+                    "autocomplete": "off",
+                }
+            ),
+            "observaciones": forms.Textarea(
+                attrs={
+                    "class": "form-control",
+                    "rows": 3,
+                    "placeholder": "Observaciones opcionales",
+                }
+            ),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields["lote"].queryset = Lote.objects.filter(
+            activo=True
+        ).order_by("numero")
+
+        self.fields["lote"].empty_label = "Seleccioná el lote"
+
+
+class EntregaEncomiendaForm(forms.Form):
+
+    TIPO_RETIRO = [
+        ("familia", "Miembro de la familia"),
+        ("otro", "Otra persona"),
+    ]
+
+    tipo_retiro = forms.ChoiceField(
+        label="Quién retira",
+        choices=TIPO_RETIRO,
+        widget=forms.RadioSelect(),
+        initial="familia",
+    )
+
+    integrante = forms.ModelChoiceField(
+        label="Miembro de la familia",
+        queryset=Integrante.objects.none(),
+        required=False,
+        empty_label="Seleccioná una persona de la familia",
+        widget=forms.Select(
+            attrs={
+                "class": "form-select form-select-lg",
+            }
+        ),
+    )
+
+    otro_nombre = forms.CharField(
+        label="Apellido y nombre",
+        max_length=150,
+        required=False,
+        widget=forms.TextInput(
+            attrs={
+                "class": "form-control form-control-lg",
+                "placeholder": "Ej: Pérez Juan",
+                "autocomplete": "off",
+            }
+        ),
+    )
+
+    def __init__(self, *args, **kwargs):
+        lote = kwargs.pop("lote", None)
+        super().__init__(*args, **kwargs)
+
+        if lote is not None:
+            self.fields["integrante"].queryset = Integrante.objects.filter(
+                lote=lote,
+                activo=True,
+            ).order_by(
+                "apellido",
+                "nombre",
+            )
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        tipo_retiro = cleaned_data.get("tipo_retiro")
+        integrante = cleaned_data.get("integrante")
+        otro_nombre = (cleaned_data.get("otro_nombre") or "").strip()
+
+        if tipo_retiro == "familia" and not integrante:
+            self.add_error(
+                "integrante",
+                "Seleccioná qué integrante de la familia retira la encomienda.",
+            )
+
+        if tipo_retiro == "otro" and not otro_nombre:
+            self.add_error(
+                "otro_nombre",
+                "Ingresá el apellido y nombre de la persona que retira.",
+            )
+
+        return cleaned_data

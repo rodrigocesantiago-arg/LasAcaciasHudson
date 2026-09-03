@@ -38,6 +38,9 @@ urlpatterns = [
     path("seguridad/visitas/", views.seguridad_visitas, name="seguridad_visitas"),
     path("seguridad/historial/", views.historial_seguridad, name="historial_seguridad"),
     path("seguridad/visita-espontanea/", views.visita_espontanea, name="visita_espontanea"),
+    path("seguridad/encomiendas/", views.seguridad_encomiendas, name="seguridad_encomiendas"),
+    path("seguridad/encomiendas/nueva/", views.registrar_encomienda, name="registrar_encomienda"),
+    path("seguridad/encomiendas/<int:encomienda_id>/entregar/", views.entregar_encomienda, name="entregar_encomienda"),
     path("seguridad/visitas/<int:visita_id>/ingreso/", views.registrar_ingreso, name="registrar_ingreso"),
     path("seguridad/visitas/<int:visita_id>/salida/", views.registrar_salida, name="registrar_salida"),
 

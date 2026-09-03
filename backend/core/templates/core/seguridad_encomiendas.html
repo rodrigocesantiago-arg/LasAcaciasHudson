@@ -1,0 +1,168 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comunidad360 - Encomiendas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'core/css/styles.css' %}">
+</head>
+<body>
+<div class="container py-4">
+
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                <div>
+                    <h1 class="text-success mb-1">Encomiendas</h1>
+                    <div class="text-secondary">Recepción y entrega de paquetes desde Portería.</div>
+                </div>
+                <div class="d-flex gap-2 flex-wrap">
+                    <a href="{% url 'registrar_encomienda' %}" class="btn btn-success">
+                        Registrar encomienda
+                    </a>
+                    <a href="{% url 'seguridad_visitas' %}" class="btn btn-outline-secondary">
+                        Volver a Portería
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body">
+            <h4 class="mb-3">Buscar encomienda</h4>
+            <form method="get">
+                <div class="row g-2">
+                    <div class="col-md-9">
+                        <input type="text" name="q" value="{{ busqueda }}"
+                               class="form-control form-control-lg"
+                               placeholder="Lote, familia, remitente o descripción">
+                    </div>
+                    <div class="col-md-3 d-grid">
+                        <button type="submit" class="btn btn-success btn-lg">Buscar</button>
+                    </div>
+                </div>
+            </form>
+
+            {% if busqueda %}
+                <div class="mt-3">
+                    <a href="{% url 'seguridad_encomiendas' %}" class="btn btn-outline-secondary btn-sm">
+                        Limpiar búsqueda
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                <div>
+                    <h4 class="mb-1">Pendientes de retiro</h4>
+                    <div class="text-secondary small">Paquetes que todavía se encuentran en Portería.</div>
+                </div>
+                <span class="badge text-bg-warning">{{ pendientes|length }} pendiente{{ pendientes|length|pluralize }}</span>
+            </div>
+
+            {% if pendientes %}
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Recepción</th>
+                                <th>Lote</th>
+                                <th>Familia</th>
+                                <th>Remitente</th>
+                                <th>Descripción</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for encomienda in pendientes %}
+                            <tr>
+                                <td>
+                                    <div class="fw-bold">{{ encomienda.fecha_recepcion|date:"d/m/Y" }}</div>
+                                    <div class="small text-secondary">{{ encomienda.fecha_recepcion|date:"H:i" }}</div>
+                                </td>
+                                <td class="fw-bold">{{ encomienda.lote.numero }}</td>
+                                <td>{{ encomienda.lote.apellido_familia }}</td>
+                                <td>{{ encomienda.remitente }}</td>
+                                <td>
+                                    {% if encomienda.descripcion %}
+                                        {{ encomienda.descripcion }}
+                                    {% else %}
+                                        <span class="text-secondary">—</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="{% url 'entregar_encomienda' encomienda.id %}" class="btn btn-success btn-sm">
+                                        Registrar entrega
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="alert alert-light border mb-0">
+                    {% if busqueda %}
+                        No hay encomiendas pendientes que coincidan con la búsqueda.
+                    {% else %}
+                        No hay encomiendas pendientes de retiro.
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                <div>
+                    <h4 class="mb-1">Entregas recientes</h4>
+                    <div class="text-secondary small">Últimas 50 encomiendas entregadas.</div>
+                </div>
+            </div>
+
+            {% if recientes %}
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Lote</th>
+                                <th>Remitente</th>
+                                <th>Recibida</th>
+                                <th>Entregada</th>
+                                <th>Retirado por</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for encomienda in recientes %}
+                            <tr>
+                                <td>
+                                    <span class="fw-bold">{{ encomienda.lote.numero }}</span>
+                                    <div class="small text-secondary">{{ encomienda.lote.apellido_familia }}</div>
+                                </td>
+                                <td>{{ encomienda.remitente }}</td>
+                                <td>{{ encomienda.fecha_recepcion|date:"d/m/Y H:i" }}</td>
+                                <td>{{ encomienda.fecha_entrega|date:"d/m/Y H:i" }}</td>
+                                <td>{{ encomienda.retirado_por }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="alert alert-light border mb-0">
+                    No hay entregas recientes para mostrar.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+</div>
+</body>
+</html>
