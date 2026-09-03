@@ -178,6 +178,18 @@ urlpatterns = [
     ),
 
     path(
+        "seguridad/visitas/<int:visita_id>/ingreso/",
+        views.registrar_ingreso,
+        name="registrar_ingreso"
+    ),
+
+    path(
+        "seguridad/visitas/<int:visita_id>/salida/",
+        views.registrar_salida,
+        name="registrar_salida"
+    ),
+
+    path(
         "logout/",
         views.logout_view,
         name="logout"

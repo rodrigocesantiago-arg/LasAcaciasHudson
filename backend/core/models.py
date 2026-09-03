@@ -688,7 +688,8 @@ class ContactoUtil(models.Model):
         verbose_name = "Contacto útil"
         verbose_name_plural = "Contactos útiles"
 
-        # -------------------------------------------------
+
+# -------------------------------------------------
 # VISITAS
 # -------------------------------------------------
 
@@ -698,37 +699,12 @@ class InvitadoFrecuente(models.Model):
         on_delete=models.CASCADE,
         related_name="invitados_frecuentes"
     )
-
-    nombre = models.CharField(
-        "Nombre",
-        max_length=100
-    )
-
-    apellido = models.CharField(
-        "Apellido",
-        max_length=100
-    )
-
-    dni = models.CharField(
-        "DNI",
-        max_length=20
-    )
-
-    patente = models.CharField(
-        "Patente",
-        max_length=20,
-        blank=True
-    )
-
-    observaciones = models.TextField(
-        "Observaciones",
-        blank=True
-    )
-
-    activo = models.BooleanField(
-        "Activo",
-        default=True
-    )
+    nombre = models.CharField("Nombre", max_length=100)
+    apellido = models.CharField("Apellido", max_length=100)
+    dni = models.CharField("DNI", max_length=20)
+    patente = models.CharField("Patente", max_length=20, blank=True)
+    observaciones = models.TextField("Observaciones", blank=True)
+    activo = models.BooleanField("Activo", default=True)
 
     def __str__(self):
         return f"{self.apellido}, {self.nombre} - DNI {self.dni}"
@@ -740,7 +716,6 @@ class InvitadoFrecuente(models.Model):
 
 
 class Visita(models.Model):
-
     ESTADOS = [
         ("autorizada", "Autorizada"),
         ("cancelada", "Cancelada"),
@@ -751,7 +726,6 @@ class Visita(models.Model):
         on_delete=models.CASCADE,
         related_name="visitas"
     )
-
     invitado = models.ForeignKey(
         InvitadoFrecuente,
         on_delete=models.SET_NULL,
@@ -759,53 +733,29 @@ class Visita(models.Model):
         blank=True,
         related_name="visitas"
     )
-
-    nombre = models.CharField(
-        "Nombre",
-        max_length=100
-    )
-
-    apellido = models.CharField(
-        "Apellido",
-        max_length=100
-    )
-
-    dni = models.CharField(
-        "DNI",
-        max_length=20
-    )
-
-    patente = models.CharField(
-        "Patente",
-        max_length=20,
-        blank=True
-    )
-
-    fecha = models.DateField(
-        "Fecha de visita"
-    )
-
-    evento = models.CharField(
-        "Evento / Motivo",
-        max_length=150,
-        blank=True
-    )
-
-    observaciones = models.TextField(
-        "Observaciones",
-        blank=True
-    )
-
+    nombre = models.CharField("Nombre", max_length=100)
+    apellido = models.CharField("Apellido", max_length=100)
+    dni = models.CharField("DNI", max_length=20)
+    patente = models.CharField("Patente", max_length=20, blank=True)
+    fecha = models.DateField("Fecha de visita")
+    evento = models.CharField("Evento / Motivo", max_length=150, blank=True)
+    observaciones = models.TextField("Observaciones", blank=True)
     estado = models.CharField(
         "Estado",
         max_length=20,
         choices=ESTADOS,
         default="autorizada"
     )
-
-    fecha_creacion = models.DateTimeField(
-        "Fecha de creación",
-        auto_now_add=True
+    fecha_creacion = models.DateTimeField("Fecha de creación", auto_now_add=True)
+    fecha_hora_ingreso = models.DateTimeField(
+        "Fecha y hora de ingreso",
+        null=True,
+        blank=True
+    )
+    fecha_hora_salida = models.DateTimeField(
+        "Fecha y hora de salida",
+        null=True,
+        blank=True
     )
 
     def __str__(self):

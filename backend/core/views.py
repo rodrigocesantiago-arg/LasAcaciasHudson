@@ -1464,6 +1464,59 @@ def seguridad_visitas(request):
         }
     )
 
+
+# -------------------------------------------------
+# SEGURIDAD / PORTERÍA - INGRESO Y SALIDA
+# -------------------------------------------------
+
+def registrar_ingreso(request, visita_id):
+    if not request.user.is_authenticated:
+        return redirect("home")
+
+    if not request.user.is_staff:
+        return redirect("portal")
+
+    visita = get_object_or_404(
+        Visita,
+        id=visita_id,
+        estado="autorizada",
+    )
+
+    if (
+        request.method == "POST"
+        and visita.fecha_hora_ingreso is None
+        and visita.fecha == timezone.localdate()
+    ):
+        visita.fecha_hora_ingreso = timezone.now()
+        visita.save(update_fields=["fecha_hora_ingreso"])
+
+    return redirect("seguridad_visitas")
+
+
+def registrar_salida(request, visita_id):
+    if not request.user.is_authenticated:
+        return redirect("home")
+
+    if not request.user.is_staff:
+        return redirect("portal")
+
+    visita = get_object_or_404(
+        Visita,
+        id=visita_id,
+        estado="autorizada",
+    )
+
+    if (
+        request.method == "POST"
+        and visita.fecha_hora_ingreso is not None
+        and visita.fecha_hora_salida is None
+    ):
+        visita.fecha_hora_salida = timezone.now()
+        visita.save(update_fields=["fecha_hora_salida"])
+
+    return redirect("seguridad_visitas")
+
+
 # -------------------------------------------------
 # LOGOUT
 # -------------------------------------------------

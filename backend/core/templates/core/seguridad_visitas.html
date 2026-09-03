@@ -35,7 +35,7 @@
                     </h1>
 
                     <div class="text-secondary">
-                        Consulta de visitas autorizadas
+                        Control de ingreso y salida de visitantes
                     </div>
                 </div>
 
@@ -133,7 +133,7 @@
                     {% if busqueda %}
                         Resultados para “{{ busqueda }}”
                     {% else %}
-                        Próximas visitas autorizadas
+                        Visitas autorizadas
                     {% endif %}
 
                 </h4>
@@ -160,7 +160,10 @@
                                 <th>Patente</th>
                                 <th>Lote</th>
                                 <th>Evento</th>
+                                <th>Ingreso</th>
+                                <th>Salida</th>
                                 <th>Estado</th>
+                                <th>Acción</th>
                             </tr>
 
                         </thead>
@@ -217,10 +220,112 @@
                                         {% endif %}
                                     </td>
 
+
                                     <td>
-                                        <span class="badge text-bg-success">
-                                            Autorizada
-                                        </span>
+                                        {% if visita.fecha_hora_ingreso %}
+                                            <div class="fw-bold">
+                                                {{ visita.fecha_hora_ingreso|date:"H:i" }}
+                                            </div>
+
+                                            <div class="small text-secondary">
+                                                {{ visita.fecha_hora_ingreso|date:"d/m/Y" }}
+                                            </div>
+                                        {% else %}
+                                            <span class="text-secondary">
+                                                —
+                                            </span>
+                                        {% endif %}
+                                    </td>
+
+
+                                    <td>
+                                        {% if visita.fecha_hora_salida %}
+                                            <div class="fw-bold">
+                                                {{ visita.fecha_hora_salida|date:"H:i" }}
+                                            </div>
+
+                                            <div class="small text-secondary">
+                                                {{ visita.fecha_hora_salida|date:"d/m/Y" }}
+                                            </div>
+                                        {% else %}
+                                            <span class="text-secondary">
+                                                —
+                                            </span>
+                                        {% endif %}
+                                    </td>
+
+
+                                    <td>
+
+                                        {% if visita.fecha_hora_salida %}
+
+                                            <span class="badge text-bg-secondary">
+                                                Salió
+                                            </span>
+
+                                        {% elif visita.fecha_hora_ingreso %}
+
+                                            <span class="badge text-bg-warning">
+                                                Dentro
+                                            </span>
+
+                                        {% else %}
+
+                                            <span class="badge text-bg-success">
+                                                Autorizada
+                                            </span>
+
+                                        {% endif %}
+
+                                    </td>
+
+
+                                    <td>
+
+                                        {% if not visita.fecha_hora_ingreso %}
+
+                                            <form
+                                                method="post"
+                                                action="{% url 'registrar_ingreso' visita.id %}"
+                                                class="m-0"
+                                            >
+                                                {% csrf_token %}
+
+                                                <button
+                                                    type="submit"
+                                                    class="btn btn-success btn-sm"
+                                                >
+                                                    Registrar ingreso
+                                                </button>
+
+                                            </form>
+
+                                        {% elif not visita.fecha_hora_salida %}
+
+                                            <form
+                                                method="post"
+                                                action="{% url 'registrar_salida' visita.id %}"
+                                                class="m-0"
+                                            >
+                                                {% csrf_token %}
+
+                                                <button
+                                                    type="submit"
+                                                    class="btn btn-danger btn-sm"
+                                                >
+                                                    Registrar salida
+                                                </button>
+
+                                            </form>
+
+                                        {% else %}
+
+                                            <span class="text-secondary small">
+                                                Finalizada
+                                            </span>
+
+                                        {% endif %}
+
                                     </td>
 
                                 </tr>
