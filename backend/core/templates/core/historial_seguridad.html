@@ -1,0 +1,107 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comunidad360 - Historial de Seguridad</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'core/css/styles.css' %}">
+</head>
+<body>
+<div class="container py-4">
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                <div>
+                    <h1 class="text-success mb-1">Historial de movimientos</h1>
+                    <div class="text-secondary">Registro de ingresos y salidas de visitantes.</div>
+                </div>
+                <a href="{% url 'seguridad_visitas' %}" class="btn btn-outline-success">
+                    Volver a Portería
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body">
+            <h4 class="mb-3">Buscar y filtrar</h4>
+            <form method="get">
+                <div class="row g-3">
+                    <div class="col-lg-6">
+                        <label class="form-label">Visitante, DNI, patente o lote</label>
+                        <input type="text" name="q" value="{{ busqueda }}" class="form-control"
+                               placeholder="Ej: Pérez, 30123456, AB123CD o 65">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Desde</label>
+                        <input type="date" name="desde" value="{{ fecha_desde }}" class="form-control">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Hasta</label>
+                        <input type="date" name="hasta" value="{{ fecha_hasta }}" class="form-control">
+                    </div>
+                    <div class="col-md-3 d-grid">
+                        <button type="submit" class="btn btn-success">Aplicar filtros</button>
+                    </div>
+                    <div class="col-md-3 d-grid">
+                        <a href="{% url 'historial_seguridad' %}" class="btn btn-outline-secondary">Limpiar</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                <h4 class="mb-0">Movimientos registrados</h4>
+                <span class="badge text-bg-success">{{ movimientos|length }} resultado{{ movimientos|length|pluralize }}</span>
+            </div>
+
+            {% if movimientos %}
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th>Visitante</th>
+                                <th>DNI</th>
+                                <th>Patente</th>
+                                <th>Lote</th>
+                                <th>Fecha autorizada</th>
+                                <th>Ingreso</th>
+                                <th>Salida</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for visita in movimientos %}
+                            <tr>
+                                <td class="fw-bold">{{ visita.apellido }}, {{ visita.nombre }}</td>
+                                <td>{{ visita.dni }}</td>
+                                <td>{% if visita.patente %}<span class="badge text-bg-dark">{{ visita.patente }}</span>{% else %}<span class="text-secondary">—</span>{% endif %}</td>
+                                <td><span class="fw-bold">{{ visita.lote.numero }}</span>{% if visita.lote.apellido_familia %}<div class="small text-secondary">{{ visita.lote.apellido_familia }}</div>{% endif %}</td>
+                                <td>{{ visita.fecha|date:"d/m/Y" }}</td>
+                                <td>{% if visita.fecha_hora_ingreso %}<div class="fw-bold">{{ visita.fecha_hora_ingreso|date:"H:i" }}</div><div class="small text-secondary">{{ visita.fecha_hora_ingreso|date:"d/m/Y" }}</div>{% else %}<span class="text-secondary">—</span>{% endif %}</td>
+                                <td>{% if visita.fecha_hora_salida %}<div class="fw-bold">{{ visita.fecha_hora_salida|date:"H:i" }}</div><div class="small text-secondary">{{ visita.fecha_hora_salida|date:"d/m/Y" }}</div>{% else %}<span class="text-secondary">—</span>{% endif %}</td>
+                                <td>
+                                    {% if visita.fecha_hora_salida %}
+                                        <span class="badge text-bg-secondary">Finalizada</span>
+                                    {% else %}
+                                        <span class="badge text-bg-warning">Dentro</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="alert alert-light border mb-0">No se encontraron movimientos con los filtros seleccionados.</div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1481,6 +1481,64 @@ def seguridad_visitas(request):
 
 
 # -------------------------------------------------
+# SEGURIDAD / PORTERÍA - HISTORIAL
+# -------------------------------------------------
+
+def historial_seguridad(request):
+    from django.db.models import Q
+
+    if not request.user.is_authenticated:
+        return redirect("home")
+
+    if not request.user.is_staff:
+        return redirect("portal")
+
+    busqueda = request.GET.get("q", "").strip()
+    fecha_desde = request.GET.get("desde", "").strip()
+    fecha_hasta = request.GET.get("hasta", "").strip()
+
+    movimientos = Visita.objects.filter(
+        Q(fecha_hora_ingreso__isnull=False)
+        | Q(fecha_hora_salida__isnull=False)
+    ).select_related("lote")
+
+    if busqueda:
+        movimientos = movimientos.filter(
+            Q(dni__icontains=busqueda)
+            | Q(patente__icontains=busqueda)
+            | Q(apellido__icontains=busqueda)
+            | Q(nombre__icontains=busqueda)
+            | Q(lote__numero__icontains=busqueda)
+        )
+
+    if fecha_desde:
+        movimientos = movimientos.filter(
+            fecha_hora_ingreso__date__gte=fecha_desde
+        )
+
+    if fecha_hasta:
+        movimientos = movimientos.filter(
+            fecha_hora_ingreso__date__lte=fecha_hasta
+        )
+
+    movimientos = movimientos.order_by(
+        "-fecha_hora_ingreso",
+        "-fecha",
+    )[:500]
+
+    return render(
+        request,
+        "core/historial_seguridad.html",
+        {
+            "movimientos": movimientos,
+            "busqueda": busqueda,
+            "fecha_desde": fecha_desde,
+            "fecha_hasta": fecha_hasta,
+        }
+    )
+
+
+# -------------------------------------------------
 # SEGURIDAD / PORTERÍA - INGRESO Y SALIDA
 # -------------------------------------------------
 
