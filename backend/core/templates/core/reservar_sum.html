@@ -1,175 +1,56 @@
 {% load static %}
-
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Reserva del SUM - Comunidad360</title>
-
-    <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
-        rel="stylesheet"
-    >
-
-    <link
-        rel="stylesheet"
-        href="{% static 'core/css/styles.css' %}"
-    >
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Reserva del SUM - Las Acacias</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'core/css/styles.css' %}">
+<style>
+:root{
+  --green:#2f6b3c;--green-dark:#174d2b;--green-soft:#edf5ee;
+  --text:#1f2923;--muted:#68736c;--line:#e4e9e5;--page:#f5f7f5;
+}
+body{background:var(--page);color:var(--text);font-family:"Segoe UI",Inter,Arial,sans-serif}
+.shell{max-width:1280px;margin:auto;padding:18px}
+.topbar{background:#fff;border:1px solid var(--line);border-radius:20px;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;box-shadow:0 8px 24px rgba(29,57,36,.06);margin-bottom:18px}
+.brand{display:flex;align-items:center;gap:13px}.brand img{width:62px;height:52px;object-fit:contain}
+.brand h1{font-size:1.35rem;color:var(--green-dark);font-weight:800;margin:0}.brand p{margin:3px 0 0;color:var(--muted);font-size:.85rem}
+.hero{min-height:230px;border-radius:22px;overflow:hidden;padding:28px;display:flex;align-items:end;background:linear-gradient(90deg,rgba(8,34,18,.78),rgba(8,34,18,.18)),url("{% static 'core/img/las_acacias_sum.png' %}") center/cover no-repeat;box-shadow:0 10px 28px rgba(26,54,34,.10);margin-bottom:18px}
+.hero-box{color:white;max-width:590px}.hero-box h2{font-size:2rem;font-weight:800;margin:0 0 6px}.hero-box p{margin:0;color:rgba(255,255,255,.9)}
+.card-oa{background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:0 6px 18px rgba(28,55,35,.045)}
+.card-pad{padding:22px}.section-title{color:var(--green-dark);font-weight:800}
+.btn-oa{background:var(--green);border-color:var(--green);color:white;font-weight:700}.btn-oa:hover{background:var(--green-dark);border-color:var(--green-dark);color:white}
+.btn-outline-oa{border-color:var(--green);color:var(--green-dark);font-weight:700}.btn-outline-oa:hover{background:var(--green);color:white}
+.turno{border:1px solid var(--line);border-radius:15px;padding:18px;background:#fbfcfb}
+.status{border-radius:999px;padding:7px 11px;font-weight:800;font-size:.82rem}
+.info-icon{width:50px;height:50px;border-radius:14px;background:var(--green-soft);display:grid;place-items:center;font-size:1.55rem;flex:0 0 auto}
+.form-control,.form-select{border-radius:11px;border-color:#dce4de;padding:.68rem .8rem}
+textarea.form-control{min-height:110px}
+.reservation{padding:20px;margin-bottom:13px}
+.empty{display:flex;align-items:center;gap:15px;padding:20px}
+.success-mark{width:76px;height:76px;border-radius:50%;background:var(--green-soft);display:grid;place-items:center;font-size:2.3rem;margin:0 auto 16px}
+.detail-row{display:flex;justify-content:space-between;gap:20px;padding:10px 0;border-bottom:1px solid var(--line)}
+.detail-row:last-child{border-bottom:0}
+@media(max-width:650px){.shell{padding:10px}.hero{min-height:200px;padding:20px}.hero-box h2{font-size:1.65rem}.detail-row{display:block}}
+</style>
 </head>
-
-<body>
-
-<div class="container py-4">
-
-    <div class="d-flex justify-content-between align-items-center mb-4">
-
-        <div>
-            <h1 class="text-success mb-1">
-                📅 Reserva del SUM
-            </h1>
-
-            <div class="text-secondary">
-                Lote {{ lote.numero }} · Familia {{ lote.apellido_familia }}
-            </div>
-        </div>
-
-        <a
-            href="{% url 'portal' %}"
-            class="btn btn-outline-secondary"
-        >
-            Volver al portal
-        </a>
-
-    </div>
-
-
-    <div class="row justify-content-center">
-
-        <div class="col-lg-7">
-
-            <div class="card shadow-sm border-0">
-
-                <div class="card-body p-4">
-
-                    <h3 class="mb-4">
-                        Nueva reserva
-                    </h3>
-
-                    {% if form.non_field_errors %}
-
-                        <div class="alert alert-danger">
-                            {{ form.non_field_errors }}
-                        </div>
-
-                    {% endif %}
-
-                    <form method="POST">
-
-                        {% csrf_token %}
-
-                        <div class="mb-3">
-
-                            <label class="form-label">
-                                Fecha
-                            </label>
-
-                            {{ form.fecha }}
-
-                            {% for error in form.fecha.errors %}
-                                <div class="text-danger small mt-1">
-                                    {{ error }}
-                                </div>
-                            {% endfor %}
-
-                        </div>
-
-
-                        <div class="mb-3">
-
-                            <label class="form-label">
-                                Turno
-                            </label>
-
-                            {{ form.turno }}
-
-                            {% for error in form.turno.errors %}
-                                <div class="text-danger small mt-1">
-                                    {{ error }}
-                                </div>
-                            {% endfor %}
-
-                        </div>
-
-
-                        <div class="mb-3">
-
-                            <label class="form-label">
-                                Cantidad estimada de personas
-                            </label>
-
-                            {{ form.cantidad_personas }}
-
-                            {% for error in form.cantidad_personas.errors %}
-                                <div class="text-danger small mt-1">
-                                    {{ error }}
-                                </div>
-                            {% endfor %}
-
-                        </div>
-
-
-                        <div class="mb-4">
-
-                            <label class="form-label">
-                                Observaciones
-                            </label>
-
-                            {{ form.observaciones }}
-
-                            {% for error in form.observaciones.errors %}
-                                <div class="text-danger small mt-1">
-                                    {{ error }}
-                                </div>
-                            {% endfor %}
-
-                        </div>
-
-
-                        <div class="alert alert-light border">
-
-                            <strong>
-                                La solicitud quedará en estado Pendiente.
-                            </strong>
-
-                            <div class="small text-secondary mt-1">
-                                La administración podrá confirmarla posteriormente.
-                            </div>
-
-                        </div>
-
-
-                        <button
-                            type="submit"
-                            class="btn btn-success w-100"
-                        >
-                            Solicitar reserva
-                        </button>
-
-                    </form>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
+<body><div class="shell">
+<div class="topbar">
+ <div class="brand"><img src="{% static 'core/img/las_acacias_logo.png' %}" alt="Las Acacias"><div><h1>Las Acacias</h1><p>Comunidad360 · SUM · Lote {{ lote.numero }} · Familia {{ lote.apellido_familia }}</p></div></div>
+ <a href="{% url 'portal' %}" class="btn btn-outline-secondary btn-sm">Volver al portal</a>
 </div>
-
-</body>
-
-</html>
+<section class="hero"><div class="hero-box"><h2>SUM Las Acacias</h2><p>Consultá disponibilidad, reservá tu turno y administrá tus próximas reuniones.</p></div></section>
+<div class="row justify-content-center"><div class="col-lg-8"><div class="card-oa card-pad">
+<div class="d-flex gap-3 align-items-center mb-4"><div class="info-icon">📝</div><div><h3 class="section-title fs-4 mb-1">Nueva reserva</h3><div class="text-secondary small">Completá los datos de tu solicitud.</div></div></div>
+{% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors }}</div>{% endif %}
+<form method="POST">{% csrf_token %}
+<div class="row g-3">
+<div class="col-md-6"><label class="form-label fw-semibold">Fecha</label>{{ form.fecha }}{% for error in form.fecha.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}</div>
+<div class="col-md-6"><label class="form-label fw-semibold">Turno</label>{{ form.turno }}{% for error in form.turno.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}</div>
+<div class="col-md-6"><label class="form-label fw-semibold">Cantidad estimada de personas</label>{{ form.cantidad_personas }}{% for error in form.cantidad_personas.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}</div>
+<div class="col-12"><label class="form-label fw-semibold">Observaciones</label>{{ form.observaciones }}{% for error in form.observaciones.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}</div>
+</div>
+<div class="alert alert-light border mt-4 d-flex gap-3"><div>ℹ️</div><div><strong>La solicitud quedará en estado Pendiente.</strong><div class="small text-secondary mt-1">La administración podrá confirmarla posteriormente.</div></div></div>
+<button type="submit" class="btn btn-oa w-100">Solicitar reserva</button>
+</form></div></div></div></div></body></html>
