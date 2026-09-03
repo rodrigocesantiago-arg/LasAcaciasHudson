@@ -10,6 +10,7 @@ from .forms import (
     ReservaSUMForm,
     SolicitudModificacionFamiliaForm,
     VisitaForm,
+    VisitaEspontaneaForm,
 )
 
 from .models import (
@@ -1444,36 +1445,49 @@ def seguridad_visitas(request):
         "fecha_hora_ingreso"
     )
 
-    visitas = Visita.objects.filter(
-        Q(fecha__gte=hoy)
-        | Q(
-            fecha_hora_ingreso__isnull=False,
-            fecha_hora_salida__isnull=True,
-        ),
+    visitas_hoy = Visita.objects.filter(
         estado="autorizada",
+        fecha=hoy,
+        fecha_hora_ingreso__isnull=True,
     ).select_related(
         "lote"
-    ).distinct()
+    ).order_by(
+        "apellido",
+        "nombre",
+    )
+
+    proximas_visitas = Visita.objects.filter(
+        estado="autorizada",
+        fecha__gt=hoy,
+        fecha_hora_ingreso__isnull=True,
+    ).select_related(
+        "lote"
+    ).order_by(
+        "fecha",
+        "apellido",
+        "nombre",
+    )
 
     if busqueda:
-        visitas = visitas.filter(
+        filtro = (
             Q(dni__icontains=busqueda)
             | Q(patente__icontains=busqueda)
             | Q(apellido__icontains=busqueda)
         )
 
-    visitas = visitas.order_by(
-        "fecha",
-        "apellido",
-        "nombre",
-    )[:100]
+        personas_dentro = personas_dentro.filter(filtro)
+        visitas_hoy = visitas_hoy.filter(filtro)
+        proximas_visitas = proximas_visitas.filter(filtro)
+
+    proximas_visitas = proximas_visitas[:100]
 
     return render(
         request,
         "core/seguridad_visitas.html",
         {
-            "visitas": visitas,
             "personas_dentro": personas_dentro,
+            "visitas_hoy": visitas_hoy,
+            "proximas_visitas": proximas_visitas,
             "busqueda": busqueda,
             "hoy": hoy,
         }
@@ -1534,6 +1548,41 @@ def historial_seguridad(request):
             "busqueda": busqueda,
             "fecha_desde": fecha_desde,
             "fecha_hasta": fecha_hasta,
+        }
+    )
+
+
+# -------------------------------------------------
+# SEGURIDAD / PORTERÍA - VISITA ESPONTÁNEA
+# -------------------------------------------------
+
+def visita_espontanea(request):
+    if not request.user.is_authenticated:
+        return redirect("home")
+
+    if not request.user.is_staff:
+        return redirect("portal")
+
+    if request.method == "POST":
+        form = VisitaEspontaneaForm(request.POST)
+
+        if form.is_valid():
+            visita = form.save(commit=False)
+            visita.fecha = timezone.localdate()
+            visita.estado = "autorizada"
+            visita.fecha_hora_ingreso = timezone.now()
+            visita.save()
+
+            return redirect("seguridad_visitas")
+
+    else:
+        form = VisitaEspontaneaForm()
+
+    return render(
+        request,
+        "core/visita_espontanea.html",
+        {
+            "form": form,
         }
     )
 

@@ -37,6 +37,7 @@ urlpatterns = [
     # SEGURIDAD / PORTERÍA
     path("seguridad/visitas/", views.seguridad_visitas, name="seguridad_visitas"),
     path("seguridad/historial/", views.historial_seguridad, name="historial_seguridad"),
+    path("seguridad/visita-espontanea/", views.visita_espontanea, name="visita_espontanea"),
     path("seguridad/visitas/<int:visita_id>/ingreso/", views.registrar_ingreso, name="registrar_ingreso"),
     path("seguridad/visitas/<int:visita_id>/salida/", views.registrar_salida, name="registrar_salida"),
 
