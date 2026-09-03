@@ -2,881 +2,438 @@
 
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Comunidad360 - Mi Portal</title>
 
-    <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
-        rel="stylesheet"
-    >
-
-    <link
-        rel="stylesheet"
-        href="{% static 'core/css/styles.css' %}"
-    >
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'core/css/styles.css' %}">
 </head>
 
 <body>
-
 <div class="container py-4">
 
     <!-- ENCABEZADO -->
-
     <div class="card shadow-sm border-0 mb-4">
         <div class="card-body">
-
             <div class="d-flex justify-content-between align-items-center">
-
                 <div>
-                    <h1 class="text-success mb-1">
-                        🏡 Comunidad360
-                    </h1>
-
-                    <div class="text-secondary">
-                        Las Acacias Hudson
-                    </div>
+                    <h1 class="text-success mb-1">🏡 Comunidad360</h1>
+                    <div class="text-secondary">Las Acacias Hudson</div>
                 </div>
 
                 <div class="text-end">
-
-                    <div class="fw-bold">
-                        Lote {{ lote.numero }}
-                    </div>
-
-                    <a
-                        href="{% url 'logout' %}"
-                        class="btn btn-outline-secondary btn-sm mt-2"
-                    >
+                    <div class="fw-bold">Lote {{ lote.numero }}</div>
+                    <a href="{% url 'logout' %}" class="btn btn-outline-secondary btn-sm mt-2">
                         Cerrar sesión
                     </a>
-
                 </div>
-
             </div>
-
         </div>
     </div>
-
 
     <!-- BIENVENIDA -->
-
     <div class="card shadow-sm border-0 mb-4">
-
         <div class="card-body text-center py-4">
-
-            <h2 class="text-success">
-                Buen día, familia {{ lote.apellido_familia }} 👋
-            </h2>
-
-            <p class="text-secondary mb-0">
-                Bienvenidos al portal de Las Acacias Hudson.
-            </p>
-
+            <h2 class="text-success">Buen día, familia {{ lote.apellido_familia }} 👋</h2>
+            <p class="text-secondary mb-0">Bienvenidos al portal de Las Acacias Hudson.</p>
         </div>
-
     </div>
 
-
     <!-- AVISO DE ENCOMIENDAS -->
-
     {% if cantidad_encomiendas_pendientes > 0 %}
-
         <div class="alert alert-warning shadow-sm mb-4">
-
             <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
-
                 <div>
-
                     <h5 class="mb-1">
-                        📦 Tenés
-                        {{ cantidad_encomiendas_pendientes }}
-
+                        📦 Tenés {{ cantidad_encomiendas_pendientes }}
                         {% if cantidad_encomiendas_pendientes == 1 %}
                             encomienda pendiente de retiro
                         {% else %}
                             encomiendas pendientes de retiro
                         {% endif %}
                     </h5>
-
-                    <div>
-                        Hay paquetes esperando para tu lote.
-                    </div>
-
+                    <div>Hay paquetes esperando para tu lote.</div>
                 </div>
 
-                <a
-                    href="{% url 'mis_encomiendas' %}"
-                    class="btn btn-warning"
-                >
+                <a href="{% url 'mis_encomiendas' %}" class="btn btn-warning">
                     Ver encomiendas
                 </a>
-
             </div>
-
         </div>
-
     {% endif %}
 
-
     <!-- ACCESOS PRINCIPALES -->
-
     <div class="row g-4 mb-4">
 
-
         <!-- NOTICIAS -->
-
         <div class="col-md-6">
-
             <div class="card h-100 shadow-sm border-0">
-
                 <div class="card-body p-4">
-
                     <div class="text-center mb-3">
-
-                        <div class="fs-1">
-                            📰
-                        </div>
-
-                        <h3 class="mt-2">
-                            Noticias
-                        </h3>
-
+                        <div class="fs-1">📰</div>
+                        <h3 class="mt-2">Noticias</h3>
                         <p class="text-secondary">
-                            Enterate de las novedades y comunicados
-                            importantes del barrio.
+                            Enterate de las novedades y comunicados importantes del barrio.
                         </p>
-
                     </div>
 
-
                     {% for noticia in noticias %}
-
                         <div class="border rounded p-3 mb-3">
-
                             {% if noticia.imagen %}
-
                                 <img
                                     src="{{ noticia.imagen.url }}"
                                     alt="{{ noticia.titulo }}"
                                     class="img-fluid rounded mb-3"
                                     style="width: 100%; height: 160px; object-fit: cover;"
                                 >
-
                             {% endif %}
 
-
                             <div class="d-flex justify-content-between align-items-start">
-
-                                <h5 class="mb-1">
-                                    {{ noticia.titulo }}
-                                </h5>
+                                <h5 class="mb-1">{{ noticia.titulo }}</h5>
 
                                 {% if noticia.destacada %}
-
-                                    <span class="badge text-bg-warning">
-                                        Destacada
-                                    </span>
-
+                                    <span class="badge text-bg-warning">Destacada</span>
                                 {% endif %}
-
                             </div>
 
-
-                            <p class="mb-2">
-                                {{ noticia.contenido|truncatechars:120 }}
-                            </p>
-
+                            <p class="mb-2">{{ noticia.contenido|truncatechars:120 }}</p>
                             <small class="text-secondary">
                                 {{ noticia.fecha_publicacion|date:"d/m/Y H:i" }}
                             </small>
-
                         </div>
-
                     {% empty %}
-
-                        <div class="alert alert-light border">
-                            No hay noticias publicadas.
-                        </div>
-
+                        <div class="alert alert-light border">No hay noticias publicadas.</div>
                     {% endfor %}
 
-
                     <div class="text-center mt-3">
-
-                        <a
-                            href="{% url 'noticias' %}"
-                            class="btn btn-outline-success"
-                        >
+                        <a href="{% url 'noticias' %}" class="btn btn-outline-success">
                             Ver todas las noticias
                         </a>
-
                     </div>
-
                 </div>
-
             </div>
-
         </div>
 
-
         <!-- RESERVA SUM -->
-
         <div class="col-md-6">
-
             <div class="card h-100 shadow-sm border-0">
-
                 <div class="card-body p-4">
-
                     <div class="text-center mb-4">
-
-                        <div class="fs-1">
-                            📅
-                        </div>
-
-                        <h3 class="mt-2">
-                            Reservar SUM
-                        </h3>
-
+                        <div class="fs-1">📅</div>
+                        <h3 class="mt-2">Reservar SUM</h3>
                         <p class="text-secondary">
-                            Consultá la disponibilidad y reservá
-                            el salón de usos múltiples.
+                            Consultá la disponibilidad y reservá el salón de usos múltiples.
                         </p>
-
-                        <a
-                            href="{% url 'disponibilidad_sum' %}"
-                            class="btn btn-success"
-                        >
+                        <a href="{% url 'disponibilidad_sum' %}" class="btn btn-success">
                             Consultar disponibilidad
                         </a>
-
                     </div>
 
                     <hr>
-
-                    <h5 class="text-success mb-3">
-                        Mis reservas
-                    </h5>
-
+                    <h5 class="text-success mb-3">Mis reservas</h5>
 
                     {% for reserva in proximas_reservas %}
-
                         <div class="border rounded p-3 mb-3">
-
                             <div class="d-flex justify-content-between align-items-start">
-
                                 <div>
-
-                                    <strong>
-                                        {{ reserva.fecha|date:"d/m/Y" }}
-                                    </strong>
-
-                                    <div class="text-secondary small">
-                                        {{ reserva.get_turno_display }}
-                                    </div>
-
+                                    <strong>{{ reserva.fecha|date:"d/m/Y" }}</strong>
+                                    <div class="text-secondary small">{{ reserva.get_turno_display }}</div>
                                 </div>
 
-
                                 <div>
-
                                     {% if reserva.estado == "pendiente" %}
-
-                                        <span class="badge text-bg-warning">
-                                            Pendiente
-                                        </span>
-
+                                        <span class="badge text-bg-warning">Pendiente</span>
                                     {% elif reserva.estado == "confirmada" %}
-
-                                        <span class="badge text-bg-success">
-                                            Confirmada
-                                        </span>
-
+                                        <span class="badge text-bg-success">Confirmada</span>
                                     {% elif reserva.estado == "cancelada" %}
-
-                                        <span class="badge text-bg-danger">
-                                            Cancelada
-                                        </span>
-
+                                        <span class="badge text-bg-danger">Cancelada</span>
                                     {% endif %}
-
                                 </div>
-
                             </div>
-
 
                             <div class="small text-secondary mt-2">
                                 {{ reserva.cantidad_personas }} personas
                             </div>
 
-
                             {% if reserva.estado != "cancelada" %}
-
                                 {% if reserva.puede_cancelar %}
-
                                     <form
                                         method="POST"
                                         action="{% url 'cancelar_reserva_sum' reserva.id %}"
                                         class="mt-3"
                                     >
-
                                         {% csrf_token %}
-
-                                        <button
-                                            type="submit"
-                                            class="btn btn-outline-danger btn-sm"
-                                        >
+                                        <button type="submit" class="btn btn-outline-danger btn-sm">
                                             Cancelar reserva
                                         </button>
-
                                     </form>
-
                                 {% else %}
-
                                     <div class="small text-secondary mt-3">
                                         Cancelación no disponible.
                                         Solo puede cancelarse hasta 7 días antes del evento.
                                     </div>
-
                                 {% endif %}
-
                             {% endif %}
-
                         </div>
-
                     {% empty %}
-
                         <div class="alert alert-light border">
                             Todavía no tenés reservas del SUM.
                         </div>
-
                     {% endfor %}
 
-
                     <div class="text-center mt-3">
-
-                        <a
-                            href="{% url 'mis_reservas_sum' %}"
-                            class="btn btn-outline-success"
-                        >
+                        <a href="{% url 'mis_reservas_sum' %}" class="btn btn-outline-success">
                             Ver todas mis reservas
                         </a>
-
                     </div>
-
                 </div>
-
             </div>
-
         </div>
 
-
         <!-- CUMPLEAÑOS -->
-
         <div class="col-md-6">
-
             <div class="card h-100 shadow-sm border-0">
-
                 <div class="card-body p-4">
-
                     <div class="text-center mb-4">
-
-                        <div class="fs-1">
-                            🎂
-                        </div>
-
-                        <h3 class="mt-2">
-                            Cumpleaños de este mes
-                        </h3>
-
+                        <div class="fs-1">🎂</div>
+                        <h3 class="mt-2">Cumpleaños de este mes</h3>
                         <p class="text-secondary">
                             Cumpleaños de los vecinos durante el mes en curso.
                         </p>
-
                     </div>
 
-
                     {% for integrante in cumpleanios_mes %}
-
                         <div class="border rounded p-3 mb-2">
-
                             <div class="d-flex justify-content-between align-items-center">
-
                                 <div>
-
-                                    <strong>
-                                        {{ integrante.apellido }}, {{ integrante.nombre }}
-                                    </strong>
-
+                                    <strong>{{ integrante.apellido }}, {{ integrante.nombre }}</strong>
                                     <div class="text-secondary small">
                                         🎂 {{ integrante.fecha_nacimiento|date:"d/m" }}
                                     </div>
-
                                 </div>
-
 
                                 <div>
-
                                     {% now "m-d" as hoy_mes_dia %}
                                     {% with cumple=integrante.fecha_nacimiento|date:"m-d" %}
-
                                         {% if cumple == hoy_mes_dia %}
-
-                                            <span class="badge text-bg-success">
-                                                🎉 Hoy
-                                            </span>
-
+                                            <span class="badge text-bg-success">🎉 Hoy</span>
                                         {% endif %}
-
                                     {% endwith %}
-
                                 </div>
-
                             </div>
-
                         </div>
-
                     {% empty %}
-
                         <div class="alert alert-light border">
                             No hay cumpleaños registrados este mes.
                         </div>
-
                     {% endfor %}
 
-
                     <div class="text-center mt-4">
-
-                        <a
-                            href="{% url 'cumpleanios' %}"
-                            class="btn btn-outline-success"
-                        >
+                        <a href="{% url 'cumpleanios' %}" class="btn btn-outline-success">
                             Ver próximos cumpleaños
                         </a>
-
                     </div>
-
                 </div>
-
             </div>
-
         </div>
-
 
         <!-- MI FAMILIA -->
-
         <div class="col-md-6">
-
             <div class="card h-100 shadow-sm border-0">
-
                 <div class="card-body text-center p-4">
-
-                    <div class="fs-1">
-                        👨‍👩‍👧‍👦
-                    </div>
-
-                    <h3 class="mt-2">
-                        Mi familia
-                    </h3>
-
+                    <div class="fs-1">👨‍👩‍👧‍👦</div>
+                    <h3 class="mt-2">Mi familia</h3>
                     <p class="text-secondary">
-                        Consultá los integrantes registrados
-                        en tu lote.
+                        Consultá los integrantes registrados en tu lote.
                     </p>
-
-                    <a
-                        href="{% url 'mi_familia' %}"
-                        class="btn btn-success"
-                    >
+                    <a href="{% url 'mi_familia' %}" class="btn btn-success">
                         Ver mi familia
                     </a>
-
                 </div>
-
             </div>
-
         </div>
-
 
         <!-- RECLAMOS -->
-
         <div class="col-md-6">
-
             <div class="card h-100 shadow-sm border-0">
-
                 <div class="card-body text-center p-4">
-
-                    <div class="fs-1">
-                        📢
-                    </div>
-
-                    <h3 class="mt-2">
-                        Reclamos
-                    </h3>
-
+                    <div class="fs-1">📢</div>
+                    <h3 class="mt-2">Reclamos</h3>
                     <p class="text-secondary">
-                        Informá inconvenientes del barrio y consultá
-                        el estado de tus reclamos.
+                        Informá inconvenientes del barrio y consultá el estado de tus reclamos.
                     </p>
 
-
                     <div class="d-grid gap-2">
-
-                        <a
-                            href="{% url 'nuevo_reclamo' %}"
-                            class="btn btn-success"
-                        >
+                        <a href="{% url 'nuevo_reclamo' %}" class="btn btn-success">
                             Nuevo reclamo
                         </a>
-
-                        <a
-                            href="{% url 'mis_reclamos' %}"
-                            class="btn btn-outline-success"
-                        >
+                        <a href="{% url 'mis_reclamos' %}" class="btn btn-outline-success">
                             Mis reclamos
                         </a>
-
                     </div>
-
                 </div>
-
             </div>
-
         </div>
 
-
         <!-- ENCOMIENDAS -->
-
         <div class="col-md-6">
-
             <div class="card h-100 shadow-sm border-0">
-
                 <div class="card-body p-4">
-
                     <div class="text-center">
-
-                        <div class="fs-1">
-                            📦
-                        </div>
-
-                        <h3 class="mt-2">
-                            Encomiendas
-                        </h3>
-
+                        <div class="fs-1">📦</div>
+                        <h3 class="mt-2">Encomiendas</h3>
 
                         {% if cantidad_encomiendas_pendientes > 0 %}
-
                             <div class="alert alert-warning mt-3">
-
                                 <strong>
-                                    Tenés
-                                    {{ cantidad_encomiendas_pendientes }}
-
+                                    Tenés {{ cantidad_encomiendas_pendientes }}
                                     {% if cantidad_encomiendas_pendientes == 1 %}
                                         encomienda pendiente
                                     {% else %}
                                         encomiendas pendientes
                                     {% endif %}
-
                                     de retiro.
                                 </strong>
-
                             </div>
 
-
                             {% for encomienda in ultimas_encomiendas_pendientes %}
-
                                 <div class="border rounded p-3 mb-2 text-start">
-
                                     <div class="d-flex justify-content-between align-items-start">
-
                                         <div>
-
-                                            <strong>
-                                                {{ encomienda.remitente }}
-                                            </strong>
-
+                                            <strong>{{ encomienda.remitente }}</strong>
                                             {% if encomienda.descripcion %}
-
                                                 <div class="text-secondary small">
                                                     {{ encomienda.descripcion }}
                                                 </div>
-
                                             {% endif %}
-
                                         </div>
-
-
-                                        <span class="badge text-bg-warning">
-                                            Pendiente
-                                        </span>
-
+                                        <span class="badge text-bg-warning">Pendiente</span>
                                     </div>
-
 
                                     <div class="small text-secondary mt-2">
-                                        Recibida:
-                                        {{ encomienda.fecha_recepcion|date:"d/m/Y H:i" }}
+                                        Recibida: {{ encomienda.fecha_recepcion|date:"d/m/Y H:i" }}
                                     </div>
-
                                 </div>
-
                             {% endfor %}
-
                         {% else %}
-
                             <p class="text-secondary mt-3">
                                 No tenés encomiendas pendientes de retiro.
                             </p>
-
                         {% endif %}
 
-
-                        <a
-                            href="{% url 'mis_encomiendas' %}"
-                            class="btn btn-success mt-3"
-                        >
+                        <a href="{% url 'mis_encomiendas' %}" class="btn btn-success mt-3">
                             Ver mis encomiendas
                         </a>
-
                     </div>
-
                 </div>
-
             </div>
-
         </div>
 
-
         <!-- DOCUMENTOS -->
-
         <div class="col-md-6">
-
             <div class="card h-100 shadow-sm border-0">
-
                 <div class="card-body text-center p-4">
-
-                    <div class="fs-1">
-                        📄
-                    </div>
-
-                    <h3 class="mt-2">
-                        Documentos
-                    </h3>
-
+                    <div class="fs-1">📄</div>
+                    <h3 class="mt-2">Documentos</h3>
                     <p class="text-secondary">
-                        Consultá reglamentos, expensas, seguridad
-                        y documentación importante del barrio.
+                        Consultá reglamentos, expensas, seguridad y documentación importante del barrio.
                     </p>
-
-                    <a
-                        href="{% url 'documentos' %}"
-                        class="btn btn-success"
-                    >
+                    <a href="{% url 'documentos' %}" class="btn btn-success">
                         Ver documentos
                     </a>
-
                 </div>
-
             </div>
-
         </div>
 
         <!-- VISITAS -->
-
         <div class="col-md-6">
-
             <div class="card h-100 shadow-sm border-0">
-
                 <div class="card-body text-center p-4">
-
-                    <div class="fs-1">
-                        🚗
-                    </div>
-
-                    <h3 class="mt-2">
-                        Visitas
-                    </h3>
-
+                    <div class="fs-1">🚗</div>
+                    <h3 class="mt-2">Visitas</h3>
                     <p class="text-secondary">
-                        Autorizá ingresos, consultá tu agenda y administrá
-                        las visitas de tu lote.
+                        Autorizá ingresos, consultá tu agenda y administrá las visitas de tu lote.
                     </p>
 
                     <div class="d-grid gap-2">
-
-                        <a
-                            href="{% url 'autorizar_visita' %}"
-                            class="btn btn-success"
-                        >
+                        <a href="{% url 'autorizar_visita' %}" class="btn btn-success">
                             Autorizar visita
                         </a>
-
-                        <a
-                            href="{% url 'agenda_visitas' %}"
-                            class="btn btn-outline-success"
-                        >
+                        <a href="{% url 'agenda_visitas' %}" class="btn btn-outline-success">
                             Agenda
                         </a>
-
-                        <a
-                            href="{% url 'historial_visitas' %}"
-                            class="btn btn-outline-success"
-                        >
+                        <a href="{% url 'historial_visitas' %}" class="btn btn-outline-success">
                             Historial
                         </a>
-
-                        <a
-                            href="{% url 'carga_masiva_visitas' %}"
-                            class="btn btn-outline-success"
-                        >
+                        <a href="{% url 'carga_masiva_visitas' %}" class="btn btn-outline-success">
                             Carga masiva
                         </a>
-
                     </div>
 
                     <div class="mt-3">
-
-                        <a
-                            href="{% url 'invitados_frecuentes' %}"
-                            class="text-success text-decoration-none"
-                        >
+                        <a href="{% url 'invitados_frecuentes' %}" class="text-success text-decoration-none">
                             ⭐ Invitados frecuentes
                         </a>
-
                     </div>
-
                 </div>
-
             </div>
-
         </div>
-
 
         <!-- CONTACTOS ÚTILES -->
-
         <div class="col-md-6">
-
             <div class="card h-100 shadow-sm border-0">
-
                 <div class="card-body text-center p-4">
-
-                    <div class="fs-1">
-                        📞
-                    </div>
-
-                    <h3 class="mt-2">
-                        Contactos útiles
-                    </h3>
-
+                    <div class="fs-1">📞</div>
+                    <h3 class="mt-2">Contactos útiles</h3>
                     <p class="text-secondary">
-                        Accedé rápidamente a teléfonos de seguridad,
-                        emergencias, administración y servicios del barrio.
+                        Accedé rápidamente a teléfonos de seguridad, emergencias,
+                        administración y servicios del barrio.
                     </p>
-
-                    <a
-                        href="{% url 'contactos_utiles' %}"
-                        class="btn btn-success"
-                    >
+                    <a href="{% url 'contactos_utiles' %}" class="btn btn-success">
                         Ver contactos
                     </a>
-
                 </div>
-
             </div>
-
         </div>
 
-
     </div>
 
-
     <!-- INFORMACIÓN DEL LOTE -->
-    </div>
-
-
-    <!-- INFORMACIÓN DEL LOTE -->
-
     <div class="card shadow-sm border-0">
-
         <div class="card-body p-4">
-
-            <h4 class="text-success">
-                🏡 Información de mi lote
-            </h4>
+            <h4 class="text-success">🏡 Información de mi lote</h4>
 
             <div class="row mt-3">
-
-
                 <div class="col-md-4 mb-3">
-
-                    <strong>
-                        Lote
-                    </strong>
-
-                    <div>
-                        {{ lote.numero }}
-                    </div>
-
+                    <strong>Lote</strong>
+                    <div>{{ lote.numero }}</div>
                 </div>
 
-
                 <div class="col-md-4 mb-3">
-
-                    <strong>
-                        Familia
-                    </strong>
-
-                    <div>
-                        {{ lote.apellido_familia }}
-                    </div>
-
+                    <strong>Familia</strong>
+                    <div>{{ lote.apellido_familia }}</div>
                 </div>
 
-
                 <div class="col-md-4 mb-3">
-
-                    <strong>
-                        Estado
-                    </strong>
-
+                    <strong>Estado</strong>
                     <div>
-
                         {% if lote.activo %}
-
-                            <span class="text-success">
-                                ● Activo
-                            </span>
-
+                            <span class="text-success">● Activo</span>
                         {% else %}
-
-                            <span class="text-danger">
-                                ● Inactivo
-                            </span>
-
+                            <span class="text-danger">● Inactivo</span>
                         {% endif %}
-
                     </div>
-
                 </div>
-
-
             </div>
-
         </div>
-
     </div>
-
 
     <div class="text-center text-secondary small mt-4">
         Comunidad360 · Las Acacias Hudson
     </div>
 
 </div>
-
 </body>
-
 </html>
