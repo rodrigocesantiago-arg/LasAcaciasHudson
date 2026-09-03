@@ -1435,11 +1435,15 @@ def seguridad_visitas(request):
     busqueda = request.GET.get("q", "").strip()
 
     visitas = Visita.objects.filter(
+        Q(fecha__gte=hoy)
+        | Q(
+            fecha_hora_ingreso__isnull=False,
+            fecha_hora_salida__isnull=True,
+        ),
         estado="autorizada",
-        fecha__gte=hoy,
     ).select_related(
         "lote"
-    )
+    ).distinct()
 
     if busqueda:
         visitas = visitas.filter(
