@@ -5,98 +5,406 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portería - Comunidad360</title>
+    <title>Portería - Las Acacias</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'core/css/styles.css' %}">
+
+    <style>
+        :root{
+            --green:#2f6b3c;
+            --green-dark:#174d2b;
+            --green-soft:#edf5ee;
+            --text:#1f2923;
+            --muted:#68736c;
+            --line:#e4e9e5;
+            --page:#f5f7f5;
+            --white:#fff;
+        }
+
+        body{
+            background:var(--page);
+            color:var(--text);
+            font-family:"Segoe UI", Inter, Arial, sans-serif;
+        }
+
+        .shell{
+            max-width:1480px;
+            margin:0 auto;
+            padding:18px;
+        }
+
+        .topbar{
+            background:#fff;
+            border:1px solid var(--line);
+            border-radius:20px;
+            box-shadow:0 8px 24px rgba(29,57,36,.06);
+            padding:14px 18px;
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            gap:16px;
+            flex-wrap:wrap;
+            margin-bottom:18px;
+        }
+
+        .brand-wrap{
+            display:flex;
+            align-items:center;
+            gap:14px;
+        }
+
+        .brand-logo{
+            width:64px;
+            height:54px;
+            object-fit:contain;
+        }
+
+        .brand-title{
+            margin:0;
+            color:var(--green-dark);
+            font-size:1.45rem;
+            font-weight:800;
+            line-height:1.05;
+        }
+
+        .brand-sub{
+            color:var(--muted);
+            font-size:.88rem;
+            margin-top:4px;
+        }
+
+        .date-pill{
+            background:var(--green-soft);
+            color:var(--green-dark);
+            border-radius:999px;
+            padding:8px 12px;
+            font-weight:700;
+            font-size:.9rem;
+        }
+
+        .hero{
+            border-radius:22px;
+            overflow:hidden;
+            min-height:280px;
+            background:
+                linear-gradient(90deg, rgba(9,33,19,.83) 0%, rgba(9,33,19,.58) 38%, rgba(9,33,19,.12) 72%),
+                url("{% static 'core/img/las_acacias_portada.png' %}") center/cover no-repeat;
+            display:flex;
+            align-items:center;
+            padding:34px;
+            margin-bottom:18px;
+            box-shadow:0 10px 28px rgba(26,54,34,.10);
+        }
+
+        .hero-panel{
+            max-width:570px;
+            color:#fff;
+        }
+
+        .hero-kicker{
+            font-size:.88rem;
+            font-weight:800;
+            letter-spacing:.08em;
+            text-transform:uppercase;
+            opacity:.88;
+            margin-bottom:8px;
+        }
+
+        .hero h1{
+            margin:0 0 8px;
+            font-weight:800;
+            font-size:clamp(2rem,4vw,3.25rem);
+        }
+
+        .hero p{
+            margin:0;
+            max-width:500px;
+            color:rgba(255,255,255,.88);
+            font-size:1rem;
+        }
+
+        .section-title{
+            margin:18px 2px 10px;
+            display:flex;
+            align-items:end;
+            justify-content:space-between;
+            gap:12px;
+            flex-wrap:wrap;
+        }
+
+        .section-title h2{
+            margin:0;
+            font-size:1.15rem;
+            color:var(--green-dark);
+            font-weight:800;
+        }
+
+        .section-title p{
+            margin:3px 0 0;
+            color:var(--muted);
+            font-size:.86rem;
+        }
+
+        .metric-card,
+        .sum-card,
+        .action-card{
+            background:#fff;
+            border:1px solid var(--line);
+            border-radius:18px;
+            box-shadow:0 6px 18px rgba(28,55,35,.045);
+        }
+
+        .metric-card{
+            height:100%;
+            padding:16px;
+            display:flex;
+            align-items:center;
+            gap:14px;
+        }
+
+        .metric-icon{
+            width:50px;
+            height:50px;
+            border-radius:14px;
+            display:grid;
+            place-items:center;
+            background:var(--green-soft);
+            font-size:1.6rem;
+            flex:0 0 auto;
+        }
+
+        .metric-number{
+            font-size:1.7rem;
+            line-height:1;
+            font-weight:800;
+            color:var(--green-dark);
+            margin-bottom:4px;
+        }
+
+        .metric-label{
+            color:var(--muted);
+            font-size:.84rem;
+        }
+
+        .sum-card{
+            overflow:hidden;
+        }
+
+        .sum-head{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:10px;
+            flex-wrap:wrap;
+            padding:18px 20px 14px;
+            border-bottom:1px solid var(--line);
+        }
+
+        .sum-body{
+            padding:18px 20px;
+        }
+
+        .status-badge{
+            border-radius:999px;
+            padding:7px 12px;
+            font-weight:800;
+            font-size:.82rem;
+        }
+
+        .sum-reserva{
+            border:1px solid var(--line);
+            border-radius:14px;
+            padding:14px;
+            background:#fbfcfb;
+        }
+
+        .actions-grid .col-md-6{
+            display:flex;
+        }
+
+        .action-card{
+            width:100%;
+            padding:18px;
+            display:flex;
+            align-items:center;
+            gap:16px;
+        }
+
+        .action-icon{
+            width:56px;
+            height:56px;
+            border-radius:15px;
+            background:var(--green-soft);
+            display:grid;
+            place-items:center;
+            font-size:1.8rem;
+            flex:0 0 auto;
+        }
+
+        .action-content{
+            flex:1;
+            min-width:0;
+        }
+
+        .action-content h3{
+            margin:0 0 5px;
+            color:var(--green-dark);
+            font-size:1.04rem;
+            font-weight:800;
+        }
+
+        .action-content p{
+            margin:0 0 10px;
+            color:var(--muted);
+            font-size:.84rem;
+            line-height:1.4;
+        }
+
+        .btn-oa{
+            background:var(--green);
+            border-color:var(--green);
+            color:#fff;
+            font-weight:700;
+        }
+
+        .btn-oa:hover{
+            background:var(--green-dark);
+            border-color:var(--green-dark);
+            color:#fff;
+        }
+
+        .btn-outline-oa{
+            border-color:var(--green);
+            color:var(--green-dark);
+            font-weight:700;
+        }
+
+        .btn-outline-oa:hover{
+            background:var(--green);
+            border-color:var(--green);
+            color:#fff;
+        }
+
+        @media(max-width:767px){
+            .shell{padding:10px}
+            .hero{min-height:245px;padding:24px}
+            .topbar{padding:12px}
+            .brand-logo{width:54px;height:46px}
+            .action-card{align-items:flex-start}
+        }
+    </style>
 </head>
 
 <body>
-<div class="container py-4">
+<div class="shell">
 
     <!-- ENCABEZADO -->
-    <div class="card shadow-sm border-0 mb-4">
-        <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
-                <div>
-                    <h1 class="text-success mb-1">🛡️ Comunidad360 · Portería</h1>
-                    <div class="text-secondary">
-                        Las Acacias Hudson · {{ hoy|date:"d/m/Y" }}
-                    </div>
-                </div>
-
-                <a href="{% url 'logout' %}" class="btn btn-outline-secondary">
-                    Cerrar sesión
-                </a>
+    <div class="topbar">
+        <div class="brand-wrap">
+            <img src="{% static 'core/img/las_acacias_logo.png' %}" alt="Las Acacias" class="brand-logo">
+            <div>
+                <h1 class="brand-title">Las Acacias</h1>
+                <div class="brand-sub">Comunidad360 · Dashboard de Portería</div>
             </div>
         </div>
+
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+            <div class="date-pill">{{ hoy|date:"d/m/Y" }}</div>
+            <a href="{% url 'logout' %}" class="btn btn-outline-secondary btn-sm">
+                Cerrar sesión
+            </a>
+        </div>
     </div>
+
+    <!-- HERO -->
+    <section class="hero">
+        <div class="hero-panel">
+            <div class="hero-kicker">🛡️ Control operativo</div>
+            <h1>Portería Las Acacias</h1>
+            <p>
+                Acceso rápido al estado actual del barrio, visitas,
+                encomiendas y movimientos registrados.
+            </p>
+        </div>
+    </section>
 
     <!-- RESUMEN OPERATIVO -->
-    <div class="row g-3 mb-4">
+    <div class="section-title">
+        <div>
+            <h2>Estado actual</h2>
+            <p>Indicadores principales para la operación de hoy.</p>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-3">
         <div class="col-6 col-lg-3">
-            <div class="card h-100 shadow-sm border-0">
-                <div class="card-body text-center">
-                    <div class="fs-2">🟢</div>
-                    <div class="display-6 fw-bold text-success">{{ personas_dentro }}</div>
-                    <div class="text-secondary">Personas dentro</div>
+            <div class="metric-card">
+                <div class="metric-icon">🟢</div>
+                <div>
+                    <div class="metric-number">{{ personas_dentro }}</div>
+                    <div class="metric-label">Personas dentro</div>
                 </div>
             </div>
         </div>
 
         <div class="col-6 col-lg-3">
-            <div class="card h-100 shadow-sm border-0">
-                <div class="card-body text-center">
-                    <div class="fs-2">🚗</div>
-                    <div class="display-6 fw-bold">{{ visitas_hoy_pendientes }}</div>
-                    <div class="text-secondary">Visitas pendientes hoy</div>
+            <div class="metric-card">
+                <div class="metric-icon">🚗</div>
+                <div>
+                    <div class="metric-number">{{ visitas_hoy_pendientes }}</div>
+                    <div class="metric-label">Visitas pendientes hoy</div>
                 </div>
             </div>
         </div>
 
         <div class="col-6 col-lg-3">
-            <div class="card h-100 shadow-sm border-0">
-                <div class="card-body text-center">
-                    <div class="fs-2">📅</div>
-                    <div class="display-6 fw-bold">{{ proximas_visitas }}</div>
-                    <div class="text-secondary">Próximas visitas</div>
+            <div class="metric-card">
+                <div class="metric-icon">📅</div>
+                <div>
+                    <div class="metric-number">{{ proximas_visitas }}</div>
+                    <div class="metric-label">Próximas visitas</div>
                 </div>
             </div>
         </div>
 
         <div class="col-6 col-lg-3">
-            <div class="card h-100 shadow-sm border-0">
-                <div class="card-body text-center">
-                    <div class="fs-2">📦</div>
-                    <div class="display-6 fw-bold">{{ encomiendas_pendientes }}</div>
-                    <div class="text-secondary">Encomiendas pendientes</div>
+            <div class="metric-card">
+                <div class="metric-icon">📦</div>
+                <div>
+                    <div class="metric-number">{{ encomiendas_pendientes }}</div>
+                    <div class="metric-label">Encomiendas pendientes</div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- ESTADO DEL SUM -->
-    <div class="card shadow-sm border-0 mb-4">
-        <div class="card-body p-4">
-            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
-                <div>
-                    <h3 class="mb-1">🏠 SUM hoy</h3>
-                    <div class="text-secondary">{{ hoy|date:"d/m/Y" }}</div>
-                </div>
+    <!-- SUM -->
+    <div class="section-title">
+        <div>
+            <h2>SUM hoy</h2>
+            <p>Estado de reservas para {{ hoy|date:"d/m/Y" }}.</p>
+        </div>
+    </div>
 
-                {% if reservas_sum_hoy %}
-                    <span class="badge text-bg-warning fs-6">Reservado</span>
-                {% else %}
-                    <span class="badge text-bg-success fs-6">Libre</span>
-                {% endif %}
-            </div>
+    <div class="sum-card mb-3">
+        <div class="sum-head">
+            <div class="fw-bold text-success-emphasis">🏠 Salón de Usos Múltiples</div>
 
+            {% if reservas_sum_hoy %}
+                <span class="status-badge bg-warning-subtle text-warning-emphasis">Reservado</span>
+            {% else %}
+                <span class="status-badge bg-success-subtle text-success-emphasis">Libre</span>
+            {% endif %}
+        </div>
+
+        <div class="sum-body">
             {% if reservas_sum_hoy %}
                 <div class="row g-3">
                     {% for reserva in reservas_sum_hoy %}
                         <div class="col-md-6">
-                            <div class="border rounded p-3 h-100">
-                                <div class="fw-bold fs-5">
+                            <div class="sum-reserva h-100">
+                                <div class="fw-bold fs-6 text-success-emphasis">
                                     {{ reserva.get_turno_display }}
                                 </div>
 
@@ -105,7 +413,7 @@
                                     · {{ reserva.lote.apellido_familia }}
                                 </div>
 
-                                <div class="text-secondary mt-1">
+                                <div class="text-secondary mt-1 small">
                                     Estado: {{ reserva.get_estado_display }}
                                 </div>
                             </div>
@@ -113,26 +421,34 @@
                     {% endfor %}
                 </div>
             {% else %}
-                <div class="text-success fw-semibold">
-                    El SUM no tiene reservas para hoy.
+                <div class="d-flex align-items-center gap-3">
+                    <div class="metric-icon">✅</div>
+                    <div>
+                        <div class="fw-bold text-success-emphasis">El SUM está libre hoy</div>
+                        <div class="text-secondary small">No hay reservas registradas para esta fecha.</div>
+                    </div>
                 </div>
             {% endif %}
         </div>
     </div>
 
     <!-- ACCIONES -->
-    <div class="row g-4">
+    <div class="section-title">
+        <div>
+            <h2>Acciones de Portería</h2>
+            <p>Accesos directos a las tareas operativas más frecuentes.</p>
+        </div>
+    </div>
+
+    <div class="row g-3 actions-grid">
 
         <div class="col-md-6">
-            <div class="card h-100 shadow-sm border-0">
-                <div class="card-body p-4 text-center">
-                    <div class="fs-1">🚗</div>
+            <div class="action-card">
+                <div class="action-icon">🚗</div>
+                <div class="action-content">
                     <h3>Control de visitas</h3>
-                    <p class="text-secondary">
-                        Consultá autorizaciones, registrá ingresos y salidas
-                        y verificá quién se encuentra dentro del barrio.
-                    </p>
-                    <a href="{% url 'seguridad_visitas' %}" class="btn btn-success w-100">
+                    <p>Consultá autorizaciones, registrá ingresos y salidas y verificá quién se encuentra dentro.</p>
+                    <a href="{% url 'seguridad_visitas' %}" class="btn btn-oa btn-sm">
                         Ir a visitas
                     </a>
                 </div>
@@ -140,15 +456,12 @@
         </div>
 
         <div class="col-md-6">
-            <div class="card h-100 shadow-sm border-0">
-                <div class="card-body p-4 text-center">
-                    <div class="fs-1">📦</div>
+            <div class="action-card">
+                <div class="action-icon">📦</div>
+                <div class="action-content">
                     <h3>Encomiendas</h3>
-                    <p class="text-secondary">
-                        Registrá paquetes recibidos y dejá asentado
-                        quién los retira.
-                    </p>
-                    <a href="{% url 'seguridad_encomiendas' %}" class="btn btn-success w-100">
+                    <p>Registrá paquetes recibidos y dejá asentado quién los retira.</p>
+                    <a href="{% url 'seguridad_encomiendas' %}" class="btn btn-oa btn-sm">
                         Ir a encomiendas
                     </a>
                 </div>
@@ -156,15 +469,12 @@
         </div>
 
         <div class="col-md-6">
-            <div class="card h-100 shadow-sm border-0">
-                <div class="card-body p-4 text-center">
-                    <div class="fs-1">🚶</div>
+            <div class="action-card">
+                <div class="action-icon">🚶</div>
+                <div class="action-content">
                     <h3>Visita espontánea</h3>
-                    <p class="text-secondary">
-                        Registrá rápidamente el ingreso de una persona
-                        que no fue autorizada previamente.
-                    </p>
-                    <a href="{% url 'visita_espontanea' %}" class="btn btn-outline-success w-100">
+                    <p>Registrá rápidamente el ingreso de una persona que no fue autorizada previamente.</p>
+                    <a href="{% url 'visita_espontanea' %}" class="btn btn-outline-oa btn-sm">
                         Registrar visita espontánea
                     </a>
                 </div>
@@ -172,15 +482,12 @@
         </div>
 
         <div class="col-md-6">
-            <div class="card h-100 shadow-sm border-0">
-                <div class="card-body p-4 text-center">
-                    <div class="fs-1">📋</div>
+            <div class="action-card">
+                <div class="action-icon">📋</div>
+                <div class="action-content">
                     <h3>Historial de movimientos</h3>
-                    <p class="text-secondary">
-                        Consultá ingresos y salidas registrados,
-                        con búsqueda y filtros por fecha.
-                    </p>
-                    <a href="{% url 'historial_seguridad' %}" class="btn btn-outline-success w-100">
+                    <p>Consultá ingresos y salidas registrados, con búsqueda y filtros por fecha.</p>
+                    <a href="{% url 'historial_seguridad' %}" class="btn btn-outline-oa btn-sm">
                         Ver historial
                     </a>
                 </div>
