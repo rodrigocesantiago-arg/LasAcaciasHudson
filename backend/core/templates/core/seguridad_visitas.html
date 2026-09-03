@@ -1,467 +1,167 @@
 {% load static %}
-
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Comunidad360 - Seguridad</title>
-
-    <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
-        rel="stylesheet"
-    >
-
-    <link
-        rel="stylesheet"
-        href="{% static 'core/css/styles.css' %}"
-    >
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'core/css/styles.css' %}">
 </head>
-
 <body>
-
 <div class="container py-4">
 
     <div class="card shadow-sm border-0 mb-4">
         <div class="card-body">
-
             <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
-
                 <div>
-                    <h1 class="text-success mb-1">
-                        ðŸ›¡ï¸ Seguridad / PorterÃ­a
-                    </h1>
-
-                    <div class="text-secondary">
-                        Control de ingreso y salida de visitantes
-                    </div>
+                    <h1 class="text-success mb-1">Seguridad / Portería</h1>
+                    <div class="text-secondary">Control de ingreso y salida de visitantes</div>
                 </div>
-
                 <div class="text-end">
-                    <div class="small text-secondary">
-                        Fecha de hoy
-                    </div>
-
-                    <div class="fw-bold">
-                        {{ hoy|date:"d/m/Y" }}
-                    </div>
-
-                    <a
-                        href="{% url 'logout' %}"
-                        class="btn btn-outline-secondary btn-sm mt-2"
-                    >
-                        Cerrar sesiÃ³n
+                    <div class="small text-secondary">Fecha de hoy</div>
+                    <div class="fw-bold">{{ hoy|date:"d/m/Y" }}</div>
+                    <a href="{% url 'logout' %}" class="btn btn-outline-secondary btn-sm mt-2">
+                        Cerrar sesión
                     </a>
                 </div>
-
             </div>
-
         </div>
     </div>
 
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body">
+            <h4 class="mb-3">Buscar visita</h4>
+            <form method="get">
+                <div class="row g-2">
+                    <div class="col-md-9">
+                        <input type="text" name="q" value="{{ busqueda }}"
+                               class="form-control form-control-lg"
+                               placeholder="Ingresá DNI, patente o apellido" autofocus>
+                    </div>
+                    <div class="col-md-3 d-grid">
+                        <button type="submit" class="btn btn-success btn-lg">Buscar</button>
+                    </div>
+                </div>
+            </form>
+            {% if busqueda %}
+                <div class="mt-3">
+                    <a href="{% url 'seguridad_visitas' %}" class="btn btn-outline-secondary btn-sm">
+                        Limpiar búsqueda
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
 
     <div class="card shadow-sm border-0 mb-4">
         <div class="card-body">
-
             <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
                 <div>
                     <h4 class="mb-1">Personas actualmente dentro</h4>
-                    <div class="text-secondary small">
-                        Visitantes con ingreso registrado y salida pendiente.
-                    </div>
+                    <div class="text-secondary small">Visitantes con ingreso registrado y salida pendiente.</div>
                 </div>
-
-                <span class="badge text-bg-warning">
-                    {{ personas_dentro|length }} dentro
-                </span>
+                <span class="badge text-bg-warning">{{ personas_dentro|length }} dentro</span>
             </div>
-
             {% if personas_dentro %}
-
                 <div class="table-responsive">
                     <table class="table table-hover align-middle mb-0">
-                        <thead>
-                            <tr>
-                                <th>Visitante</th>
-                                <th>DNI</th>
-                                <th>Patente</th>
-                                <th>Lote</th>
-                                <th>Ingreso</th>
-                                <th>Acción</th>
-                            </tr>
-                        </thead>
-
+                        <thead><tr><th>Visitante</th><th>DNI</th><th>Patente</th><th>Lote</th><th>Ingreso</th><th>Acción</th></tr></thead>
                         <tbody>
-                            {% for visita in personas_dentro %}
-                                <tr>
-                                    <td class="fw-bold">
-                                        {{ visita.apellido }}, {{ visita.nombre }}
-                                    </td>
-
-                                    <td>{{ visita.dni }}</td>
-
-                                    <td>
-                                        {% if visita.patente %}
-                                            <span class="badge text-bg-dark">
-                                                {{ visita.patente }}
-                                            </span>
-                                        {% else %}
-                                            <span class="text-secondary">—</span>
-                                        {% endif %}
-                                    </td>
-
-                                    <td>
-                                        <span class="fw-bold">
-                                            {{ visita.lote.numero }}
-                                        </span>
-
-                                        {% if visita.lote.apellido_familia %}
-                                            <div class="small text-secondary">
-                                                {{ visita.lote.apellido_familia }}
-                                            </div>
-                                        {% endif %}
-                                    </td>
-
-                                    <td>
-                                        <div class="fw-bold">
-                                            {{ visita.fecha_hora_ingreso|date:"H:i" }}
-                                        </div>
-                                        <div class="small text-secondary">
-                                            {{ visita.fecha_hora_ingreso|date:"d/m/Y" }}
-                                        </div>
-                                    </td>
-
-                                    <td>
-                                        <form
-                                            method="post"
-                                            action="{% url 'registrar_salida' visita.id %}"
-                                            class="m-0"
-                                        >
-                                            {% csrf_token %}
-                                            <button
-                                                type="submit"
-                                                class="btn btn-danger btn-sm"
-                                            >
-                                                Registrar salida
-                                            </button>
-                                        </form>
-                                    </td>
-                                </tr>
-                            {% endfor %}
+                        {% for visita in personas_dentro %}
+                            <tr>
+                                <td class="fw-bold">{{ visita.apellido }}, {{ visita.nombre }}</td>
+                                <td>{{ visita.dni }}</td>
+                                <td>{% if visita.patente %}<span class="badge text-bg-dark">{{ visita.patente }}</span>{% else %}<span class="text-secondary">—</span>{% endif %}</td>
+                                <td><span class="fw-bold">{{ visita.lote.numero }}</span>{% if visita.lote.apellido_familia %}<div class="small text-secondary">{{ visita.lote.apellido_familia }}</div>{% endif %}</td>
+                                <td><div class="fw-bold">{{ visita.fecha_hora_ingreso|date:"H:i" }}</div><div class="small text-secondary">{{ visita.fecha_hora_ingreso|date:"d/m/Y" }}</div></td>
+                                <td>
+                                    <form method="post" action="{% url 'registrar_salida' visita.id %}" class="m-0">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-danger btn-sm">Registrar salida</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
                         </tbody>
                     </table>
                 </div>
-
             {% else %}
-
-                <div class="alert alert-light border mb-0">
-                    No hay visitantes actualmente dentro.
-                </div>
-
+                <div class="alert alert-light border mb-0">No hay visitantes actualmente dentro.</div>
             {% endif %}
-
         </div>
     </div>
-
 
     <div class="card shadow-sm border-0 mb-4">
-
         <div class="card-body">
-
-            <h4 class="mb-3">
-                Buscar visita
-            </h4>
-
-            <form method="get">
-
-                <div class="row g-2">
-
-                    <div class="col-md-9">
-
-                        <input
-                            type="text"
-                            name="q"
-                            value="{{ busqueda }}"
-                            class="form-control form-control-lg"
-                            placeholder="IngresÃ¡ DNI, patente o apellido"
-                            autofocus
-                        >
-
-                    </div>
-
-                    <div class="col-md-3 d-grid">
-
-                        <button
-                            type="submit"
-                            class="btn btn-success btn-lg"
-                        >
-                            ðŸ”Ž Buscar
-                        </button>
-
-                    </div>
-
+            <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                <h4 class="mb-0">Visitas autorizadas para hoy</h4>
+                <span class="badge text-bg-success">{{ visitas_hoy|length }} pendiente{{ visitas_hoy|length|pluralize }}</span>
+            </div>
+            {% if visitas_hoy %}
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead><tr><th>Visitante</th><th>DNI</th><th>Patente</th><th>Lote</th><th>Evento</th><th>Acción</th></tr></thead>
+                        <tbody>
+                        {% for visita in visitas_hoy %}
+                            <tr>
+                                <td class="fw-bold">{{ visita.apellido }}, {{ visita.nombre }}</td>
+                                <td>{{ visita.dni }}</td>
+                                <td>{% if visita.patente %}<span class="badge text-bg-dark">{{ visita.patente }}</span>{% else %}<span class="text-secondary">—</span>{% endif %}</td>
+                                <td><span class="fw-bold">{{ visita.lote.numero }}</span>{% if visita.lote.apellido_familia %}<div class="small text-secondary">{{ visita.lote.apellido_familia }}</div>{% endif %}</td>
+                                <td>{% if visita.evento %}{{ visita.evento }}{% else %}<span class="text-secondary">—</span>{% endif %}</td>
+                                <td>
+                                    <form method="post" action="{% url 'registrar_ingreso' visita.id %}" class="m-0">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-success btn-sm">Registrar ingreso</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
-
-            </form>
-
-            {% if busqueda %}
-
-                <div class="mt-3">
-
-                    <a
-                        href="{% url 'seguridad_visitas' %}"
-                        class="btn btn-outline-secondary btn-sm"
-                    >
-                        Limpiar bÃºsqueda
-                    </a>
-
+            {% else %}
+                <div class="alert alert-light border mb-0">
+                    {% if busqueda %}No hay visitas de hoy que coincidan con la búsqueda.{% else %}No hay visitas pendientes para hoy.{% endif %}
                 </div>
-
             {% endif %}
-
         </div>
-
     </div>
 
-
     <div class="card shadow-sm border-0">
-
         <div class="card-body">
-
             <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-
-                <h4 class="mb-0">
-
-                    {% if busqueda %}
-                        Resultados para â€œ{{ busqueda }}â€
-                    {% else %}
-                        Visitas autorizadas
-                    {% endif %}
-
-                </h4>
-
-                <span class="badge text-bg-success">
-                    {{ visitas|length }} resultado{{ visitas|length|pluralize }}
-                </span>
-
+                <h4 class="mb-0">Próximas visitas autorizadas</h4>
+                <span class="badge text-bg-secondary">{{ proximas_visitas|length }} próxima{{ proximas_visitas|length|pluralize }}</span>
             </div>
-
-
-            {% if visitas %}
-
+            {% if proximas_visitas %}
                 <div class="table-responsive">
-
-                    <table class="table table-hover align-middle">
-
-                        <thead>
-
-                            <tr>
-                                <th>Fecha</th>
-                                <th>Visitante</th>
-                                <th>DNI</th>
-                                <th>Patente</th>
-                                <th>Lote</th>
-                                <th>Evento</th>
-                                <th>Ingreso</th>
-                                <th>Salida</th>
-                                <th>Estado</th>
-                                <th>AcciÃ³n</th>
-                            </tr>
-
-                        </thead>
-
+                    <table class="table table-hover align-middle mb-0">
+                        <thead><tr><th>Fecha</th><th>Visitante</th><th>DNI</th><th>Patente</th><th>Lote</th><th>Evento</th><th>Estado</th></tr></thead>
                         <tbody>
-
-                            {% for visita in visitas %}
-
-                                <tr>
-
-                                    <td class="fw-bold">
-                                        {{ visita.fecha|date:"d/m/Y" }}
-                                    </td>
-
-                                    <td>
-                                        {{ visita.apellido }}, {{ visita.nombre }}
-                                    </td>
-
-                                    <td>
-                                        {{ visita.dni }}
-                                    </td>
-
-                                    <td>
-                                        {% if visita.patente %}
-                                            <span class="badge text-bg-dark">
-                                                {{ visita.patente }}
-                                            </span>
-                                        {% else %}
-                                            <span class="text-secondary">
-                                                â€”
-                                            </span>
-                                        {% endif %}
-                                    </td>
-
-                                    <td>
-                                        <span class="fw-bold">
-                                            {{ visita.lote.numero }}
-                                        </span>
-
-                                        {% if visita.lote.apellido_familia %}
-                                            <div class="small text-secondary">
-                                                {{ visita.lote.apellido_familia }}
-                                            </div>
-                                        {% endif %}
-                                    </td>
-
-                                    <td>
-                                        {% if visita.evento %}
-                                            {{ visita.evento }}
-                                        {% else %}
-                                            <span class="text-secondary">
-                                                â€”
-                                            </span>
-                                        {% endif %}
-                                    </td>
-
-
-                                    <td>
-                                        {% if visita.fecha_hora_ingreso %}
-                                            <div class="fw-bold">
-                                                {{ visita.fecha_hora_ingreso|date:"H:i" }}
-                                            </div>
-
-                                            <div class="small text-secondary">
-                                                {{ visita.fecha_hora_ingreso|date:"d/m/Y" }}
-                                            </div>
-                                        {% else %}
-                                            <span class="text-secondary">
-                                                â€”
-                                            </span>
-                                        {% endif %}
-                                    </td>
-
-
-                                    <td>
-                                        {% if visita.fecha_hora_salida %}
-                                            <div class="fw-bold">
-                                                {{ visita.fecha_hora_salida|date:"H:i" }}
-                                            </div>
-
-                                            <div class="small text-secondary">
-                                                {{ visita.fecha_hora_salida|date:"d/m/Y" }}
-                                            </div>
-                                        {% else %}
-                                            <span class="text-secondary">
-                                                â€”
-                                            </span>
-                                        {% endif %}
-                                    </td>
-
-
-                                    <td>
-
-                                        {% if visita.fecha_hora_salida %}
-
-                                            <span class="badge text-bg-secondary">
-                                                SaliÃ³
-                                            </span>
-
-                                        {% elif visita.fecha_hora_ingreso %}
-
-                                            <span class="badge text-bg-warning">
-                                                Dentro
-                                            </span>
-
-                                        {% else %}
-
-                                            <span class="badge text-bg-success">
-                                                Autorizada
-                                            </span>
-
-                                        {% endif %}
-
-                                    </td>
-
-
-                                    <td>
-
-                                        {% if not visita.fecha_hora_ingreso %}
-
-                                            <form
-                                                method="post"
-                                                action="{% url 'registrar_ingreso' visita.id %}"
-                                                class="m-0"
-                                            >
-                                                {% csrf_token %}
-
-                                                <button
-                                                    type="submit"
-                                                    class="btn btn-success btn-sm"
-                                                >
-                                                    Registrar ingreso
-                                                </button>
-
-                                            </form>
-
-                                        {% elif not visita.fecha_hora_salida %}
-
-                                            <form
-                                                method="post"
-                                                action="{% url 'registrar_salida' visita.id %}"
-                                                class="m-0"
-                                            >
-                                                {% csrf_token %}
-
-                                                <button
-                                                    type="submit"
-                                                    class="btn btn-danger btn-sm"
-                                                >
-                                                    Registrar salida
-                                                </button>
-
-                                            </form>
-
-                                        {% else %}
-
-                                            <span class="text-secondary small">
-                                                Finalizada
-                                            </span>
-
-                                        {% endif %}
-
-                                    </td>
-
-                                </tr>
-
-                            {% endfor %}
-
+                        {% for visita in proximas_visitas %}
+                            <tr>
+                                <td class="fw-bold">{{ visita.fecha|date:"d/m/Y" }}</td>
+                                <td>{{ visita.apellido }}, {{ visita.nombre }}</td>
+                                <td>{{ visita.dni }}</td>
+                                <td>{% if visita.patente %}<span class="badge text-bg-dark">{{ visita.patente }}</span>{% else %}<span class="text-secondary">—</span>{% endif %}</td>
+                                <td><span class="fw-bold">{{ visita.lote.numero }}</span>{% if visita.lote.apellido_familia %}<div class="small text-secondary">{{ visita.lote.apellido_familia }}</div>{% endif %}</td>
+                                <td>{% if visita.evento %}{{ visita.evento }}{% else %}<span class="text-secondary">—</span>{% endif %}</td>
+                                <td><span class="badge text-bg-light border text-secondary">Disponible el {{ visita.fecha|date:"d/m/Y" }}</span></td>
+                            </tr>
+                        {% endfor %}
                         </tbody>
-
                     </table>
-
                 </div>
-
             {% else %}
-
                 <div class="alert alert-light border mb-0">
-
-                    {% if busqueda %}
-                        No se encontraron visitas autorizadas con ese dato.
-                    {% else %}
-                        No hay visitas autorizadas pendientes desde hoy.
-                    {% endif %}
-
+                    {% if busqueda %}No hay próximas visitas que coincidan con la búsqueda.{% else %}No hay próximas visitas autorizadas.{% endif %}
                 </div>
-
             {% endif %}
-
         </div>
-
     </div>
 
 </div>
-
 </body>
-
 </html>
