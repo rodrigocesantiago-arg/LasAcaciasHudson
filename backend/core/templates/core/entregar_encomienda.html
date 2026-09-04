@@ -1,136 +1,66 @@
 {% load static %}
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Comunidad360 - Entregar encomienda</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'core/css/styles.css' %}">
-</head>
-<body>
-<div class="container py-4">
-
-    <div class="card shadow-sm border-0 mb-4">
-        <div class="card-body">
-            <h1 class="text-success mb-1">Registrar entrega</h1>
-            <div class="text-secondary">Confirmá quién retira la encomienda.</div>
-        </div>
-    </div>
-
-    <div class="card shadow-sm border-0 mb-4">
-        <div class="card-body">
-            <div class="row g-3">
-                <div class="col-md-3">
-                    <div class="small text-secondary">Lote</div>
-                    <div class="fw-bold fs-5">{{ encomienda.lote.numero }}</div>
-                </div>
-                <div class="col-md-3">
-                    <div class="small text-secondary">Familia</div>
-                    <div class="fw-bold">{{ encomienda.lote.apellido_familia }}</div>
-                </div>
-                <div class="col-md-3">
-                    <div class="small text-secondary">Remitente</div>
-                    <div class="fw-bold">{{ encomienda.remitente }}</div>
-                </div>
-                <div class="col-md-3">
-                    <div class="small text-secondary">Recepción</div>
-                    <div class="fw-bold">{{ encomienda.fecha_recepcion|date:"d/m/Y H:i" }}</div>
-                </div>
-            </div>
-
-            {% if encomienda.descripcion %}
-                <hr>
-                <div class="small text-secondary">Descripción</div>
-                <div>{{ encomienda.descripcion }}</div>
-            {% endif %}
-        </div>
-    </div>
-
-    <div class="card shadow-sm border-0">
-        <div class="card-body">
-            <form method="post" novalidate>
-                {% csrf_token %}
-
-                <div class="mb-4">
-                    <label class="form-label fw-bold">{{ form.tipo_retiro.label }}</label>
-                    <div class="d-flex gap-4 flex-wrap">
-                        {% for radio in form.tipo_retiro %}
-                            <div class="form-check">
-                                {{ radio.tag }}
-                                <label class="form-check-label" for="{{ radio.id_for_label }}">
-                                    {{ radio.choice_label }}
-                                </label>
-                            </div>
-                        {% endfor %}
-                    </div>
-                    {% for error in form.tipo_retiro.errors %}
-                        <div class="text-danger small mt-1">{{ error }}</div>
-                    {% endfor %}
-                </div>
-
-                <div class="mb-4" id="bloque-integrante">
-                    <label for="{{ form.integrante.id_for_label }}" class="form-label fw-bold">
-                        {{ form.integrante.label }}
-                    </label>
-                    {{ form.integrante }}
-                    {% for error in form.integrante.errors %}
-                        <div class="text-danger small mt-1">{{ error }}</div>
-                    {% endfor %}
-                    <div class="form-text mt-2">
-                        Solo se muestran integrantes activos registrados en la familia del lote.
-                    </div>
-                </div>
-
-                <div class="mb-4" id="bloque-otro">
-                    <label for="{{ form.otro_nombre.id_for_label }}" class="form-label fw-bold">
-                        {{ form.otro_nombre.label }}
-                    </label>
-                    {{ form.otro_nombre }}
-                    {% for error in form.otro_nombre.errors %}
-                        <div class="text-danger small mt-1">{{ error }}</div>
-                    {% endfor %}
-                </div>
-
-                <div class="d-flex gap-2 flex-wrap">
-                    <button type="submit" class="btn btn-success btn-lg">
-                        Confirmar entrega
-                    </button>
-                    <a href="{% url 'seguridad_encomiendas' %}" class="btn btn-outline-secondary btn-lg">
-                        Cancelar
-                    </a>
-                </div>
-            </form>
-        </div>
-    </div>
-
+<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Las Acacias - Entregar encomienda</title><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'core/css/styles.css' %}">
+<style>
+:root{--verde:#1f6b45;--verde-oscuro:#155236;--verde-suave:#eaf4ee;--fondo:#f4f7f4;--texto:#24322a;--borde:#dfe8e2}
+body{background:var(--fondo);color:var(--texto);font-family:"Segoe UI",Arial,sans-serif}
+.topbar,.panel{background:#fff;border:1px solid var(--borde);border-radius:20px;box-shadow:0 12px 32px rgba(31,107,69,.08)}
+.brand-logo{height:54px;width:auto}.brand-title{font-weight:750;color:var(--verde);line-height:1.05}.brand-sub{color:#718078;font-size:.88rem}
+.page-title,.section-title{font-weight:750}.metric{background:#fff;border:1px solid var(--borde);border-radius:16px;padding:16px 18px;height:100%}
+.metric-number{font-size:1.55rem;font-weight:800;color:var(--verde)}.metric-label{color:#718078;font-size:.85rem}
+.btn-success{background:var(--verde);border-color:var(--verde)}.btn-success:hover{background:var(--verde-oscuro);border-color:var(--verde-oscuro)}
+.btn-outline-success{color:var(--verde);border-color:var(--verde)}.btn-outline-success:hover{background:var(--verde);border-color:var(--verde)}
+.form-control,.form-select,textarea{border-radius:12px!important;border-color:#d8e2dc!important}
+.form-control:focus,.form-select:focus,textarea:focus{border-color:#7eaa90!important;box-shadow:0 0 0 .2rem rgba(31,107,69,.12)!important}
+.table thead th{color:#617068;font-size:.78rem;text-transform:uppercase;letter-spacing:.035em;white-space:nowrap}.table td{vertical-align:middle}
+.badge{border-radius:999px;padding:.48em .72em}.search-box{background:linear-gradient(135deg,#f8fbf9,#edf6f0)}.pending-panel{border-left:4px solid #d99a18}
+.info-box{background:var(--verde-suave);border:1px solid #d6e8dc;border-radius:16px;padding:18px}.data-label{font-size:.78rem;color:#718078;text-transform:uppercase;letter-spacing:.035em}
+@media(max-width:767px){.brand-logo{height:44px}.topbar,.panel{border-radius:16px}}
+</style>
+</head><body><div class="container py-4">
+<header class="topbar p-3 p-md-4 mb-4">
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+<div class="d-flex align-items-center gap-3">
+<img src="{% static 'core/img/las_acacias_logo.png' %}" class="brand-logo" alt="Las Acacias">
+<div><div class="brand-title fs-4">Las Acacias</div><div class="brand-sub">Comunidad360 · Portería</div></div>
 </div>
+<a href="{% url 'seguridad_dashboard' %}" class="btn btn-outline-secondary">Dashboard</a>
+</div></header>
 
+<div class="row justify-content-center"><div class="col-xl-10">
+<div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-3"><div><h1 class="page-title h2 mb-1">Registrar entrega</h1>
+<div class="text-secondary">Confirmá quién retira la encomienda.</div></div><a href="{% url 'seguridad_encomiendas' %}" class="btn btn-outline-secondary">Volver a Encomiendas</a></div>
+
+<section class="panel p-3 p-md-4 mb-4"><h2 class="section-title h5 mb-3">Datos de la encomienda</h2><div class="info-box">
+<div class="row g-3"><div class="col-6 col-md-3"><div class="data-label">Lote</div><div class="fw-bold fs-4">{{ encomienda.lote.numero }}</div></div>
+<div class="col-6 col-md-3"><div class="data-label">Familia</div><div class="fw-bold">{{ encomienda.lote.apellido_familia }}</div></div>
+<div class="col-6 col-md-3"><div class="data-label">Remitente</div><div class="fw-bold">{{ encomienda.remitente }}</div></div>
+<div class="col-6 col-md-3"><div class="data-label">Recepción</div><div class="fw-bold">{{ encomienda.fecha_recepcion|date:"d/m/Y H:i" }}</div></div></div>
+{% if encomienda.descripcion %}<hr><div class="data-label">Descripción</div><div>{{ encomienda.descripcion }}</div>{% endif %}
+</div></section>
+
+<section class="panel p-3 p-md-4"><form method="post" novalidate>{% csrf_token %}
+<div class="mb-4"><label class="form-label fw-bold">{{ form.tipo_retiro.label }}</label><div class="d-flex gap-4 flex-wrap">
+{% for radio in form.tipo_retiro %}<div class="form-check">{{ radio.tag }}<label class="form-check-label" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label></div>{% endfor %}
+</div>{% for error in form.tipo_retiro.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}</div>
+<div class="mb-4" id="bloque-integrante"><label for="{{ form.integrante.id_for_label }}" class="form-label fw-bold">{{ form.integrante.label }}</label>{{ form.integrante }}
+{% for error in form.integrante.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}
+<div class="form-text mt-2">Solo se muestran integrantes activos registrados en la familia del lote.</div></div>
+<div class="mb-4" id="bloque-otro"><label for="{{ form.otro_nombre.id_for_label }}" class="form-label fw-bold">{{ form.otro_nombre.label }}</label>{{ form.otro_nombre }}
+{% for error in form.otro_nombre.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}</div>
+<div class="d-flex gap-2 flex-wrap"><button type="submit" class="btn btn-success btn-lg px-4">Confirmar entrega</button>
+<a href="{% url 'seguridad_encomiendas' %}" class="btn btn-outline-secondary btn-lg">Cancelar</a></div>
+</form></section></div></div></div>
 <script>
-    function actualizarTipoRetiro() {
-        const seleccionado = document.querySelector('input[name="tipo_retiro"]:checked');
-        const bloqueIntegrante = document.getElementById("bloque-integrante");
-        const bloqueOtro = document.getElementById("bloque-otro");
-
-        if (!seleccionado) {
-            return;
-        }
-
-        if (seleccionado.value === "otro") {
-            bloqueIntegrante.style.display = "none";
-            bloqueOtro.style.display = "block";
-        } else {
-            bloqueIntegrante.style.display = "block";
-            bloqueOtro.style.display = "none";
-        }
-    }
-
-    document.querySelectorAll('input[name="tipo_retiro"]').forEach(function(radio) {
-        radio.addEventListener("change", actualizarTipoRetiro);
-    });
-
-    actualizarTipoRetiro();
-</script>
-
-</body>
-</html>
+function actualizarTipoRetiro() {
+ const seleccionado=document.querySelector('input[name="tipo_retiro"]:checked');
+ const bloqueIntegrante=document.getElementById("bloque-integrante");
+ const bloqueOtro=document.getElementById("bloque-otro");
+ if(!seleccionado){return;}
+ if(seleccionado.value==="otro"){bloqueIntegrante.style.display="none";bloqueOtro.style.display="block";}
+ else{bloqueIntegrante.style.display="block";bloqueOtro.style.display="none";}
+}
+document.querySelectorAll('input[name="tipo_retiro"]').forEach(function(radio){radio.addEventListener("change",actualizarTipoRetiro);});
+actualizarTipoRetiro();
+</script></body></html>

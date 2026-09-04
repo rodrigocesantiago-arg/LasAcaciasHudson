@@ -1,85 +1,44 @@
 {% load static %}
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Comunidad360 - Registrar encomienda</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'core/css/styles.css' %}">
-</head>
-<body>
-<div class="container py-4">
-
-    <div class="card shadow-sm border-0 mb-4">
-        <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
-                <div>
-                    <h1 class="text-success mb-1">Registrar encomienda</h1>
-                    <div class="text-secondary">Ingresá los datos del paquete recibido en Portería.</div>
-                </div>
-                <a href="{% url 'seguridad_encomiendas' %}" class="btn btn-outline-secondary">
-                    Volver
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <div class="card shadow-sm border-0">
-        <div class="card-body">
-            <form method="post" novalidate>
-                {% csrf_token %}
-
-                {% if form.non_field_errors %}
-                    <div class="alert alert-danger">{{ form.non_field_errors }}</div>
-                {% endif %}
-
-                <div class="mb-4">
-                    <label for="{{ form.lote.id_for_label }}" class="form-label fw-bold">{{ form.lote.label }}</label>
-                    {{ form.lote }}
-                    {% for error in form.lote.errors %}
-                        <div class="text-danger small mt-1">{{ error }}</div>
-                    {% endfor %}
-                </div>
-
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <label for="{{ form.remitente.id_for_label }}" class="form-label fw-bold">{{ form.remitente.label }}</label>
-                        {{ form.remitente }}
-                        {% for error in form.remitente.errors %}
-                            <div class="text-danger small mt-1">{{ error }}</div>
-                        {% endfor %}
-                    </div>
-
-                    <div class="col-md-6">
-                        <label for="{{ form.descripcion.id_for_label }}" class="form-label fw-bold">{{ form.descripcion.label }}</label>
-                        {{ form.descripcion }}
-                        {% for error in form.descripcion.errors %}
-                            <div class="text-danger small mt-1">{{ error }}</div>
-                        {% endfor %}
-                    </div>
-
-                    <div class="col-12">
-                        <label for="{{ form.observaciones.id_for_label }}" class="form-label fw-bold">{{ form.observaciones.label }}</label>
-                        {{ form.observaciones }}
-                        {% for error in form.observaciones.errors %}
-                            <div class="text-danger small mt-1">{{ error }}</div>
-                        {% endfor %}
-                    </div>
-                </div>
-
-                <div class="d-flex gap-2 mt-4 flex-wrap">
-                    <button type="submit" class="btn btn-success btn-lg">
-                        Registrar recepción
-                    </button>
-                    <a href="{% url 'seguridad_encomiendas' %}" class="btn btn-outline-secondary btn-lg">
-                        Cancelar
-                    </a>
-                </div>
-            </form>
-        </div>
-    </div>
-
+<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Las Acacias - Registrar encomienda</title><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'core/css/styles.css' %}">
+<style>
+:root{--verde:#1f6b45;--verde-oscuro:#155236;--verde-suave:#eaf4ee;--fondo:#f4f7f4;--texto:#24322a;--borde:#dfe8e2}
+body{background:var(--fondo);color:var(--texto);font-family:"Segoe UI",Arial,sans-serif}
+.topbar,.panel{background:#fff;border:1px solid var(--borde);border-radius:20px;box-shadow:0 12px 32px rgba(31,107,69,.08)}
+.brand-logo{height:54px;width:auto}.brand-title{font-weight:750;color:var(--verde);line-height:1.05}.brand-sub{color:#718078;font-size:.88rem}
+.page-title,.section-title{font-weight:750}.metric{background:#fff;border:1px solid var(--borde);border-radius:16px;padding:16px 18px;height:100%}
+.metric-number{font-size:1.55rem;font-weight:800;color:var(--verde)}.metric-label{color:#718078;font-size:.85rem}
+.btn-success{background:var(--verde);border-color:var(--verde)}.btn-success:hover{background:var(--verde-oscuro);border-color:var(--verde-oscuro)}
+.btn-outline-success{color:var(--verde);border-color:var(--verde)}.btn-outline-success:hover{background:var(--verde);border-color:var(--verde)}
+.form-control,.form-select,textarea{border-radius:12px!important;border-color:#d8e2dc!important}
+.form-control:focus,.form-select:focus,textarea:focus{border-color:#7eaa90!important;box-shadow:0 0 0 .2rem rgba(31,107,69,.12)!important}
+.table thead th{color:#617068;font-size:.78rem;text-transform:uppercase;letter-spacing:.035em;white-space:nowrap}.table td{vertical-align:middle}
+.badge{border-radius:999px;padding:.48em .72em}.search-box{background:linear-gradient(135deg,#f8fbf9,#edf6f0)}.pending-panel{border-left:4px solid #d99a18}
+.info-box{background:var(--verde-suave);border:1px solid #d6e8dc;border-radius:16px;padding:18px}.data-label{font-size:.78rem;color:#718078;text-transform:uppercase;letter-spacing:.035em}
+@media(max-width:767px){.brand-logo{height:44px}.topbar,.panel{border-radius:16px}}
+</style>
+</head><body><div class="container py-4">
+<header class="topbar p-3 p-md-4 mb-4">
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+<div class="d-flex align-items-center gap-3">
+<img src="{% static 'core/img/las_acacias_logo.png' %}" class="brand-logo" alt="Las Acacias">
+<div><div class="brand-title fs-4">Las Acacias</div><div class="brand-sub">Comunidad360 · Portería</div></div>
 </div>
-</body>
-</html>
+<a href="{% url 'seguridad_dashboard' %}" class="btn btn-outline-secondary">Dashboard</a>
+</div></header>
+
+<div class="row justify-content-center"><div class="col-xl-9">
+<div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-3"><div><h1 class="page-title h2 mb-1">Registrar encomienda</h1>
+<div class="text-secondary">Ingresá los datos del paquete recibido en Portería.</div></div><a href="{% url 'seguridad_encomiendas' %}" class="btn btn-outline-secondary">Volver a Encomiendas</a></div>
+<section class="panel p-3 p-md-4"><form method="post" novalidate>{% csrf_token %}
+{% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors }}</div>{% endif %}
+<div class="mb-4"><label for="{{ form.lote.id_for_label }}" class="form-label fw-bold">{{ form.lote.label }}</label>{{ form.lote }}
+{% for error in form.lote.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}<div class="form-text">Seleccioná el lote destinatario del paquete.</div></div>
+<hr class="my-4"><div class="row g-3">
+<div class="col-md-6"><label for="{{ form.remitente.id_for_label }}" class="form-label fw-bold">{{ form.remitente.label }}</label>{{ form.remitente }}{% for error in form.remitente.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}</div>
+<div class="col-md-6"><label for="{{ form.descripcion.id_for_label }}" class="form-label fw-bold">{{ form.descripcion.label }}</label>{{ form.descripcion }}{% for error in form.descripcion.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}</div>
+<div class="col-12"><label for="{{ form.observaciones.id_for_label }}" class="form-label fw-bold">{{ form.observaciones.label }}</label>{{ form.observaciones }}{% for error in form.observaciones.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}</div>
+</div><div class="d-flex gap-2 mt-4 flex-wrap"><button type="submit" class="btn btn-success btn-lg px-4">Registrar recepción</button>
+<a href="{% url 'seguridad_encomiendas' %}" class="btn btn-outline-secondary btn-lg">Cancelar</a></div></form></section>
+</div></div></div></body></html>
