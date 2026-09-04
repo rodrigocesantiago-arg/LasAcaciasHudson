@@ -1,231 +1,242 @@
 {% load static %}
-
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis reclamos - Las Acacias</title>
 
-    <title>Mis reclamos - Comunidad360</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'core/css/styles.css' %}">
 
-    <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
-        rel="stylesheet"
-    >
+    <style>
+        :root {
+            --verde: #1f6b45;
+            --verde-oscuro: #155236;
+            --verde-suave: #eaf4ee;
+            --fondo: #f4f7f4;
+            --texto: #24322a;
+            --muted: #6d7b73;
+            --borde: #dfe8e2;
+        }
 
-    <link
-        rel="stylesheet"
-        href="{% static 'core/css/styles.css' %}"
-    >
+        body {
+            background: var(--fondo);
+            color: var(--texto);
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
+
+        .topbar,
+        .panel,
+        .reclamo-card {
+            background: #fff;
+            border: 1px solid var(--borde);
+            border-radius: 20px;
+            box-shadow: 0 12px 32px rgba(31, 107, 69, .08);
+        }
+
+        .brand-logo {
+            height: 54px;
+            width: auto;
+        }
+
+        .brand-title {
+            color: var(--verde);
+            font-weight: 750;
+            line-height: 1.05;
+        }
+
+        .brand-sub,
+        .muted {
+            color: var(--muted);
+        }
+
+        .page-title,
+        .section-title {
+            font-weight: 750;
+        }
+
+        .btn-success {
+            background: var(--verde);
+            border-color: var(--verde);
+        }
+
+        .btn-success:hover {
+            background: var(--verde-oscuro);
+            border-color: var(--verde-oscuro);
+        }
+
+        .btn-outline-success {
+            color: var(--verde);
+            border-color: var(--verde);
+        }
+
+        .btn-outline-success:hover {
+            background: var(--verde);
+            border-color: var(--verde);
+        }
+
+        .reclamo-card {
+            box-shadow: none;
+        }
+
+        .reclamo-id {
+            color: var(--muted);
+            font-size: .85rem;
+        }
+
+        .respuesta-admin {
+            background: var(--verde-suave);
+            border: 1px solid #d3e6d9;
+            border-radius: 14px;
+        }
+
+        .empty-state {
+            background: #fff;
+            border: 1px dashed #ccd8d0;
+            border-radius: 18px;
+            padding: 42px 24px;
+            text-align: center;
+        }
+
+        @media (max-width: 767px) {
+            .brand-logo {
+                height: 44px;
+            }
+
+            .topbar,
+            .panel,
+            .reclamo-card {
+                border-radius: 16px;
+            }
+        }
+    </style>
 </head>
 
 <body>
-
 <div class="container py-4">
 
-    <!-- ENCABEZADO -->
+    <header class="topbar p-3 p-md-4 mb-4">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div class="d-flex align-items-center gap-3">
+                <img src="{% static 'core/img/las_acacias_logo.png' %}" class="brand-logo" alt="Las Acacias">
+                <div>
+                    <div class="brand-title fs-4">Las Acacias</div>
+                    <div class="brand-sub small">Comunidad360 · Portal del vecino</div>
+                </div>
+            </div>
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
+            <a href="{% url 'portal' %}" class="btn btn-outline-success">
+                Volver al portal
+            </a>
+        </div>
+    </header>
 
+    <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-4">
         <div>
-            <h1 class="text-success mb-1">
-                📢 Mis reclamos
-            </h1>
-
+            <h1 class="page-title h2 mb-1">Mis reclamos</h1>
             <div class="text-secondary">
                 Lote {{ lote.numero }} · Familia {{ lote.apellido_familia }}
             </div>
         </div>
 
-        <div class="d-flex gap-2">
-
-            <a
-                href="{% url 'nuevo_reclamo' %}"
-                class="btn btn-success"
-            >
-                Nuevo reclamo
-            </a>
-
-            <a
-                href="{% url 'portal' %}"
-                class="btn btn-outline-secondary"
-            >
-                Volver al portal
-            </a>
-
-        </div>
-
+        <a href="{% url 'nuevo_reclamo' %}" class="btn btn-success px-4">
+            Nuevo reclamo
+        </a>
     </div>
 
-
-    <!-- LISTADO DE RECLAMOS -->
-
     {% for reclamo in reclamos %}
+        <article class="reclamo-card p-3 p-md-4 mb-3">
 
-        <div class="card shadow-sm border-0 mb-3">
-
-            <div class="card-body p-4">
-
-                <div class="d-flex justify-content-between align-items-start">
-
-                    <div>
-
-                        <div class="text-secondary small mb-1">
-                            Reclamo #{{ reclamo.id }}
-                        </div>
-
-                        <h4 class="mb-1">
-                            {{ reclamo.asunto }}
-                        </h4>
-
-                        <div class="text-secondary">
-                            {{ reclamo.get_categoria_display }}
-                        </div>
-
+            <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+                <div>
+                    <div class="reclamo-id mb-1">
+                        Reclamo #{{ reclamo.id }}
                     </div>
 
+                    <h2 class="h5 mb-1">
+                        {{ reclamo.asunto }}
+                    </h2>
 
-                    <div>
-
-                        {% if reclamo.estado == "pendiente" %}
-
-                            <span class="badge text-bg-warning fs-6">
-                                Pendiente
-                            </span>
-
-                        {% elif reclamo.estado == "en_proceso" %}
-
-                            <span class="badge text-bg-primary fs-6">
-                                En proceso
-                            </span>
-
-                        {% elif reclamo.estado == "resuelto" %}
-
-                            <span class="badge text-bg-success fs-6">
-                                Resuelto
-                            </span>
-
-                        {% elif reclamo.estado == "rechazado" %}
-
-                            <span class="badge text-bg-danger fs-6">
-                                Rechazado
-                            </span>
-
-                        {% endif %}
-
+                    <div class="text-secondary">
+                        {{ reclamo.get_categoria_display }}
                     </div>
-
                 </div>
 
-
-                <hr>
-
-
-                <!-- DESCRIPCIÓN -->
-
-                <div class="mb-3">
-
-                    <strong>
-                        Descripción
-                    </strong>
-
-                    <div class="mt-1">
-                        {{ reclamo.descripcion }}
-                    </div>
-
+                <div>
+                    {% if reclamo.estado == "pendiente" %}
+                        <span class="badge rounded-pill text-bg-warning px-3 py-2">
+                            Pendiente
+                        </span>
+                    {% elif reclamo.estado == "en_proceso" %}
+                        <span class="badge rounded-pill text-bg-primary px-3 py-2">
+                            En proceso
+                        </span>
+                    {% elif reclamo.estado == "resuelto" %}
+                        <span class="badge rounded-pill text-bg-success px-3 py-2">
+                            Resuelto
+                        </span>
+                    {% elif reclamo.estado == "rechazado" %}
+                        <span class="badge rounded-pill text-bg-danger px-3 py-2">
+                            Rechazado
+                        </span>
+                    {% endif %}
                 </div>
-
-
-                <!-- FECHAS -->
-
-                <div class="row">
-
-                    <div class="col-md-6 mb-3">
-
-                        <strong>
-                            Fecha del reclamo
-                        </strong>
-
-                        <div class="text-secondary">
-                            {{ reclamo.fecha_creacion|date:"d/m/Y H:i" }}
-                        </div>
-
-                    </div>
-
-
-                    <div class="col-md-6 mb-3">
-
-                        <strong>
-                            Última actualización
-                        </strong>
-
-                        <div class="text-secondary">
-                            {{ reclamo.fecha_actualizacion|date:"d/m/Y H:i" }}
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <!-- RESPUESTA ADMIN -->
-
-                {% if reclamo.respuesta_administracion %}
-
-                    <div class="alert alert-light border mb-0">
-
-                        <strong>
-                            Respuesta de Administración
-                        </strong>
-
-                        <div class="mt-2">
-                            {{ reclamo.respuesta_administracion }}
-                        </div>
-
-                    </div>
-
-                {% endif %}
-
             </div>
 
-        </div>
+            <hr class="my-4">
 
+            <div class="mb-4">
+                <div class="fw-semibold mb-1">Descripción</div>
+                <div>{{ reclamo.descripcion }}</div>
+            </div>
+
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <div class="small text-secondary">Fecha del reclamo</div>
+                    <div class="fw-semibold">
+                        {{ reclamo.fecha_creacion|date:"d/m/Y H:i" }}
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="small text-secondary">Última actualización</div>
+                    <div class="fw-semibold">
+                        {{ reclamo.fecha_actualizacion|date:"d/m/Y H:i" }}
+                    </div>
+                </div>
+            </div>
+
+            {% if reclamo.respuesta_administracion %}
+                <div class="respuesta-admin p-3 mt-3">
+                    <div class="fw-semibold mb-1">Respuesta de Administración</div>
+                    <div>{{ reclamo.respuesta_administracion }}</div>
+                </div>
+            {% endif %}
+
+        </article>
 
     {% empty %}
 
-        <div class="card shadow-sm border-0">
+        <div class="empty-state">
+            <div class="fs-1 mb-3">📢</div>
 
-            <div class="card-body p-5 text-center">
+            <h2 class="h4 mb-2">
+                Todavía no tenés reclamos
+            </h2>
 
-                <div class="fs-1 mb-3">
-                    📢
-                </div>
+            <p class="text-secondary mb-4">
+                Cuando necesites informar un inconveniente,
+                podés generar un reclamo desde aquí.
+            </p>
 
-                <h4>
-                    Todavía no tenés reclamos
-                </h4>
-
-                <p class="text-secondary">
-                    Cuando necesites informar un inconveniente,
-                    podés generar un reclamo desde aquí.
-                </p>
-
-                <a
-                    href="{% url 'nuevo_reclamo' %}"
-                    class="btn btn-success"
-                >
-                    Crear primer reclamo
-                </a>
-
-            </div>
-
+            <a href="{% url 'nuevo_reclamo' %}" class="btn btn-success px-4">
+                Crear primer reclamo
+            </a>
         </div>
 
     {% endfor %}
 
 </div>
-
 </body>
-
 </html>

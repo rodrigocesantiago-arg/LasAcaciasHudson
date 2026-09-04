@@ -1,196 +1,246 @@
 {% load static %}
-
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nuevo reclamo - Las Acacias</title>
 
-    <title>Nuevo reclamo - Comunidad360</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'core/css/styles.css' %}">
 
-    <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
-        rel="stylesheet"
-    >
+    <style>
+        :root {
+            --verde: #1f6b45;
+            --verde-oscuro: #155236;
+            --verde-suave: #eaf4ee;
+            --fondo: #f4f7f4;
+            --texto: #24322a;
+            --muted: #6d7b73;
+            --borde: #dfe8e2;
+        }
 
-    <link
-        rel="stylesheet"
-        href="{% static 'core/css/styles.css' %}"
-    >
+        body {
+            background: var(--fondo);
+            color: var(--texto);
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
+
+        .topbar,
+        .form-panel {
+            background: #fff;
+            border: 1px solid var(--borde);
+            border-radius: 20px;
+            box-shadow: 0 12px 32px rgba(31, 107, 69, .08);
+        }
+
+        .brand-logo {
+            height: 54px;
+            width: auto;
+        }
+
+        .brand-title {
+            color: var(--verde);
+            font-weight: 750;
+            line-height: 1.05;
+        }
+
+        .brand-sub {
+            color: var(--muted);
+        }
+
+        .page-title,
+        .section-title {
+            font-weight: 750;
+        }
+
+        .btn-success {
+            background: var(--verde);
+            border-color: var(--verde);
+        }
+
+        .btn-success:hover {
+            background: var(--verde-oscuro);
+            border-color: var(--verde-oscuro);
+        }
+
+        .btn-outline-success {
+            color: var(--verde);
+            border-color: var(--verde);
+        }
+
+        .btn-outline-success:hover {
+            background: var(--verde);
+            border-color: var(--verde);
+        }
+
+        .info-box {
+            background: var(--verde-suave);
+            border: 1px solid #d3e6d9;
+            border-radius: 14px;
+        }
+
+        .form-panel select,
+        .form-panel input,
+        .form-panel textarea {
+            width: 100%;
+            border: 1px solid #ced8d1;
+            border-radius: 10px;
+            padding: .72rem .85rem;
+            background: #fff;
+        }
+
+        .form-panel textarea {
+            min-height: 140px;
+            resize: vertical;
+        }
+
+        .form-panel select:focus,
+        .form-panel input:focus,
+        .form-panel textarea:focus {
+            outline: none;
+            border-color: var(--verde);
+            box-shadow: 0 0 0 .2rem rgba(31, 107, 69, .12);
+        }
+
+        @media (max-width: 767px) {
+            .brand-logo {
+                height: 44px;
+            }
+
+            .topbar,
+            .form-panel {
+                border-radius: 16px;
+            }
+        }
+    </style>
 </head>
 
 <body>
-
 <div class="container py-4">
 
-    <!-- ENCABEZADO -->
-
-    <div class="d-flex justify-content-between align-items-center mb-4">
-
-        <div>
-            <h1 class="text-success mb-1">
-                📢 Nuevo reclamo
-            </h1>
-
-            <div class="text-secondary">
-                Lote {{ lote.numero }} · Familia {{ lote.apellido_familia }}
+    <header class="topbar p-3 p-md-4 mb-4">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div class="d-flex align-items-center gap-3">
+                <img src="{% static 'core/img/las_acacias_logo.png' %}" class="brand-logo" alt="Las Acacias">
+                <div>
+                    <div class="brand-title fs-4">Las Acacias</div>
+                    <div class="brand-sub small">Comunidad360 · Portal del vecino</div>
+                </div>
             </div>
+
+            <a href="{% url 'mis_reclamos' %}" class="btn btn-outline-success">
+                Volver a Mis Reclamos
+            </a>
         </div>
+    </header>
 
-        <a
-            href="{% url 'mis_reclamos' %}"
-            class="btn btn-outline-secondary"
-        >
-            Volver a Mis Reclamos
-        </a>
-
+    <div class="mb-4">
+        <h1 class="page-title h2 mb-1">Nuevo reclamo</h1>
+        <div class="text-secondary">
+            Lote {{ lote.numero }} · Familia {{ lote.apellido_familia }}
+        </div>
     </div>
 
-
     <div class="row justify-content-center">
-
         <div class="col-lg-8">
 
-            <div class="card shadow-sm border-0">
+            <section class="form-panel p-3 p-md-4">
 
-                <div class="card-body p-4">
+                <h2 class="section-title h4 mb-1">
+                    Crear reclamo
+                </h2>
 
-                    <h3 class="mb-2">
-                        Crear reclamo
-                    </h3>
+                <p class="text-secondary mb-4">
+                    Informá el inconveniente para que Administración
+                    pueda realizar su seguimiento.
+                </p>
 
-                    <p class="text-secondary mb-4">
-                        Informá el inconveniente para que Administración
-                        pueda realizar su seguimiento.
-                    </p>
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
 
+                <form method="POST">
+                    {% csrf_token %}
 
-                    {% if form.non_field_errors %}
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">
+                            Categoría
+                        </label>
 
-                        <div class="alert alert-danger">
-                            {{ form.non_field_errors }}
-                        </div>
+                        {{ form.categoria }}
 
-                    {% endif %}
-
-
-                    <form method="POST">
-
-                        {% csrf_token %}
-
-
-                        <!-- CATEGORÍA -->
-
-                        <div class="mb-4">
-
-                            <label class="form-label fw-semibold">
-                                Categoría
-                            </label>
-
-                            {{ form.categoria }}
-
-                            {% for error in form.categoria.errors %}
-                                <div class="text-danger small mt-1">
-                                    {{ error }}
-                                </div>
-                            {% endfor %}
-
-                        </div>
-
-
-                        <!-- ASUNTO -->
-
-                        <div class="mb-4">
-
-                            <label class="form-label fw-semibold">
-                                Asunto
-                            </label>
-
-                            {{ form.asunto }}
-
-                            {% for error in form.asunto.errors %}
-                                <div class="text-danger small mt-1">
-                                    {{ error }}
-                                </div>
-                            {% endfor %}
-
-                        </div>
-
-
-                        <!-- DESCRIPCIÓN -->
-
-                        <div class="mb-4">
-
-                            <label class="form-label fw-semibold">
-                                Descripción
-                            </label>
-
-                            {{ form.descripcion }}
-
-                            <div class="form-text">
-                                Indicá qué ocurre y, cuando corresponda,
-                                dónde se encuentra el problema.
+                        {% for error in form.categoria.errors %}
+                            <div class="text-danger small mt-1">
+                                {{ error }}
                             </div>
+                        {% endfor %}
+                    </div>
 
-                            {% for error in form.descripcion.errors %}
-                                <div class="text-danger small mt-1">
-                                    {{ error }}
-                                </div>
-                            {% endfor %}
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">
+                            Asunto
+                        </label>
 
-                        </div>
+                        {{ form.asunto }}
 
-
-                        <!-- INFORMACIÓN -->
-
-                        <div class="alert alert-light border">
-
-                            <strong>
-                                ¿Qué ocurre después?
-                            </strong>
-
-                            <div class="small mt-2 text-secondary">
-                                El reclamo será enviado a Administración
-                                con estado Pendiente. Desde Mis Reclamos
-                                podrás consultar su avance y la respuesta
-                                de Administración.
+                        {% for error in form.asunto.errors %}
+                            <div class="text-danger small mt-1">
+                                {{ error }}
                             </div>
+                        {% endfor %}
+                    </div>
 
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">
+                            Descripción
+                        </label>
+
+                        {{ form.descripcion }}
+
+                        <div class="form-text">
+                            Indicá qué ocurre y, cuando corresponda,
+                            dónde se encuentra el problema.
                         </div>
 
+                        {% for error in form.descripcion.errors %}
+                            <div class="text-danger small mt-1">
+                                {{ error }}
+                            </div>
+                        {% endfor %}
+                    </div>
 
-                        <!-- BOTONES -->
-
-                        <div class="d-grid gap-2">
-
-                            <button
-                                type="submit"
-                                class="btn btn-success"
-                            >
-                                Enviar reclamo
-                            </button>
-
-                            <a
-                                href="{% url 'mis_reclamos' %}"
-                                class="btn btn-outline-secondary"
-                            >
-                                Cancelar
-                            </a>
-
+                    <div class="info-box p-3 mb-4">
+                        <div class="fw-semibold mb-1">
+                            ¿Qué ocurre después?
                         </div>
 
-                    </form>
+                        <div class="small text-secondary">
+                            El reclamo será enviado a Administración
+                            con estado Pendiente. Desde Mis Reclamos
+                            podrás consultar su avance y la respuesta
+                            de Administración.
+                        </div>
+                    </div>
 
-                </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-success">
+                            Enviar reclamo
+                        </button>
 
-            </div>
+                        <a href="{% url 'mis_reclamos' %}" class="btn btn-outline-secondary">
+                            Cancelar
+                        </a>
+                    </div>
+                </form>
+
+            </section>
 
         </div>
-
     </div>
 
 </div>
-
 </body>
 </html>
