@@ -7,7 +7,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Solicitar modificación - Comunidad360</title>
+    <title>Solicitar modificación - Las Acacias</title>
 
     <link
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
@@ -18,49 +18,56 @@
         rel="stylesheet"
         href="{% static 'core/css/styles.css' %}"
     >
+
+<style>
+:root{--verde:#1f6b45;--verde-oscuro:#155236;--verde-suave:#eaf4ee;--fondo:#f4f7f4;--texto:#24322a;--borde:#dfe8e2}
+body{background:var(--fondo);color:var(--texto);font-family:"Segoe UI",Arial,sans-serif}
+.topbar,.form-panel{background:#fff;border:1px solid var(--borde);border-radius:20px;box-shadow:0 12px 32px rgba(31,107,69,.08)}
+.brand-logo{height:54px;width:auto}.brand-title{font-weight:750;color:var(--verde);line-height:1.05}.brand-sub{color:#718078;font-size:.88rem}
+.page-title{font-weight:750}.btn-success{background:var(--verde);border-color:var(--verde)}.btn-success:hover{background:var(--verde-oscuro);border-color:var(--verde-oscuro)}
+.btn-outline-success{color:var(--verde);border-color:var(--verde)}.btn-outline-success:hover{background:var(--verde);border-color:var(--verde)}
+.form-control,.form-select{border-radius:12px;border-color:#d8e2dc}.form-control:focus,.form-select:focus{border-color:#7eaa90;box-shadow:0 0 0 .2rem rgba(31,107,69,.12)}
+.form-label{font-weight:650}.info-box{background:var(--verde-suave);border:1px solid #d7e9dd;border-radius:14px}
+.alert{border-radius:14px}.section-box{background:#f8faf8;border:1px solid var(--borde);border-radius:16px;padding:18px;margin-bottom:20px}
+@media(max-width:767px){.brand-logo{height:44px}.topbar,.form-panel{border-radius:16px}}
+</style>
+
 </head>
 
 <body>
 
 <div class="container py-4">
 
-    <!-- ENCABEZADO -->
-
-    <div class="d-flex justify-content-between align-items-center mb-4">
-
-        <div>
-
-            <h1 class="text-success mb-1">
-                ✏️ Solicitar modificación
-            </h1>
-
-            <div class="text-secondary">
-                Lote {{ lote.numero }} · Familia {{ lote.apellido_familia }}
+    <header class="topbar p-3 p-md-4 mb-4">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div class="d-flex align-items-center gap-3">
+                <img src="{% static 'core/img/las_acacias_logo.png' %}" class="brand-logo" alt="Las Acacias">
+                <div>
+                    <div class="brand-title fs-4">Las Acacias</div>
+                    <div class="brand-sub">Comunidad360 · Portal del vecino</div>
+                </div>
             </div>
-
+            <a href="{% url 'mi_familia' %}" class="btn btn-outline-success">Volver a Mi Familia</a>
         </div>
+    </header>
 
-        <a
-            href="{% url 'mi_familia' %}"
-            class="btn btn-outline-secondary"
-        >
-            Volver a Mi Familia
-        </a>
-
+    <div class="mb-4">
+        <h1 class="page-title h2 mb-1">Solicitar modificación</h1>
+        <div class="text-secondary">Lote {{ lote.numero }} · Familia {{ lote.apellido_familia }}</div>
     </div>
-
 
     <div class="row justify-content-center">
 
         <div class="col-lg-8">
 
-            <div class="card shadow-sm border-0">
+            <div class="form-panel">
 
-                <div class="card-body p-4">
+                <div class="p-4 p-md-5">
 
-                    <h3 class="mb-4 text-center">
-                        Nueva solicitud
-                    </h3>
+                    <div class="info-box p-3 mb-4">
+                        <h3 class="h5 mb-1">Nueva solicitud</h3>
+                        <div class="text-secondary small">Elegí el tipo de cambio y completá únicamente los datos solicitados.</div>
+                    </div>
 
 
                     {% if form.non_field_errors %}
@@ -134,7 +141,7 @@
                             style="display: none;"
                         >
 
-                            <div class="alert alert-light border text-center">
+                            <div class="section-box text-center">
 
                                 <h5>
                                     Modificar datos
@@ -200,7 +207,7 @@
                             style="display: none;"
                         >
 
-                            <div class="alert alert-light border text-center">
+                            <div class="section-box text-center">
 
                                 <h5>
                                     Agregar integrante
@@ -364,7 +371,7 @@
                             style="display: none;"
                         >
 
-                            <div class="alert alert-light border">
+                            <div class="section-box">
 
                                 <h5>
                                     Otra solicitud
