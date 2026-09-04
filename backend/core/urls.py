@@ -1,10 +1,34 @@
 from django.urls import path
 from . import views
+from . import password_reset_views
 
 
 urlpatterns = [
     path("", views.home, name="home"),
     path("login/", views.login_view, name="login"),
+
+    # RECUPERACIÓN DE CONTRASEÑA
+    path(
+        "recuperar-password/",
+        password_reset_views.recuperar_password,
+        name="recuperar_password"
+    ),
+    path(
+        "recuperar-password/enviado/",
+        password_reset_views.recuperar_password_enviado,
+        name="recuperar_password_enviado"
+    ),
+    path(
+        "recuperar-password/<uidb64>/<token>/",
+        password_reset_views.restablecer_password,
+        name="restablecer_password"
+    ),
+    path(
+        "password-restaurada/",
+        password_reset_views.password_restaurada,
+        name="password_restaurada"
+    ),
+
     path("portal/", views.portal, name="portal"),
     path("noticias/", views.noticias_view, name="noticias"),
     path("cumpleanios/", views.cumpleanios_view, name="cumpleanios"),

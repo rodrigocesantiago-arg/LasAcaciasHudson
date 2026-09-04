@@ -1,102 +1,312 @@
 {% load static %}
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
-
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Las Acacias · Comunidad360</title>
 
-    <title>Comunidad360</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'core/css/styles.css' %}">
 
-    <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
-        rel="stylesheet"
-    >
+    <style>
+        :root {
+            --verde: #1f6b45;
+            --verde-oscuro: #155236;
+            --verde-suave: #eaf4ee;
+            --fondo: #eef3ef;
+            --texto: #24322a;
+            --muted: #6d7b73;
+            --borde: #dfe8e2;
+        }
 
-    <link
-        rel="stylesheet"
-        href="{% static 'core/css/styles.css' %}"
-    >
+        body {
+            min-height: 100vh;
+            margin: 0;
+            background: var(--fondo);
+            color: var(--texto);
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
 
+        .login-shell {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 28px 0;
+        }
+
+        .login-card {
+            overflow: hidden;
+            background: #fff;
+            border: 1px solid var(--borde);
+            border-radius: 26px;
+            box-shadow: 0 22px 60px rgba(31, 107, 69, .14);
+        }
+
+        .photo-side {
+            min-height: 590px;
+            background:
+                linear-gradient(180deg, rgba(18, 48, 33, .10), rgba(18, 48, 33, .58)),
+                url("{% static 'core/img/las_acacias_portada.png' %}") center/cover no-repeat;
+            position: relative;
+        }
+
+        .photo-copy {
+            position: absolute;
+            left: 34px;
+            right: 34px;
+            bottom: 34px;
+            color: #fff;
+        }
+
+        .photo-copy h2 {
+            font-weight: 750;
+        }
+
+        .form-side {
+            padding: 44px;
+        }
+
+        .brand-logo {
+            height: 68px;
+            width: auto;
+        }
+
+        .brand-title {
+            color: var(--verde);
+            font-size: 1.65rem;
+            font-weight: 750;
+            line-height: 1.05;
+        }
+
+        .brand-sub {
+            color: var(--muted);
+            font-size: .92rem;
+        }
+
+        .welcome-title {
+            font-weight: 750;
+        }
+
+        .form-control {
+            border-radius: 12px;
+            padding: .78rem .9rem;
+            border-color: #cfdad3;
+        }
+
+        .form-control:focus {
+            border-color: var(--verde);
+            box-shadow: 0 0 0 .2rem rgba(31, 107, 69, .12);
+        }
+
+        .password-wrap {
+            position: relative;
+        }
+
+        .password-wrap .form-control {
+            padding-right: 96px;
+        }
+
+        .toggle-password {
+            position: absolute;
+            top: 50%;
+            right: 12px;
+            transform: translateY(-50%);
+            border: 0;
+            background: transparent;
+            color: var(--verde);
+            font-size: .86rem;
+            font-weight: 650;
+        }
+
+        .btn-success {
+            background: var(--verde);
+            border-color: var(--verde);
+            border-radius: 12px;
+            padding: .78rem 1rem;
+            font-weight: 650;
+        }
+
+        .btn-success:hover {
+            background: var(--verde-oscuro);
+            border-color: var(--verde-oscuro);
+        }
+
+        .forgot-link {
+            color: var(--verde);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .forgot-link:hover {
+            text-decoration: underline;
+        }
+
+        .footer-note {
+            color: var(--muted);
+            font-size: .82rem;
+        }
+
+        @media (max-width: 991px) {
+            .photo-side {
+                min-height: 250px;
+            }
+
+            .form-side {
+                padding: 32px 26px;
+            }
+        }
+
+        @media (max-width: 575px) {
+            .login-shell {
+                padding: 0;
+            }
+
+            .login-card {
+                border-radius: 0;
+                min-height: 100vh;
+                border: 0;
+            }
+
+            .photo-side {
+                min-height: 200px;
+            }
+
+            .photo-copy {
+                left: 24px;
+                right: 24px;
+                bottom: 22px;
+            }
+        }
+    </style>
 </head>
 
 <body>
 
-<div class="container">
+<div class="container login-shell">
+    <div class="row justify-content-center w-100">
+        <div class="col-xl-10">
 
-    <div class="row justify-content-center">
+            <div class="login-card">
+                <div class="row g-0">
 
-        <div class="col-md-5">
-
-            <div class="card shadow-lg p-4">
-
-                <h1 class="text-center text-success mb-3">
-                    🏡 Comunidad360
-                </h1>
-
-                <h4 class="text-center text-secondary mb-4">
-                    Las Acacias Hudson
-                </h4>
-
-                {% if error %}
-                    <div class="alert alert-danger">
-                        {{ error }}
-                    </div>
-                {% endif %}
-
-                <form method="POST" action="{% url 'login' %}">
-
-                    {% csrf_token %}
-
-                    <div class="mb-3">
-
-                        <label class="form-label">
-                            Número de lote
-                        </label>
-
-                        <input
-                            type="text"
-                            name="numero_lote"
-                            class="form-control"
-                            placeholder="Ej: 65"
-                            required
-                        >
-
+                    <div class="col-lg-6 photo-side">
+                        <div class="photo-copy">
+                            <h2 class="h3 mb-2">Bienvenido a Las Acacias</h2>
+                            <p class="mb-0">
+                                Un espacio digital para acompañar la vida cotidiana de nuestra comunidad.
+                            </p>
+                        </div>
                     </div>
 
-                    <div class="mb-4">
+                    <div class="col-lg-6">
+                        <div class="form-side h-100 d-flex flex-column justify-content-center">
 
-                        <label class="form-label">
-                            Contraseña
-                        </label>
+                            <div class="d-flex align-items-center gap-3 mb-4">
+                                <img src="{% static 'core/img/las_acacias_logo.png' %}"
+                                     class="brand-logo"
+                                     alt="Las Acacias">
 
-                        <input
-                            type="password"
-                            name="password"
-                            class="form-control"
-                            required
-                        >
+                                <div>
+                                    <div class="brand-title">Las Acacias</div>
+                                    <div class="brand-sub">Comunidad360 · Portal del vecino</div>
+                                </div>
+                            </div>
 
+                            <h1 class="welcome-title h3 mb-1">Ingresar</h1>
+
+                            <p class="text-secondary mb-4">
+                                Accedé con el número de lote y tu contraseña.
+                            </p>
+
+                            {% if error %}
+                                <div class="alert alert-danger">
+                                    {{ error }}
+                                </div>
+                            {% endif %}
+
+                            <form method="POST" action="{% url 'login' %}">
+                                {% csrf_token %}
+
+                                <div class="mb-3">
+                                    <label for="numero_lote" class="form-label fw-semibold">
+                                        Número de lote
+                                    </label>
+
+                                    <input
+                                        id="numero_lote"
+                                        type="text"
+                                        name="numero_lote"
+                                        class="form-control"
+                                        placeholder="Ej: 65"
+                                        value="{{ request.POST.numero_lote|default:'' }}"
+                                        inputmode="numeric"
+                                        autocomplete="username"
+                                        required
+                                    >
+                                </div>
+
+                                <div class="mb-2">
+                                    <label for="password" class="form-label fw-semibold">
+                                        Contraseña
+                                    </label>
+
+                                    <div class="password-wrap">
+                                        <input
+                                            id="password"
+                                            type="password"
+                                            name="password"
+                                            class="form-control"
+                                            autocomplete="current-password"
+                                            required
+                                        >
+
+                                        <button
+                                            type="button"
+                                            class="toggle-password"
+                                            id="togglePassword"
+                                            aria-label="Mostrar u ocultar contraseña"
+                                        >
+                                            Mostrar
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="text-end mb-4">
+                                    <a href="{% url 'recuperar_password' %}" class="forgot-link">
+                                        ¿Olvidaste tu contraseña?
+                                    </a>
+                                </div>
+
+                                <button type="submit" class="btn btn-success w-100">
+                                    Ingresar
+                                </button>
+                            </form>
+
+                            <div class="footer-note text-center mt-4">
+                                Comunidad360 · Las Acacias Hudson
+                            </div>
+
+                        </div>
                     </div>
 
-                    <button
-                        type="submit"
-                        class="btn btn-success w-100"
-                    >
-                        Ingresar
-                    </button>
-
-                </form>
-
+                </div>
             </div>
 
         </div>
-
     </div>
-
 </div>
+
+<script>
+    const toggle = document.getElementById("togglePassword");
+    const password = document.getElementById("password");
+
+    toggle.addEventListener("click", function () {
+        const mostrar = password.type === "password";
+        password.type = mostrar ? "text" : "password";
+        toggle.textContent = mostrar ? "Ocultar" : "Mostrar";
+    });
+</script>
 
 </body>
 </html>
