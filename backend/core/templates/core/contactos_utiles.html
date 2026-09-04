@@ -1,192 +1,98 @@
 {% load static %}
-
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Contactos útiles - Comunidad360</title>
-
-    <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
-        rel="stylesheet"
-    >
-
-    <link
-        rel="stylesheet"
-        href="{% static 'core/css/styles.css' %}"
-    >
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contactos útiles - Las Acacias</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'core/css/styles.css' %}">
+<style>
+:root{--verde:#1f6b45;--verde-oscuro:#155236;--verde-suave:#eaf4ee;--fondo:#f4f7f4;--texto:#24322a;--borde:#dfe8e2;--muted:#6d7b73}
+body{background:var(--fondo);color:var(--texto);font-family:"Segoe UI",Arial,sans-serif}
+.topbar,.panel,.contact-card{background:#fff;border:1px solid var(--borde);border-radius:20px;box-shadow:0 12px 32px rgba(31,107,69,.08)}
+.brand-logo{height:54px;width:auto}.brand-title{font-weight:750;color:var(--verde);line-height:1.05}.brand-sub{color:#718078;font-size:.88rem}
+.page-title,.section-title{font-weight:750}.btn-success{background:var(--verde);border-color:var(--verde)}.btn-success:hover{background:var(--verde-oscuro);border-color:var(--verde-oscuro)}
+.btn-outline-success{color:var(--verde);border-color:var(--verde)}.btn-outline-success:hover{background:var(--verde);border-color:var(--verde)}
+.intro{background:linear-gradient(135deg,#f8fbf9,#eaf4ee)}
+.category-title{font-weight:750;color:var(--verde)}
+.contact-card{height:100%;padding:20px;box-shadow:none;transition:.18s ease}
+.contact-card:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(31,107,69,.08)}
+.phone{font-size:1.25rem;font-weight:750;color:var(--texto)}
+.muted{color:var(--muted)}.empty-state{background:#fff;border:1px dashed #ccd8d0;border-radius:18px;padding:36px;text-align:center;color:var(--muted)}
+@media(max-width:767px){.brand-logo{height:44px}.topbar,.panel,.contact-card{border-radius:16px}}
+</style>
 </head>
-
 <body>
-
 <div class="container py-4">
 
-    <!-- ENCABEZADO -->
+<header class="topbar p-3 p-md-4 mb-4">
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+<div class="d-flex align-items-center gap-3">
+<img src="{% static 'core/img/las_acacias_logo.png' %}" class="brand-logo" alt="Las Acacias">
+<div>
+<div class="brand-title fs-4">Las Acacias</div>
+<div class="brand-sub">Comunidad360 · Portal del vecino</div>
+</div>
+</div>
+<a href="{% url 'portal' %}" class="btn btn-outline-success">Volver al portal</a>
+</div>
+</header>
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
-
-        <div>
-            <h1 class="text-success mb-1">
-                📞 Contactos útiles
-            </h1>
-
-            <div class="text-secondary">
-                Las Acacias Hudson
-            </div>
-        </div>
-
-        <a
-            href="{% url 'portal' %}"
-            class="btn btn-outline-secondary"
-        >
-            Volver al portal
-        </a>
-
-    </div>
-
-
-    <!-- INTRODUCCIÓN -->
-
-    <div class="card shadow-sm border-0 mb-4">
-
-        <div class="card-body p-4">
-
-            <h4 class="text-success">
-                Información de contacto
-            </h4>
-
-            <p class="text-secondary mb-0">
-                Encontrá rápidamente los teléfonos de seguridad,
-                emergencias, administración, mantenimiento y
-                otros servicios importantes del barrio.
-            </p>
-
-        </div>
-
-    </div>
-
-
-    <!-- CONTACTOS POR CATEGORÍA -->
-
-    {% for categoria in categorias %}
-
-        <div class="card shadow-sm border-0 mb-4">
-
-            <div class="card-body p-4">
-
-                <h3 class="text-success mb-4">
-                    {{ categoria.nombre }}
-                </h3>
-
-
-                <div class="row g-3">
-
-                    {% for contacto in categoria.contactos %}
-
-                        <div class="col-md-6">
-
-                            <div class="border rounded p-3 h-100">
-
-                                <h5 class="mb-2">
-                                    {{ contacto.nombre }}
-                                </h5>
-
-
-                                {% if contacto.descripcion %}
-
-                                    <p class="text-secondary">
-                                        {{ contacto.descripcion }}
-                                    </p>
-
-                                {% endif %}
-
-
-                                <div class="mb-3">
-
-                                    <strong>
-                                        Teléfono:
-                                    </strong>
-
-                                    <div class="fs-5">
-                                        {{ contacto.telefono }}
-                                    </div>
-
-                                </div>
-
-
-                                <div class="d-grid gap-2">
-
-                                    <a
-                                        href="tel:{{ contacto.telefono }}"
-                                        class="btn btn-success"
-                                    >
-                                        📞 Llamar
-                                    </a>
-
-
-                                    {% if contacto.whatsapp %}
-
-                                        <a
-                                            href="https://wa.me/{{ contacto.whatsapp }}"
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            class="btn btn-outline-success"
-                                        >
-                                            💬 WhatsApp
-                                        </a>
-
-                                    {% endif %}
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    {% endfor %}
-
-                </div>
-
-            </div>
-
-        </div>
-
-
-    {% empty %}
-
-        <div class="card shadow-sm border-0">
-
-            <div class="card-body text-center p-5">
-
-                <div class="fs-1 mb-3">
-                    📞
-                </div>
-
-                <h4>
-                    No hay contactos disponibles
-                </h4>
-
-                <p class="text-secondary mb-0">
-                    Administración todavía no publicó
-                    contactos útiles.
-                </p>
-
-            </div>
-
-        </div>
-
-    {% endfor %}
-
-
-    <div class="text-center text-secondary small mt-4">
-        Comunidad360 · Las Acacias Hudson
-    </div>
-
+<div class="mb-4">
+<h1 class="page-title h2 mb-1">Contactos útiles</h1>
+<div class="text-secondary">Las Acacias Hudson</div>
 </div>
 
-</body>
+<section class="panel intro p-3 p-md-4 mb-4">
+<h2 class="section-title h5 mb-1">Información de contacto</h2>
+<p class="text-secondary mb-0">Encontrá rápidamente los teléfonos de seguridad, emergencias, administración, mantenimiento y otros servicios importantes del barrio.</p>
+</section>
 
+{% for categoria in categorias %}
+<section class="panel p-3 p-md-4 mb-4">
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+<h2 class="category-title h4 mb-0">{{ categoria.nombre }}</h2>
+<span class="badge text-bg-light border text-secondary">{{ categoria.contactos|length }} contacto{{ categoria.contactos|length|pluralize }}</span>
+</div>
+
+<div class="row g-3">
+{% for contacto in categoria.contactos %}
+<div class="col-md-6">
+<div class="contact-card">
+<div class="d-flex flex-column h-100">
+<div>
+<h3 class="h5 mb-2">{{ contacto.nombre }}</h3>
+{% if contacto.descripcion %}
+<p class="muted mb-3">{{ contacto.descripcion }}</p>
+{% endif %}
+<div class="small text-secondary">Teléfono</div>
+<div class="phone mb-3">{{ contacto.telefono }}</div>
+</div>
+
+<div class="d-grid gap-2 mt-auto">
+<a href="tel:{{ contacto.telefono }}" class="btn btn-success">Llamar</a>
+{% if contacto.whatsapp %}
+<a href="https://wa.me/{{ contacto.whatsapp }}" target="_blank" rel="noopener noreferrer" class="btn btn-outline-success">WhatsApp</a>
+{% endif %}
+</div>
+</div>
+</div>
+</div>
+{% endfor %}
+</div>
+</section>
+
+{% empty %}
+<div class="empty-state">
+<div class="fs-1 mb-3">📞</div>
+<h4>No hay contactos disponibles</h4>
+<p class="mb-0">Administración todavía no publicó contactos útiles.</p>
+</div>
+{% endfor %}
+
+<div class="text-center text-secondary small mt-4">Comunidad360 · Las Acacias Hudson</div>
+
+</div>
+</body>
 </html>
