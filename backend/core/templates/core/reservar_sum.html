@@ -46,6 +46,7 @@ textarea.form-control{min-height:110px}
 {% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors }}</div>{% endif %}
 <form method="POST">{% csrf_token %}
 <div class="row g-3">
+<div class="col-md-6"><label class="form-label fw-semibold">Solicitado por</label>{{ form.solicitado_por }}{% for error in form.solicitado_por.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}</div>
 <div class="col-md-6"><label class="form-label fw-semibold">Fecha</label>{{ form.fecha }}{% for error in form.fecha.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}</div>
 <div class="col-md-6"><label class="form-label fw-semibold">Turno</label>{{ form.turno }}{% for error in form.turno.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}</div>
 <div class="col-md-6"><label class="form-label fw-semibold">Cantidad estimada de personas</label>{{ form.cantidad_personas }}{% for error in form.cantidad_personas.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}</div>

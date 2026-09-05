@@ -18,6 +18,7 @@ class ReservaSUMForm(forms.ModelForm):
         model = ReservaSUM
 
         fields = [
+            "solicitado_por",
             "fecha",
             "turno",
             "cantidad_personas",
@@ -25,6 +26,11 @@ class ReservaSUMForm(forms.ModelForm):
         ]
 
         widgets = {
+            "solicitado_por": forms.Select(
+                attrs={
+                    "class": "form-select",
+                }
+            ),
             "fecha": forms.DateInput(
                 attrs={
                     "type": "date",
@@ -50,6 +56,22 @@ class ReservaSUMForm(forms.ModelForm):
                 }
             ),
         }
+
+    def __init__(self, *args, lote=None, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields["solicitado_por"].empty_label = "Seleccioná quién solicita"
+
+        if lote is not None:
+            self.fields["solicitado_por"].queryset = (
+                self.fields["solicitado_por"].queryset
+                .filter(lote=lote, activo=True)
+                .order_by("apellido", "nombre")
+            )
+        else:
+            self.fields["solicitado_por"].queryset = (
+                self.fields["solicitado_por"].queryset.none()
+            )
 
 
 class SolicitudModificacionFamiliaForm(forms.ModelForm):

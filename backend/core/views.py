@@ -383,7 +383,8 @@ def reservar_sum(request):
     if request.method == "POST":
 
         form = ReservaSUMForm(
-            request.POST
+            request.POST,
+            lote=lote
         )
 
         if form.is_valid():
@@ -423,7 +424,8 @@ def reservar_sum(request):
             initial={
                 "fecha": fecha_inicial,
                 "turno": turno_inicial,
-            }
+            },
+            lote=lote
         )
 
     return render(

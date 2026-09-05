@@ -131,6 +131,15 @@ class ReservaSUM(models.Model):
         related_name="reservas_sum"
     )
 
+    solicitado_por = models.ForeignKey(
+        Integrante,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="reservas_sum_solicitadas",
+        verbose_name="Solicitado por"
+    )
+
     fecha = models.DateField(
         "Fecha de reserva"
     )
