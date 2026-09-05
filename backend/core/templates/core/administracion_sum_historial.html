@@ -1,0 +1,88 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SUM · Administración · Las Acacias</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+:root{--green:#176b45;--green-dark:#0f5436;--green-soft:#edf7f1;--line:#dfe8e2;--muted:#6b7470;--bg:#f5f7f5}
+body{background:var(--bg);font-family:"Segoe UI",Arial,sans-serif;color:#1f2b25}
+.topbar{background:white;border-bottom:1px solid var(--line)}
+.logo{width:54px;height:54px;object-fit:contain}.brand{font-size:1.15rem;font-weight:750}.muted{color:var(--muted)}
+.hero{background:linear-gradient(135deg,var(--green-dark),var(--green));border-radius:22px;color:white;padding:24px}
+.metric,.panel{background:white;border:1px solid var(--line);border-radius:18px;box-shadow:0 5px 18px rgba(21,62,43,.05)}
+.metric{padding:18px;height:100%}.metric .n{font-size:1.7rem;font-weight:800;color:var(--green-dark)}.panel{padding:20px}
+.form-control,.form-select{border-radius:11px;border-color:#d7e2da}.btn-oa{background:var(--green);border-color:var(--green);color:#fff}
+.btn-oa:hover{background:var(--green-dark);border-color:var(--green-dark);color:#fff}.table-wrap{overflow:auto}.table{min-width:980px;margin-bottom:0}
+.table th{font-size:.78rem;text-transform:uppercase;letter-spacing:.03em;color:var(--muted);background:#f8faf8;border-bottom-color:var(--line)}
+.table td{vertical-align:middle;border-bottom-color:#edf1ee}.status-pendiente{background:#fff4d6;color:#805b00}
+.status-confirmada{background:#e9f7ee;color:#176b45}.status-cancelada{background:#fdecec;color:#9a2d2d}
+@media(max-width:700px){.hero{padding:20px}.panel{padding:15px}}
+</style>
+</head>
+<body>
+<header class="topbar"><div class="container py-3 d-flex align-items-center justify-content-between gap-3">
+<div class="d-flex align-items-center gap-3"><img src="{% static 'core/img/las_acacias_logo.png' %}" class="logo" alt="Las Acacias">
+<div><div class="brand">Las Acacias</div><div class="muted small">Administración · Comunidad360</div></div></div>
+<div class="d-flex gap-2"><a href="{% url 'administracion_dashboard' %}" class="btn btn-sm btn-outline-success">Volver</a>
+<a href="{% url 'logout' %}" class="btn btn-sm btn-outline-secondary">Cerrar sesión</a></div></div></header>
+
+<main class="container py-4">
+<section class="hero mb-4"><div class="small text-uppercase fw-semibold mb-2">Administración del SUM</div>
+<h1 class="h2 fw-bold mb-2">Histórico de reservas</h1><p class="mb-0 opacity-75">Consultá reservas, solicitantes, lotes, estados y cantidad estimada de asistentes.</p></section>
+
+<div class="row g-3 mb-4">
+<div class="col-6 col-lg"><div class="metric"><div class="muted small">Reservas</div><div class="n">{{ total }}</div></div></div>
+<div class="col-6 col-lg"><div class="metric"><div class="muted small">Pendientes</div><div class="n">{{ pendientes }}</div></div></div>
+<div class="col-6 col-lg"><div class="metric"><div class="muted small">Confirmadas</div><div class="n">{{ confirmadas }}</div></div></div>
+<div class="col-6 col-lg"><div class="metric"><div class="muted small">Canceladas</div><div class="n">{{ canceladas }}</div></div></div>
+<div class="col-12 col-lg"><div class="metric"><div class="muted small">Personas estimadas</div><div class="n">{{ personas }}</div></div></div>
+</div>
+
+<section class="panel mb-4">
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+<div><h2 class="h5 fw-bold mb-1">Filtros</h2><div class="muted small">Los indicadores y la tabla responden a los filtros aplicados.</div></div>
+<a href="{% url 'administracion_sum_historial' %}" class="btn btn-sm btn-outline-secondary">Limpiar filtros</a></div>
+
+<form method="get" class="row g-3">
+<div class="col-md-2"><label class="form-label small fw-semibold">Mes</label><select class="form-select" name="mes"><option value="">Todos</option>
+{% for valor,nombre in meses %}<option value="{{ valor }}" {% if filtros.mes == valor %}selected{% endif %}>{{ nombre }}</option>{% endfor %}</select></div>
+<div class="col-md-2"><label class="form-label small fw-semibold">Año</label><select class="form-select" name="anio"><option value="">Todos</option>
+{% for valor in anios %}<option value="{{ valor }}" {% if filtros.anio == valor %}selected{% endif %}>{{ valor }}</option>{% endfor %}</select></div>
+<div class="col-md-2"><label class="form-label small fw-semibold">Lote</label><select class="form-select" name="lote"><option value="">Todos</option>
+{% for lote in lotes %}<option value="{{ lote.id }}" {% if filtros.lote == lote.id %}selected{% endif %}>Lote {{ lote.numero }}</option>{% endfor %}</select></div>
+<div class="col-md-2"><label class="form-label small fw-semibold">Turno</label><select class="form-select" name="turno"><option value="">Todos</option>
+{% for valor,nombre in turnos %}<option value="{{ valor }}" {% if filtros.turno == valor %}selected{% endif %}>{{ nombre }}</option>{% endfor %}</select></div>
+<div class="col-md-2"><label class="form-label small fw-semibold">Estado</label><select class="form-select" name="estado"><option value="">Todos</option>
+{% for valor,nombre in estados %}<option value="{{ valor }}" {% if filtros.estado == valor %}selected{% endif %}>{{ nombre }}</option>{% endfor %}</select></div>
+<div class="col-md-2"><label class="form-label small fw-semibold">Buscar</label><input class="form-control" type="text" name="q" value="{{ filtros.q }}" placeholder="Persona o lote"></div>
+<div class="col-12 d-grid d-md-flex justify-content-md-end"><button class="btn btn-oa px-4" type="submit">Aplicar filtros</button></div>
+</form>
+</section>
+
+<section class="panel">
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+<div><h2 class="h5 fw-bold mb-1">Reservas</h2><div class="muted small">{{ total }} registro{{ total|pluralize }} encontrado{{ total|pluralize }}.</div></div>
+<a href="/admin/core/reservasum/" class="btn btn-sm btn-outline-success">Gestionar estados</a></div>
+
+<div class="table-wrap"><table class="table"><thead><tr>
+<th>Fecha</th><th>Turno</th><th>Lote</th><th>Familia</th><th>Solicitado por</th><th>Personas</th><th>Estado</th><th></th>
+</tr></thead><tbody>
+{% for r in reservas %}
+<tr>
+<td class="fw-semibold">{{ r.fecha|date:"d/m/Y" }}</td><td>{{ r.get_turno_display }}</td><td>Lote {{ r.lote.numero }}</td>
+<td>{{ r.lote.apellido_familia }}</td>
+<td>{% if r.solicitado_por %}{{ r.solicitado_por.nombre }} {{ r.solicitado_por.apellido }}{% else %}<span class="muted">No informado</span>{% endif %}</td>
+<td>{{ r.cantidad_personas }}</td><td><span class="badge status-{{ r.estado }}">{{ r.get_estado_display }}</span></td>
+<td><a class="btn btn-sm btn-outline-secondary" href="/admin/core/reservasum/{{ r.id }}/change/">Editar</a></td>
+</tr>
+{% empty %}
+<tr><td colspan="8" class="text-center py-5 muted">No hay reservas que coincidan con los filtros seleccionados.</td></tr>
+{% endfor %}
+</tbody></table></div>
+</section>
+</main>
+</body>
+</html>

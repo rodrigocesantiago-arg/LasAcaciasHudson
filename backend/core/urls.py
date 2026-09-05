@@ -3,6 +3,7 @@ from django.urls import path
 from . import views
 from . import password_reset_views
 from . import administracion_views
+from . import administracion_sum_views
 
 
 urlpatterns = [
@@ -43,6 +44,11 @@ urlpatterns = [
         "administracion/",
         administracion_views.administracion_dashboard,
         name="administracion_dashboard"
+    ),
+    path(
+        "administracion/sum/",
+        administracion_sum_views.administracion_sum_historial,
+        name="administracion_sum_historial"
     ),
 
     # -------------------------------------------------
