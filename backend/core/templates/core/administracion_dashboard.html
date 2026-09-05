@@ -1,0 +1,56 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Administración · Las Acacias</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+:root{--v:#1f6b45;--vs:#eaf4ee;--bg:#f3f6f4;--tx:#24322a;--mu:#718078;--bd:#dfe8e2}
+body{background:var(--bg);color:var(--tx);font-family:"Segoe UI",Arial,sans-serif}.topbar{background:#fff;border-bottom:1px solid var(--bd)}
+.logo{height:55px}.brand{color:var(--v);font-weight:750;font-size:1.35rem}.muted{color:var(--mu)}
+.hero{background:linear-gradient(100deg,rgba(15,60,38,.92),rgba(31,107,69,.72)),url("{% static 'core/img/las_acacias_portada.png' %}") center/cover;border-radius:22px;color:#fff;padding:32px}
+.metric,.panel,.action{background:#fff;border:1px solid var(--bd);border-radius:18px;box-shadow:0 8px 24px rgba(28,65,44,.05)}
+.metric{padding:20px;height:100%}.metric .n{font-size:2rem;font-weight:750;color:var(--v)}
+.action{display:block;padding:20px;text-decoration:none;color:var(--tx);height:100%;transition:.15s}.action:hover{transform:translateY(-2px);border-color:#b9d2c2;color:var(--tx)}
+.icon{width:43px;height:43px;border-radius:12px;background:var(--vs);display:flex;align-items:center;justify-content:center;font-size:1.25rem}
+.at{font-weight:700;margin-top:14px}.panel{padding:22px}.badge-soft{background:var(--vs);color:var(--v);font-weight:650}
+</style>
+</head>
+<body>
+<header class="topbar"><div class="container py-3 d-flex align-items-center justify-content-between">
+<div class="d-flex align-items-center gap-3"><img src="{% static 'core/img/las_acacias_logo.png' %}" class="logo" alt="Las Acacias"><div><div class="brand">Las Acacias</div><div class="muted small">Administración · Comunidad360</div></div></div>
+<div class="d-flex gap-3 align-items-center"><span class="small d-none d-md-inline">{{ request.user.username }}</span><a href="{% url 'logout' %}" class="btn btn-sm btn-outline-success">Cerrar sesión</a></div>
+</div></header>
+<main class="container py-4">
+<section class="hero mb-4"><div class="small text-uppercase fw-semibold mb-2">Panel de administración</div><h1 class="h2 fw-bold mb-2">Gestión de Las Acacias</h1><p class="mb-0 opacity-75">Resumen operativo y accesos a las principales herramientas de Comunidad360.</p></section>
+
+<div class="row g-3 mb-4">
+{% for label,value in metrics %}{% endfor %}
+<div class="col-6 col-lg"><div class="metric"><div class="muted small">Lotes activos</div><div class="n">{{ lotes_activos }}</div></div></div>
+<div class="col-6 col-lg"><div class="metric"><div class="muted small">Reclamos abiertos</div><div class="n">{{ reclamos_abiertos }}</div></div></div>
+<div class="col-6 col-lg"><div class="metric"><div class="muted small">SUM pendientes</div><div class="n">{{ reservas_pendientes }}</div></div></div>
+<div class="col-6 col-lg"><div class="metric"><div class="muted small">Encomiendas</div><div class="n">{{ encomiendas_pendientes }}</div></div></div>
+<div class="col-12 col-lg"><div class="metric"><div class="muted small">Cambios familiares</div><div class="n">{{ solicitudes_pendientes }}</div></div></div>
+</div>
+
+<h2 class="h5 fw-bold mb-3">Gestión</h2><div class="row g-3 mb-4">
+<div class="col-md-6 col-xl-3"><a class="action" href="/admin/core/lote/"><div class="icon">🏠</div><div class="at">Lotes y familias</div><div class="muted small mt-1">Datos de lotes e integrantes.</div></a></div>
+<div class="col-md-6 col-xl-3"><a class="action" href="/admin/core/solicitudmodificacionfamilia/"><div class="icon">👨‍👩‍👧‍👦</div><div class="at">Solicitudes familiares</div><div class="muted small mt-1">Altas, bajas y modificaciones.</div></a></div>
+<div class="col-md-6 col-xl-3"><a class="action" href="/admin/core/reclamo/"><div class="icon">📝</div><div class="at">Reclamos</div><div class="muted small mt-1">Seguimiento y respuestas.</div></a></div>
+<div class="col-md-6 col-xl-3"><a class="action" href="/admin/core/reservasum/"><div class="icon">📅</div><div class="at">SUM</div><div class="muted small mt-1">Reservas y estados. Próximo: histórico.</div></a></div>
+<div class="col-md-6 col-xl-3"><a class="action" href="/admin/core/encomienda/"><div class="icon">📦</div><div class="at">Encomiendas</div><div class="muted small mt-1">Recepción y entregas.</div></a></div>
+<div class="col-md-6 col-xl-3"><a class="action" href="/admin/core/noticia/"><div class="icon">📰</div><div class="at">Noticias</div><div class="muted small mt-1">Publicaciones para vecinos.</div></a></div>
+<div class="col-md-6 col-xl-3"><a class="action" href="/admin/core/documento/"><div class="icon">📄</div><div class="at">Documentos</div><div class="muted small mt-1">Archivos y reglamentos.</div></a></div>
+<div class="col-md-6 col-xl-3"><a class="action" href="/admin/core/contactoutil/"><div class="icon">☎️</div><div class="at">Contactos útiles</div><div class="muted small mt-1">Teléfonos y servicios.</div></a></div>
+</div>
+
+<div class="row g-4">
+<div class="col-lg-6"><div class="panel h-100"><h2 class="h5 fw-bold mb-3">Reclamos que requieren atención</h2>
+{% for r in ultimos_reclamos %}<div class="border-bottom py-2 d-flex justify-content-between gap-2"><div><b>{{ r.asunto }}</b><div class="muted small">Lote {{ r.lote.numero }} · {{ r.get_categoria_display }}</div></div><span class="badge badge-soft align-self-center">{{ r.get_estado_display }}</span></div>{% empty %}<div class="muted">No hay reclamos abiertos.</div>{% endfor %}
+</div></div>
+<div class="col-lg-6"><div class="panel h-100"><h2 class="h5 fw-bold mb-3">Próximas reservas del SUM</h2>
+{% for r in proximas_reservas %}<div class="border-bottom py-2 d-flex justify-content-between gap-2"><div><b>{{ r.fecha|date:"d/m/Y" }} · {{ r.get_turno_display }}</b><div class="muted small">Lote {{ r.lote.numero }} · {{ r.cantidad_personas }} personas</div></div><span class="badge badge-soft align-self-center">{{ r.get_estado_display }}</span></div>{% empty %}<div class="muted">No hay próximas reservas.</div>{% endfor %}
+</div></div>
+</div>
+</main></body></html>
