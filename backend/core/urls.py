@@ -6,6 +6,7 @@ from . import administracion_views
 from . import administracion_sum_views
 from . import administracion_reclamos_views
 from . import administracion_solicitudes_familiares_views
+from . import administracion_lotes_views
 
 
 urlpatterns = [
@@ -283,6 +284,17 @@ urlpatterns = [
         "administracion/solicitudes-familiares/<int:solicitud_id>/resolver/",
         administracion_solicitudes_familiares_views.administracion_solicitud_familiar_resolver,
         name="administracion_solicitud_familiar_resolver",
+    ),
+
+    path(
+        "administracion/lotes/",
+        administracion_lotes_views.administracion_lotes,
+        name="administracion_lotes",
+    ),
+    path(
+        "administracion/lotes/<int:lote_id>/",
+        administracion_lotes_views.administracion_lote_detalle,
+        name="administracion_lote_detalle",
     ),
 
 ]

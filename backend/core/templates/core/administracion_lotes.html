@@ -1,0 +1,113 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lotes y familias | Administración | Las Acacias</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+:root{--g:#176b45;--gd:#0f5436;--line:#dfe8e2;--muted:#6b7470;--bg:#f5f7f5}
+body{background:var(--bg);font-family:"Segoe UI",Arial,sans-serif;color:#1f2b25}
+.topbar{background:#fff;border-bottom:1px solid var(--line)}
+.logo{width:54px;height:54px;object-fit:contain}
+.brand{font-size:1.15rem;font-weight:750}
+.muted{color:var(--muted)}
+.hero{background:linear-gradient(135deg,var(--gd),var(--g));border-radius:22px;color:#fff;padding:24px}
+.metric,.panel{background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:0 5px 18px rgba(21,62,43,.05)}
+.metric{padding:18px;height:100%}.metric .n{font-size:1.7rem;font-weight:800;color:var(--gd)}
+.panel{padding:20px}.form-control,.form-select{border-radius:11px;border-color:#d7e2da}
+.btn-oa{background:var(--g);border-color:var(--g);color:#fff}
+.table-wrap{overflow:auto}.table{min-width:980px;margin:0}
+.table th{font-size:.78rem;text-transform:uppercase;color:var(--muted);background:#f8faf8}
+.table td{vertical-align:middle}
+.badge-ok{background:#e9f7ee;color:#176b45}.badge-off{background:#f1f1f1;color:#666}
+</style>
+</head>
+<body>
+<header class="topbar">
+<div class="container py-3 d-flex justify-content-between align-items-center gap-3">
+<div class="d-flex align-items-center gap-3">
+<img src="{% static 'core/img/las_acacias_logo.png' %}" class="logo" alt="Las Acacias">
+<div><div class="brand">Las Acacias</div><div class="muted small">Administración · Comunidad360</div></div>
+</div>
+<div class="d-flex gap-2">
+<a href="{% url 'administracion_dashboard' %}" class="btn btn-sm btn-outline-success">Volver</a>
+<a href="{% url 'logout' %}" class="btn btn-sm btn-outline-secondary">Cerrar sesión</a>
+</div>
+</div>
+</header>
+
+<main class="container py-4">
+<section class="hero mb-4">
+<div class="small text-uppercase fw-semibold mb-2">Administración de vecinos</div>
+<h1 class="h2 fw-bold mb-2">Lotes y familias</h1>
+<p class="mb-0 opacity-75">Consultá familias, integrantes, datos de contacto y acceso al portal.</p>
+</section>
+
+<div class="row g-3 mb-4">
+<div class="col-6 col-lg-3"><div class="metric"><div class="muted small">Total</div><div class="n">{{ total }}</div></div></div>
+<div class="col-6 col-lg-3"><div class="metric"><div class="muted small">Activos</div><div class="n">{{ activos }}</div></div></div>
+<div class="col-6 col-lg-3"><div class="metric"><div class="muted small">Inactivos</div><div class="n">{{ inactivos }}</div></div></div>
+<div class="col-6 col-lg-3"><div class="metric"><div class="muted small">Con usuario</div><div class="n">{{ con_usuario }}</div></div></div>
+</div>
+
+<section class="panel mb-4">
+<div class="d-flex justify-content-between gap-2 mb-3">
+<div><h2 class="h5 fw-bold mb-1">Filtros</h2><div class="muted small">Buscá por lote, familia, email o teléfono.</div></div>
+<a href="{% url 'administracion_lotes' %}" class="btn btn-sm btn-outline-secondary align-self-start">Limpiar</a>
+</div>
+<form method="get" class="row g-3">
+<div class="col-md-4">
+<label class="form-label small fw-semibold">Estado</label>
+<select name="estado" class="form-select">
+<option value="">Todos</option>
+<option value="activos" {% if filtros.estado == "activos" %}selected{% endif %}>Activos</option>
+<option value="inactivos" {% if filtros.estado == "inactivos" %}selected{% endif %}>Inactivos</option>
+</select>
+</div>
+<div class="col-md-6">
+<label class="form-label small fw-semibold">Buscar</label>
+<input name="q" value="{{ filtros.q }}" class="form-control" placeholder="Ej.: 65, Santiago, email o teléfono">
+</div>
+<div class="col-md-2 d-grid align-items-end">
+<button class="btn btn-oa">Buscar</button>
+</div>
+</form>
+</section>
+
+<section class="panel">
+<h2 class="h5 fw-bold mb-3">Listado de lotes</h2>
+<div class="table-wrap">
+<table class="table">
+<thead><tr><th>Lote</th><th>Familia</th><th>Email</th><th>Teléfono</th><th>Integrantes</th><th>Acceso</th><th>Estado</th><th></th></tr></thead>
+<tbody>
+{% for lote in lotes %}
+<tr>
+<td class="fw-bold">{{ lote.numero }}</td>
+<td>{{ lote.apellido_familia }}</td>
+<td>{{ lote.email|default:"—" }}</td>
+<td>{{ lote.telefono|default:"—" }}</td>
+<td>{{ lote.integrantes_activos }} activos</td>
+<td>
+{% if lote.usuario %}
+<span class="badge badge-ok">{{ lote.usuario.username }}</span>
+{% else %}
+<span class="muted">Sin usuario</span>
+{% endif %}
+</td>
+<td>
+{% if lote.activo %}<span class="badge badge-ok">Activo</span>{% else %}<span class="badge badge-off">Inactivo</span>{% endif %}
+</td>
+<td><a href="{% url 'administracion_lote_detalle' lote.id %}" class="btn btn-sm btn-outline-secondary">Ver ficha</a></td>
+</tr>
+{% empty %}
+<tr><td colspan="8" class="text-center py-5 muted">No hay lotes que coincidan con la búsqueda.</td></tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+</section>
+</main>
+</body>
+</html>
