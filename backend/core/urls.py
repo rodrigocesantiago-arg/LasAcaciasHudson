@@ -5,6 +5,7 @@ from . import password_reset_views
 from . import administracion_views
 from . import administracion_sum_views
 from . import administracion_reclamos_views
+from . import administracion_solicitudes_familiares_views
 
 
 urlpatterns = [
@@ -268,4 +269,20 @@ urlpatterns = [
         administracion_reclamos_views.administracion_reclamo_detalle,
         name="administracion_reclamo_detalle",
     ),
+    path(
+        "administracion/solicitudes-familiares/",
+        administracion_solicitudes_familiares_views.administracion_solicitudes_familiares,
+        name="administracion_solicitudes_familiares",
+    ),
+    path(
+        "administracion/solicitudes-familiares/<int:solicitud_id>/",
+        administracion_solicitudes_familiares_views.administracion_solicitud_familiar_detalle,
+        name="administracion_solicitud_familiar_detalle",
+    ),
+    path(
+        "administracion/solicitudes-familiares/<int:solicitud_id>/resolver/",
+        administracion_solicitudes_familiares_views.administracion_solicitud_familiar_resolver,
+        name="administracion_solicitud_familiar_resolver",
+    ),
+
 ]
