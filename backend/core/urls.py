@@ -4,6 +4,7 @@ from . import views
 from . import password_reset_views
 from . import administracion_views
 from . import administracion_sum_views
+from . import administracion_reclamos_views
 
 
 urlpatterns = [
@@ -255,5 +256,16 @@ urlpatterns = [
         "logout/",
         views.logout_view,
         name="logout"
+    ),
+
+    path(
+        "administracion/reclamos/",
+        administracion_reclamos_views.administracion_reclamos,
+        name="administracion_reclamos",
+    ),
+    path(
+        "administracion/reclamos/<int:reclamo_id>/",
+        administracion_reclamos_views.administracion_reclamo_detalle,
+        name="administracion_reclamo_detalle",
     ),
 ]
