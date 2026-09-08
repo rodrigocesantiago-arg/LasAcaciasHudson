@@ -8,6 +8,7 @@ from . import administracion_reclamos_views
 from . import administracion_solicitudes_familiares_views
 from . import administracion_lotes_views
 from . import administracion_encomiendas_views
+from . import administracion_noticias_views
 
 
 urlpatterns = [
@@ -307,6 +308,27 @@ urlpatterns = [
         "administracion/encomiendas/<int:encomienda_id>/",
         administracion_encomiendas_views.administracion_encomienda_detalle,
         name="administracion_encomienda_detalle",
+    ),
+
+    path(
+        "administracion/noticias/",
+        administracion_noticias_views.administracion_noticias,
+        name="administracion_noticias",
+    ),
+    path(
+        "administracion/noticias/nueva/",
+        administracion_noticias_views.administracion_noticia_nueva,
+        name="administracion_noticia_nueva",
+    ),
+    path(
+        "administracion/noticias/<int:noticia_id>/editar/",
+        administracion_noticias_views.administracion_noticia_editar,
+        name="administracion_noticia_editar",
+    ),
+    path(
+        "administracion/noticias/<int:noticia_id>/eliminar/",
+        administracion_noticias_views.administracion_noticia_eliminar,
+        name="administracion_noticia_eliminar",
     ),
 
 ]
