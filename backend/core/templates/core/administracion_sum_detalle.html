@@ -1,0 +1,93 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reserva SUM - Administracion - Las Acacias</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+:root{--g:#176b45;--gd:#0f5436;--line:#dfe8e2;--muted:#6b7470;--bg:#f5f7f5}
+body{background:var(--bg);font-family:"Segoe UI",Arial,sans-serif;color:#1f2b25}
+.topbar{background:#fff;border-bottom:1px solid var(--line)}
+.logo{width:54px;height:54px;object-fit:contain}.brand{font-size:1.15rem;font-weight:750}.muted{color:var(--muted)}
+.hero{background:linear-gradient(135deg,var(--gd),var(--g));border-radius:22px;color:#fff;padding:24px}
+.panel{background:#fff;border:1px solid var(--line);border-radius:18px;padding:22px;box-shadow:0 5px 18px rgba(21,62,43,.05)}
+.lab{font-size:.78rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);font-weight:700}
+.val{font-size:1.05rem;font-weight:650;margin-top:3px}
+.status-pendiente{background:#fff4d6;color:#805b00}.status-confirmada{background:#e9f7ee;color:#176b45}.status-cancelada{background:#fdecec;color:#9a2d2d}
+.btn-confirm{background:var(--g);border-color:var(--g);color:#fff}.btn-confirm:hover{background:var(--gd);border-color:var(--gd);color:#fff}
+.obs{white-space:pre-wrap;background:#f8faf8;border-radius:12px;padding:14px;min-height:58px}
+</style>
+</head>
+<body>
+<header class="topbar"><div class="container py-3 d-flex align-items-center justify-content-between gap-3">
+<div class="d-flex align-items-center gap-3">
+<img src="{% static 'core/img/las_acacias_logo.png' %}" class="logo" alt="Las Acacias">
+<div><div class="brand">Las Acacias</div><div class="muted small">Administracion - Comunidad360</div></div>
+</div>
+<a href="{% url 'logout' %}" class="btn btn-sm btn-outline-secondary">Cerrar sesion</a>
+</div></header>
+
+<main class="container py-4">
+<section class="hero mb-4">
+<div class="small text-uppercase fw-semibold mb-2">Administracion del SUM</div>
+<h1 class="h2 fw-bold mb-2">Reserva del {{ reserva.fecha|date:"d/m/Y" }}</h1>
+<p class="mb-0 opacity-75">Lote {{ reserva.lote.numero }} - {{ reserva.lote.apellido_familia }} - {{ reserva.get_turno_display }}</p>
+</section>
+
+{% for message in messages %}
+<div class="alert {% if message.tags == 'success' %}alert-success{% elif message.tags == 'error' %}alert-danger{% else %}alert-info{% endif %}">{{ message }}</div>
+{% endfor %}
+
+<div class="row g-4">
+<div class="col-lg-8">
+<section class="panel">
+<div class="d-flex justify-content-between align-items-center gap-3 mb-4">
+<div><h2 class="h5 fw-bold mb-1">Datos de la reserva</h2><div class="muted small">Informacion registrada por el vecino.</div></div>
+<span class="badge status-{{ reserva.estado }} fs-6">{{ reserva.get_estado_display }}</span>
+</div>
+<div class="row g-4">
+<div class="col-md-4"><div class="lab">Fecha</div><div class="val">{{ reserva.fecha|date:"d/m/Y" }}</div></div>
+<div class="col-md-4"><div class="lab">Turno</div><div class="val">{{ reserva.get_turno_display }}</div></div>
+<div class="col-md-4"><div class="lab">Personas</div><div class="val">{{ reserva.cantidad_personas }}</div></div>
+<div class="col-md-4"><div class="lab">Lote</div><div class="val">{{ reserva.lote.numero }}</div></div>
+<div class="col-md-4"><div class="lab">Familia</div><div class="val">{{ reserva.lote.apellido_familia }}</div></div>
+<div class="col-md-4"><div class="lab">Solicitado por</div><div class="val">{% if reserva.solicitado_por %}{{ reserva.solicitado_por.nombre }} {{ reserva.solicitado_por.apellido }}{% else %}<span class="muted">No informado</span>{% endif %}</div></div>
+<div class="col-12"><div class="lab mb-2">Observaciones</div><div class="obs">{% if reserva.observaciones %}{{ reserva.observaciones }}{% else %}<span class="muted">Sin observaciones.</span>{% endif %}</div></div>
+<div class="col-12"><div class="lab">Solicitud creada</div><div class="val">{{ reserva.fecha_creacion|date:"d/m/Y H:i" }}</div></div>
+</div>
+</section>
+</div>
+
+<div class="col-lg-4">
+<section class="panel">
+<h2 class="h5 fw-bold mb-2">Gestionar reserva</h2>
+<p class="muted small">Cambia el estado directamente desde Comunidad360.</p>
+
+{% if reserva.estado != "confirmada" %}
+<form method="post" action="{% url 'administracion_sum_cambiar_estado' reserva.id %}" class="mb-2">
+{% csrf_token %}
+<input type="hidden" name="estado" value="confirmada">
+<button type="submit" class="btn btn-confirm w-100">Confirmar reserva</button>
+</form>
+{% endif %}
+
+{% if reserva.estado != "cancelada" %}
+<form method="post" action="{% url 'administracion_sum_cambiar_estado' reserva.id %}" onsubmit="return confirm('Confirmas la cancelacion de esta reserva?');">
+{% csrf_token %}
+<input type="hidden" name="estado" value="cancelada">
+<button type="submit" class="btn btn-outline-danger w-100">Cancelar reserva</button>
+</form>
+{% endif %}
+
+{% if reserva.estado == "cancelada" %}
+<div class="alert alert-light border mt-3 mb-0 small">La reserva esta cancelada. Administracion puede volver a confirmarla si fuera necesario.</div>
+{% endif %}
+</section>
+<a href="{% url 'administracion_sum_historial' %}" class="btn btn-outline-success w-100 mt-3">Volver al historico</a>
+</div>
+</div>
+</main>
+</body>
+</html>

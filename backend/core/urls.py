@@ -50,6 +50,16 @@ urlpatterns = [
         administracion_sum_views.administracion_sum_historial,
         name="administracion_sum_historial"
     ),
+    path(
+        "administracion/sum/<int:reserva_id>/",
+        administracion_sum_views.administracion_sum_detalle,
+        name="administracion_sum_detalle"
+    ),
+    path(
+        "administracion/sum/<int:reserva_id>/estado/",
+        administracion_sum_views.administracion_sum_cambiar_estado,
+        name="administracion_sum_cambiar_estado"
+    ),
 
     # -------------------------------------------------
     # PORTAL DEL VECINO

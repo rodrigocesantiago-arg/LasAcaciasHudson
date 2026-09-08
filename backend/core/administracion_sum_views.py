@@ -1,5 +1,6 @@
 from django.db.models import Q, Sum
-from django.shortcuts import render
+from django.contrib import messages
+from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 
 from .administracion_views import superuser_required
@@ -97,3 +98,40 @@ def administracion_sum_historial(request):
             "personas": personas,
         }
     )
+@superuser_required
+def administracion_sum_detalle(request, reserva_id):
+    reserva = get_object_or_404(
+        ReservaSUM.objects.select_related("lote", "solicitado_por"),
+        pk=reserva_id,
+    )
+    return render(
+        request,
+        "core/administracion_sum_detalle.html",
+        {"reserva": reserva},
+    )
+
+
+@superuser_required
+def administracion_sum_cambiar_estado(request, reserva_id):
+    reserva = get_object_or_404(ReservaSUM, pk=reserva_id)
+
+    if request.method != "POST":
+        return redirect("administracion_sum_detalle", reserva_id=reserva.id)
+
+    nuevo_estado = request.POST.get("estado", "").strip()
+
+    if nuevo_estado not in {"confirmada", "cancelada"}:
+        messages.error(request, "El estado solicitado no es valido.")
+    elif reserva.estado == nuevo_estado:
+        messages.info(request, "La reserva ya tiene ese estado.")
+    else:
+        reserva.estado = nuevo_estado
+        reserva.save(update_fields=["estado"])
+        messages.success(
+            request,
+            f"Reserva marcada como {reserva.get_estado_display().lower()}."
+        )
+
+    return redirect("administracion_sum_detalle", reserva_id=reserva.id)
+
+

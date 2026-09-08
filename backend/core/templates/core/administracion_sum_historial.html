@@ -65,7 +65,7 @@ body{background:var(--bg);font-family:"Segoe UI",Arial,sans-serif;color:#1f2b25}
 <section class="panel">
 <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
 <div><h2 class="h5 fw-bold mb-1">Reservas</h2><div class="muted small">{{ total }} registro{{ total|pluralize }} encontrado{{ total|pluralize }}.</div></div>
-<a href="/admin/core/reservasum/" class="btn btn-sm btn-outline-success">Gestionar estados</a></div>
+<span class="muted small">Gestion integrada en Comunidad360</span></div>
 
 <div class="table-wrap"><table class="table"><thead><tr>
 <th>Fecha</th><th>Turno</th><th>Lote</th><th>Familia</th><th>Solicitado por</th><th>Personas</th><th>Estado</th><th></th>
@@ -76,7 +76,7 @@ body{background:var(--bg);font-family:"Segoe UI",Arial,sans-serif;color:#1f2b25}
 <td>{{ r.lote.apellido_familia }}</td>
 <td>{% if r.solicitado_por %}{{ r.solicitado_por.nombre }} {{ r.solicitado_por.apellido }}{% else %}<span class="muted">No informado</span>{% endif %}</td>
 <td>{{ r.cantidad_personas }}</td><td><span class="badge status-{{ r.estado }}">{{ r.get_estado_display }}</span></td>
-<td><a class="btn btn-sm btn-outline-secondary" href="/admin/core/reservasum/{{ r.id }}/change/">Editar</a></td>
+<td><a class="btn btn-sm btn-outline-secondary" href="{% url 'administracion_sum_detalle' r.id %}">Ver / gestionar</a></td>
 </tr>
 {% empty %}
 <tr><td colspan="8" class="text-center py-5 muted">No hay reservas que coincidan con los filtros seleccionados.</td></tr>
