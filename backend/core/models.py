@@ -642,6 +642,7 @@ class ContactoUtil(models.Model):
         ("seguridad", "Seguridad"),
         ("emergencias", "Emergencias"),
         ("administracion", "Administración"),
+        ("intendencia", "Intendencia"),
         ("mantenimiento", "Mantenimiento"),
         ("servicios", "Servicios"),
         ("otro", "Otro"),

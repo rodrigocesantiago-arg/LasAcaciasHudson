@@ -10,6 +10,7 @@ from . import administracion_lotes_views
 from . import administracion_encomiendas_views
 from . import administracion_noticias_views
 from . import administracion_documentos_views
+from . import administracion_contactos_views
 
 
 urlpatterns = [
@@ -352,6 +353,28 @@ urlpatterns = [
         "administracion/documentos/<int:documento_id>/eliminar/",
         administracion_documentos_views.administracion_documento_eliminar,
         name="administracion_documento_eliminar",
+    ),
+
+
+    path(
+        "administracion/contactos/",
+        administracion_contactos_views.administracion_contactos,
+        name="administracion_contactos",
+    ),
+    path(
+        "administracion/contactos/nuevo/",
+        administracion_contactos_views.administracion_contacto_nuevo,
+        name="administracion_contacto_nuevo",
+    ),
+    path(
+        "administracion/contactos/<int:contacto_id>/editar/",
+        administracion_contactos_views.administracion_contacto_editar,
+        name="administracion_contacto_editar",
+    ),
+    path(
+        "administracion/contactos/<int:contacto_id>/eliminar/",
+        administracion_contactos_views.administracion_contacto_eliminar,
+        name="administracion_contacto_eliminar",
     ),
 
 ]
