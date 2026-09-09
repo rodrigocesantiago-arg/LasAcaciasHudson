@@ -1,0 +1,25 @@
+{% load static %}
+<!DOCTYPE html><html lang="es"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{% if modo == "nuevo" %}Nuevo documento{% else %}Editar documento{% endif %} | Las Acacias</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+:root{--g:#176b45;--gd:#0f5436;--line:#dfe8e2;--muted:#6b7470;--bg:#f5f7f5}
+body{background:var(--bg);font-family:"Segoe UI",Arial,sans-serif;color:#1f2b25}.top{background:#fff;border-bottom:1px solid var(--line)}
+.logo{width:54px;height:54px;object-fit:contain}.brand{font-weight:750;font-size:1.15rem}.muted{color:var(--muted)}.hero{background:linear-gradient(135deg,var(--gd),var(--g));border-radius:22px;color:#fff;padding:24px}
+.panel{background:#fff;border:1px solid var(--line);border-radius:18px;padding:22px;box-shadow:0 5px 18px rgba(21,62,43,.05)}.form-control,.form-select{border-radius:11px}.btn-g{background:var(--g);border-color:var(--g);color:#fff}textarea{min-height:180px}
+</style></head><body>
+<header class="top"><div class="container py-3 d-flex justify-content-between align-items-center"><div class="d-flex align-items-center gap-3"><img src="{% static 'core/img/las_acacias_logo.png' %}" class="logo"><div><div class="brand">Las Acacias</div><div class="muted small">Administración · Comunidad360</div></div></div><a href="{% url 'logout' %}" class="btn btn-sm btn-outline-secondary">Cerrar sesión</a></div></header>
+<main class="container py-4">
+<section class="hero mb-4"><div class="small text-uppercase fw-semibold mb-2">Documentos</div><h1 class="h2 fw-bold mb-1">{% if modo == "nuevo" %}Nuevo documento{% else %}Editar documento{% endif %}</h1>{% if documento %}<div class="opacity-75">Publicado {{ documento.fecha_publicacion|date:"d/m/Y H:i" }}</div>{% endif %}</section>
+{% if messages %}{% for message in messages %}<div class="alert alert-{{ message.tags|default:'success' }}">{{ message }}</div>{% endfor %}{% endif %}
+<form method="post" enctype="multipart/form-data">{% csrf_token %}<div class="row g-4">
+<div class="col-lg-8"><section class="panel"><div class="mb-3"><label class="form-label fw-semibold">Título *</label><input name="titulo" maxlength="200" required class="form-control" value="{{ datos.titulo|default:'' }}"></div>
+<div class="mb-3"><label class="form-label fw-semibold">Descripción</label><textarea name="descripcion" class="form-control">{{ datos.descripcion|default:'' }}</textarea></div>
+<div><label class="form-label fw-semibold">Categoría *</label><select name="categoria" class="form-select" required><option value="">Seleccionar...</option>{% for v,n in categorias %}<option value="{{ v }}" {% if datos.categoria == v %}selected{% endif %}>{{ n }}</option>{% endfor %}</select></div></section></div>
+<div class="col-lg-4"><section class="panel mb-3"><h2 class="h5 fw-bold mb-3">Publicación</h2><div class="form-check form-switch"><input class="form-check-input" type="checkbox" name="activo" id="activo" {% if datos.activo %}checked{% endif %}><label class="form-check-label" for="activo">Visible para los vecinos</label></div></section>
+<section class="panel mb-3"><h2 class="h5 fw-bold mb-3">Archivo</h2>{% if documento %}<div class="mb-3"><a href="{{ documento.archivo.url }}" target="_blank" class="btn btn-outline-success w-100">Abrir archivo actual</a></div>{% endif %}<input type="file" name="archivo" class="form-control" {% if modo == "nuevo" %}required{% endif %}><div class="muted small mt-2">{% if documento %}Dejalo vacío para conservar el archivo actual. Si seleccionás otro, será reemplazado en el registro.{% else %}Seleccioná el archivo que querés publicar.{% endif %}</div></section>
+<div class="d-grid gap-2"><button class="btn btn-g btn-lg">Guardar documento</button><a href="{% url 'administracion_documentos' %}" class="btn btn-outline-secondary">Volver al listado</a></div></div>
+</div></form>
+{% if documento %}<section class="panel border-danger mt-4"><h2 class="h6 fw-bold text-danger">Eliminar documento</h2><p class="small muted">Esta acción elimina definitivamente el registro del sistema.</p><form method="post" action="{% url 'administracion_documento_eliminar' documento.id %}">{% csrf_token %}<button class="btn btn-outline-danger" onclick="return confirm('¿Eliminar definitivamente este documento?')">Eliminar documento</button></form></section>{% endif %}
+</main></body></html>

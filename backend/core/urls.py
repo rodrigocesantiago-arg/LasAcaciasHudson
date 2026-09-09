@@ -9,6 +9,7 @@ from . import administracion_solicitudes_familiares_views
 from . import administracion_lotes_views
 from . import administracion_encomiendas_views
 from . import administracion_noticias_views
+from . import administracion_documentos_views
 
 
 urlpatterns = [
@@ -329,6 +330,28 @@ urlpatterns = [
         "administracion/noticias/<int:noticia_id>/eliminar/",
         administracion_noticias_views.administracion_noticia_eliminar,
         name="administracion_noticia_eliminar",
+    ),
+
+
+    path(
+        "administracion/documentos/",
+        administracion_documentos_views.administracion_documentos,
+        name="administracion_documentos",
+    ),
+    path(
+        "administracion/documentos/nuevo/",
+        administracion_documentos_views.administracion_documento_nuevo,
+        name="administracion_documento_nuevo",
+    ),
+    path(
+        "administracion/documentos/<int:documento_id>/editar/",
+        administracion_documentos_views.administracion_documento_editar,
+        name="administracion_documento_editar",
+    ),
+    path(
+        "administracion/documentos/<int:documento_id>/eliminar/",
+        administracion_documentos_views.administracion_documento_eliminar,
+        name="administracion_documento_eliminar",
     ),
 
 ]
