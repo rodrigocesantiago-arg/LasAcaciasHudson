@@ -731,10 +731,24 @@
 (function(){
     const ENDPOINT = "{% url 'estado_emergencias' %}";
     const INTERVALO_MS = 8000;
+    const INTERVALO_SONIDO_MS = 3000;
 
     let idsConocidos = new Set(
         [{% for emergencia in emergencias_activas %}{{ emergencia.id }}{% if not forloop.last %},{% endif %}{% endfor %}]
     );
+
+    let estadosConocidos = new Map([
+        {% for emergencia in emergencias_activas %}
+        [{{ emergencia.id }}, "{{ emergencia.estado }}"]{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ]);
+
+    let hayEmergenciaSinTomar = false;
+    {% for emergencia in emergencias_activas %}
+        {% if emergencia.estado == "activa" %}
+            hayEmergenciaSinTomar = true;
+        {% endif %}
+    {% endfor %}
 
     let primeraConsulta = true;
     let alarmaActiva = false;
@@ -745,6 +759,7 @@
 
     function setMonitor(ok){
         if(!monitor) return;
+
         if(ok){
             monitor.classList.remove("error");
             monitor.innerHTML = '<span class="monitor-dot"></span>Alertas en vivo';
@@ -760,21 +775,53 @@
                 audioContext = new (window.AudioContext || window.webkitAudioContext)();
             }
 
-            const oscillator = audioContext.createOscillator();
-            const gain = audioContext.createGain();
+            if(audioContext.state === "suspended"){
+                return;
+            }
 
-            oscillator.type = "sine";
-            oscillator.frequency.value = 880;
+            const ahora = audioContext.currentTime;
+            const master = audioContext.createGain();
 
-            gain.gain.setValueAtTime(0.0001, audioContext.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.18, audioContext.currentTime + 0.02);
-            gain.gain.exponentialRampToValueAtTime(0.0001, audioContext.currentTime + 0.32);
+            master.gain.setValueAtTime(0.0001, ahora);
+            master.gain.exponentialRampToValueAtTime(0.7, ahora + 0.04);
+            master.gain.setValueAtTime(0.7, ahora + 1.55);
+            master.gain.exponentialRampToValueAtTime(0.0001, ahora + 1.75);
+            master.connect(audioContext.destination);
 
-            oscillator.connect(gain);
-            gain.connect(audioContext.destination);
+            const osc1 = audioContext.createOscillator();
+            const gain1 = audioContext.createGain();
 
-            oscillator.start();
-            oscillator.stop(audioContext.currentTime + 0.34);
+            osc1.type = "square";
+            osc1.frequency.setValueAtTime(740, ahora);
+            osc1.frequency.linearRampToValueAtTime(1050, ahora + 0.42);
+            osc1.frequency.linearRampToValueAtTime(740, ahora + 0.84);
+            osc1.frequency.linearRampToValueAtTime(1050, ahora + 1.26);
+            osc1.frequency.linearRampToValueAtTime(740, ahora + 1.68);
+
+            gain1.gain.setValueAtTime(0.48, ahora);
+            osc1.connect(gain1);
+            gain1.connect(master);
+
+            const osc2 = audioContext.createOscillator();
+            const gain2 = audioContext.createGain();
+
+            osc2.type = "sawtooth";
+            osc2.frequency.setValueAtTime(520, ahora);
+            osc2.frequency.linearRampToValueAtTime(760, ahora + 0.42);
+            osc2.frequency.linearRampToValueAtTime(520, ahora + 0.84);
+            osc2.frequency.linearRampToValueAtTime(760, ahora + 1.26);
+            osc2.frequency.linearRampToValueAtTime(520, ahora + 1.68);
+
+            gain2.gain.setValueAtTime(0.22, ahora);
+            osc2.connect(gain2);
+            gain2.connect(master);
+
+            osc1.start(ahora);
+            osc2.start(ahora);
+
+            osc1.stop(ahora + 1.78);
+            osc2.stop(ahora + 1.78);
+
         }catch(error){
             console.log("Audio no disponible:", error);
         }
@@ -782,10 +829,14 @@
 
     function iniciarAlarma(){
         if(alarmaActiva) return;
-        alarmaActiva = true;
 
+        alarmaActiva = true;
         beep();
-        temporizadorAlarma = setInterval(beep, 3000);
+
+        temporizadorAlarma = setInterval(
+            beep,
+            INTERVALO_SONIDO_MS
+        );
     }
 
     function detenerAlarma(){
@@ -797,11 +848,21 @@
         }
     }
 
+    function actualizarAlarma(){
+        if(hayEmergenciaSinTomar){
+            iniciarAlarma();
+        }else{
+            detenerAlarma();
+        }
+    }
+
     async function consultarEmergencias(){
         try{
             const response = await fetch(ENDPOINT, {
                 method: "GET",
-                headers: {"X-Requested-With": "XMLHttpRequest"},
+                headers: {
+                    "X-Requested-With": "XMLHttpRequest"
+                },
                 cache: "no-store"
             });
 
@@ -812,44 +873,62 @@
             const data = await response.json();
             setMonitor(true);
 
-            const actuales = new Set(data.emergencias.map(item => item.id));
-            const sinTomar = data.emergencias.filter(item => item.estado === "activa");
+            const actuales = new Set(
+                data.emergencias.map(item => item.id)
+            );
+
+            const nuevosEstados = new Map(
+                data.emergencias.map(
+                    item => [item.id, item.estado]
+                )
+            );
+
+            const sinTomar = data.emergencias.filter(
+                item => item.estado === "activa"
+            );
+
+            hayEmergenciaSinTomar = sinTomar.length > 0;
+            actualizarAlarma();
 
             let hayNueva = false;
+            let cambioEstado = false;
 
             data.emergencias.forEach(item => {
                 if(!idsConocidos.has(item.id)){
                     hayNueva = true;
                 }
+
+                if(
+                    estadosConocidos.has(item.id) &&
+                    estadosConocidos.get(item.id) !== item.estado
+                ){
+                    cambioEstado = true;
+                }
             });
 
             if(!primeraConsulta && hayNueva){
-                iniciarAlarma();
-
-                // Recargamos para mostrar inmediatamente la tarjeta completa.
                 setTimeout(() => {
                     window.location.reload();
                 }, 700);
                 return;
             }
 
-            // Si una alerta que estaba visible cambia de estado o desaparece,
-            // refrescamos para actualizar el dashboard.
             if(!primeraConsulta){
-                const cambioCantidad = actuales.size !== idsConocidos.size;
-                const hayActiva = sinTomar.length > 0;
+                const cambioCantidad =
+                    actuales.size !== idsConocidos.size;
 
-                if(cambioCantidad){
+                if(cambioCantidad || cambioEstado){
+                    if(!hayEmergenciaSinTomar){
+                        detenerAlarma();
+                    }
+
                     window.location.reload();
                     return;
-                }
-
-                if(!hayActiva){
-                    detenerAlarma();
                 }
             }
 
             idsConocidos = actuales;
+            estadosConocidos = nuevosEstados;
             primeraConsulta = false;
 
         }catch(error){
@@ -857,17 +936,32 @@
         }
     }
 
-    // Los navegadores bloquean audio automático hasta que el usuario interactúa.
-    // Con el primer click/tecla dejamos el audio habilitado para futuras alertas.
-    function habilitarAudio(){
+    /*
+    Los navegadores suelen bloquear audio automático hasta que
+    el usuario interactúa al menos una vez con la página.
+
+    Si al hacer ese primer clic/tecla ya existe una emergencia
+    sin tomar, la alarma comienza inmediatamente y continúa
+    cada 3 segundos hasta que Portería la tome.
+    */
+    async function habilitarAudio(){
         try{
             if(!audioContext){
-                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                audioContext = new (
+                    window.AudioContext ||
+                    window.webkitAudioContext
+                )();
             }
+
             if(audioContext.state === "suspended"){
-                audioContext.resume();
+                await audioContext.resume();
             }
-        }catch(error){}
+
+            actualizarAlarma();
+
+        }catch(error){
+            console.log("No se pudo habilitar el audio:", error);
+        }
 
         document.removeEventListener("click", habilitarAudio);
         document.removeEventListener("keydown", habilitarAudio);
@@ -876,6 +970,11 @@
     document.addEventListener("click", habilitarAudio);
     document.addEventListener("keydown", habilitarAudio);
 
+    /*
+    Si la página ya fue habilitada para audio durante la sesión,
+    una alerta nueva mantendrá el sonido activo hasta ser tomada.
+    */
+    actualizarAlarma();
     consultarEmergencias();
     setInterval(consultarEmergencias, INTERVALO_MS);
 })();
