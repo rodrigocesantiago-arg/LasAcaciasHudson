@@ -1,0 +1,125 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Emergencias · Administración · Las Acacias</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+:root{--v:#1f6b45;--vs:#eaf4ee;--bg:#f3f6f4;--tx:#24322a;--mu:#718078;--bd:#dfe8e2;--red:#b42318;--amber:#a15c08}
+body{background:var(--bg);color:var(--tx);font-family:"Segoe UI",Arial,sans-serif}
+.topbar{background:#fff;border-bottom:1px solid var(--bd)}
+.logo{height:52px}.brand{color:var(--v);font-weight:800;font-size:1.3rem}.muted{color:var(--mu)}
+.hero{background:linear-gradient(100deg,rgba(84,14,10,.96),rgba(180,35,24,.82));border-radius:22px;color:#fff;padding:28px}
+.metric,.panel{background:#fff;border:1px solid var(--bd);border-radius:18px;box-shadow:0 8px 24px rgba(28,65,44,.05)}
+.metric{padding:17px;height:100%}.metric .n{font-size:1.8rem;font-weight:800}
+.panel{padding:18px}
+.emergency-row{background:#fff;border:1px solid var(--bd);border-left:6px solid #8a9490;border-radius:16px;padding:16px;margin-bottom:12px}
+.emergency-row.activa{border-left-color:var(--red);box-shadow:0 7px 20px rgba(180,35,24,.08)}
+.emergency-row.atendida{border-left-color:var(--amber)}
+.emergency-row.cerrada{border-left-color:#6d7a73}
+.badge-state{border-radius:999px;padding:6px 10px;font-size:.78rem;font-weight:800}
+.badge-activa{background:#fde8e7;color:#a61b13}
+.badge-atendida{background:#fff1d8;color:#8a4b08}
+.badge-cerrada{background:#eef1ef;color:#53605a}
+.community{background:#fde8e7;color:#a61b13;border-radius:999px;padding:5px 9px;font-size:.75rem;font-weight:900}
+.info-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:13px}
+.info{background:#f7f9f7;border-radius:11px;padding:10px}
+.info .lab{font-size:.72rem;color:var(--mu);text-transform:uppercase;font-weight:700}
+.info .val{font-size:.88rem;font-weight:650;margin-top:3px;word-break:break-word}
+.desc{background:#f7f9f7;border-radius:11px;padding:11px;margin-top:11px;font-size:.9rem}
+.filters{display:grid;grid-template-columns:2fr repeat(4,1fr);gap:10px}
+@media(max-width:992px){.filters{grid-template-columns:1fr 1fr}.info-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.filters,.info-grid{grid-template-columns:1fr}.hero{padding:22px}.container{padding-left:10px;padding-right:10px}}
+</style>
+</head>
+<body>
+<header class="topbar">
+<div class="container py-3 d-flex align-items-center justify-content-between gap-3">
+<div class="d-flex align-items-center gap-3">
+<img src="{% static 'core/img/las_acacias_logo.png' %}" class="logo" alt="Las Acacias">
+<div><div class="brand">Las Acacias</div><div class="muted small">Administración · Comunidad360</div></div>
+</div>
+<a href="{% url 'administracion_dashboard' %}" class="btn btn-sm btn-outline-success">← Volver al panel</a>
+</div>
+</header>
+
+<main class="container py-4">
+<section class="hero mb-4">
+<div class="small text-uppercase fw-semibold mb-2">🚨 Gestión y auditoría</div>
+<h1 class="h2 fw-bold mb-2">Historial de Emergencias</h1>
+<p class="mb-0 opacity-75">Consulta completa de alertas generadas por vecinos y gestión realizada por Portería.</p>
+</section>
+
+<div class="row g-3 mb-4">
+<div class="col-6 col-lg-3"><div class="metric"><div class="muted small">Sin tomar</div><div class="n text-danger">{{ resumen.activas }}</div></div></div>
+<div class="col-6 col-lg-3"><div class="metric"><div class="muted small">Atendidas abiertas</div><div class="n" style="color:#a15c08">{{ resumen.atendidas }}</div></div></div>
+<div class="col-6 col-lg-3"><div class="metric"><div class="muted small">Cerradas</div><div class="n text-secondary">{{ resumen.cerradas }}</div></div></div>
+<div class="col-6 col-lg-3"><div class="metric"><div class="muted small">Comunitarias abiertas</div><div class="n text-danger">{{ resumen.comunitarias_abiertas }}</div></div></div>
+</div>
+
+<div class="panel mb-4">
+<form method="GET">
+<div class="filters">
+<input class="form-control" type="search" name="q" value="{{ busqueda }}" placeholder="Lote, familia, texto o usuario...">
+<select class="form-select" name="estado">
+<option value="">Todos los estados</option>
+{% for codigo,nombre in estados %}<option value="{{ codigo }}" {% if estado_seleccionado == codigo %}selected{% endif %}>{{ nombre }}</option>{% endfor %}
+</select>
+<select class="form-select" name="tipo">
+<option value="">Todos los tipos</option>
+{% for codigo,nombre in tipos %}<option value="{{ codigo }}" {% if tipo_seleccionado == codigo %}selected{% endif %}>{{ nombre }}</option>{% endfor %}
+</select>
+<input class="form-control" type="date" name="desde" value="{{ fecha_desde }}" title="Desde">
+<input class="form-control" type="date" name="hasta" value="{{ fecha_hasta }}" title="Hasta">
+</div>
+<div class="d-flex gap-2 mt-3">
+<button class="btn btn-success" type="submit">Aplicar filtros</button>
+<a href="{% url 'administracion_emergencias' %}" class="btn btn-outline-secondary">Limpiar</a>
+</div>
+</form>
+</div>
+
+{% for e in emergencias %}
+<div class="emergency-row {{ e.estado }}">
+<div class="d-flex justify-content-between align-items-start gap-3 flex-wrap">
+<div>
+<div class="d-flex gap-2 flex-wrap align-items-center">
+<h2 class="h5 fw-bold mb-0">
+{% if e.tipo == "incendio" %}🔥{% elif e.tipo == "robo" %}🚨{% elif e.tipo == "medica" %}🏥{% elif e.tipo == "accidente" %}⚠️{% else %}🆘{% endif %}
+{{ e.get_tipo_display }}
+</h2>
+{% if e.es_comunitaria %}<span class="community">ALERTA COMUNITARIA</span>{% endif %}
+</div>
+<div class="muted small mt-1"><strong>Lote {{ e.lote.numero }}</strong> · {{ e.lote.apellido_familia }}</div>
+</div>
+{% if e.estado == "activa" %}<span class="badge-state badge-activa">ACTIVA · SIN TOMAR</span>
+{% elif e.estado == "atendida" %}<span class="badge-state badge-atendida">ATENDIDA · ABIERTA</span>
+{% else %}<span class="badge-state badge-cerrada">CERRADA</span>{% endif %}
+</div>
+
+<div class="info-grid">
+<div class="info"><div class="lab">Activación</div><div class="val">{{ e.fecha_creacion|date:"d/m/Y H:i:s" }}</div></div>
+<div class="info"><div class="lab">Generada por</div><div class="val">{% if e.usuario %}{{ e.usuario.username }}{% else %}No informado{% endif %}</div></div>
+<div class="info"><div class="lab">Atendida</div><div class="val">{% if e.fecha_atencion %}{{ e.fecha_atencion|date:"d/m/Y H:i:s" }} · {{ e.atendida_por.username }}{% else %}Pendiente{% endif %}</div></div>
+<div class="info"><div class="lab">Cierre</div><div class="val">{% if e.fecha_cierre %}{{ e.fecha_cierre|date:"d/m/Y H:i:s" }} · {{ e.cerrada_por.username }}{% else %}Abierta{% endif %}</div></div>
+</div>
+
+{% if e.descripcion %}
+<div class="desc"><strong>Descripción del vecino:</strong><br>{{ e.descripcion|linebreaksbr }}</div>
+{% endif %}
+{% if e.observaciones_porteria %}
+<div class="desc"><strong>Observaciones de Portería:</strong><br>{{ e.observaciones_porteria|linebreaksbr }}</div>
+{% endif %}
+</div>
+{% empty %}
+<div class="panel text-center py-5">
+<div class="fs-1">✅</div>
+<h2 class="h5 fw-bold mt-2">No se encontraron emergencias</h2>
+<div class="muted">No hay registros que coincidan con los filtros seleccionados.</div>
+</div>
+{% endfor %}
+</main>
+</body>
+</html>

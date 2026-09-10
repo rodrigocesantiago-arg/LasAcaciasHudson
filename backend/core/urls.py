@@ -12,6 +12,7 @@ from . import administracion_noticias_views
 from . import administracion_documentos_views
 from . import administracion_contactos_views
 from . import seguridad_views
+from . import administracion_emergencias_views
 
 
 urlpatterns = [
@@ -24,6 +25,11 @@ urlpatterns = [
     path("password-restaurada/", password_reset_views.password_restaurada, name="password_restaurada"),
 
     path("administracion/", administracion_views.administracion_dashboard, name="administracion_dashboard"),
+    path(
+    "administracion/emergencias/",
+    administracion_emergencias_views.administracion_emergencias,
+    name="administracion_emergencias"
+),
     path("administracion/sum/", administracion_sum_views.administracion_sum_historial, name="administracion_sum_historial"),
     path("administracion/sum/<int:reserva_id>/", administracion_sum_views.administracion_sum_detalle, name="administracion_sum_detalle"),
     path("administracion/sum/<int:reserva_id>/estado/", administracion_sum_views.administracion_sum_cambiar_estado, name="administracion_sum_cambiar_estado"),

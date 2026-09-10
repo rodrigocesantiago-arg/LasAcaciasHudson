@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.utils import timezone
 
 from .models import (
+    Emergencia,
     Encomienda,
     Lote,
     Reclamo,
@@ -34,6 +35,9 @@ def administracion_dashboard(request):
         ).count(),
         "solicitudes_pendientes": SolicitudModificacionFamilia.objects.filter(
             estado="pendiente"
+        ).count(),
+        "emergencias_abiertas": Emergencia.objects.filter(
+            estado__in=["activa", "atendida"]
         ).count(),
         "ultimos_reclamos": Reclamo.objects.filter(
             estado__in=["pendiente", "en_proceso"]
