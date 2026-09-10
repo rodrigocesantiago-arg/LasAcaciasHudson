@@ -95,6 +95,7 @@ path("seguridad/emergencias/<int:emergencia_id>/cerrar/", seguridad_views.cerrar
     path("seguridad/encomiendas/<int:encomienda_id>/entregar/", seguridad_views.entregar_encomienda, name="entregar_encomienda"),
     path("seguridad/visitas/<int:visita_id>/ingreso/", seguridad_views.registrar_ingreso, name="registrar_ingreso"),
     path("seguridad/visitas/<int:visita_id>/salida/", seguridad_views.registrar_salida, name="registrar_salida"),
+    path("seguridad/emergencias/estado/", seguridad_views.estado_emergencias, name="estado_emergencias"),
 
     path("logout/", views.logout_view, name="logout"),
 ]

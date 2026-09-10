@@ -401,6 +401,39 @@
             margin-bottom:9px;
         }
 
+
+        .monitor-badge{
+            display:inline-flex;
+            align-items:center;
+            gap:7px;
+            background:#eef7f0;
+            color:#1f6b45;
+            border:1px solid #cfe2d3;
+            border-radius:999px;
+            padding:7px 11px;
+            font-size:.78rem;
+            font-weight:800;
+        }
+
+        .monitor-dot{
+            width:8px;
+            height:8px;
+            border-radius:50%;
+            background:#2f9e44;
+            box-shadow:0 0 0 4px rgba(47,158,68,.12);
+        }
+
+        .monitor-badge.error{
+            background:#fff3f2;
+            color:#a61b13;
+            border-color:#efc2be;
+        }
+
+        .monitor-badge.error .monitor-dot{
+            background:#d92d20;
+            box-shadow:0 0 0 4px rgba(217,45,32,.12);
+        }
+
         @media(max-width:767px){
             .shell{padding:10px}
             .hero{min-height:245px;padding:24px}
@@ -425,6 +458,10 @@
         </div>
 
         <div class="d-flex align-items-center gap-2 flex-wrap">
+            <div id="monitorStatus" class="monitor-badge" title="El sistema consulta nuevas emergencias automáticamente">
+                <span class="monitor-dot"></span>
+                Alertas en vivo
+            </div>
             <div class="date-pill">{{ hoy|date:"d/m/Y" }}</div>
             <a href="{% url 'logout' %}" class="btn btn-outline-secondary btn-sm">
                 Cerrar sesión
@@ -689,5 +726,160 @@
     </div>
 
 </div>
+
+<script>
+(function(){
+    const ENDPOINT = "{% url 'estado_emergencias' %}";
+    const INTERVALO_MS = 8000;
+
+    let idsConocidos = new Set(
+        [{% for emergencia in emergencias_activas %}{{ emergencia.id }}{% if not forloop.last %},{% endif %}{% endfor %}]
+    );
+
+    let primeraConsulta = true;
+    let alarmaActiva = false;
+    let audioContext = null;
+    let temporizadorAlarma = null;
+
+    const monitor = document.getElementById("monitorStatus");
+
+    function setMonitor(ok){
+        if(!monitor) return;
+        if(ok){
+            monitor.classList.remove("error");
+            monitor.innerHTML = '<span class="monitor-dot"></span>Alertas en vivo';
+        }else{
+            monitor.classList.add("error");
+            monitor.innerHTML = '<span class="monitor-dot"></span>Sin conexión de alertas';
+        }
+    }
+
+    function beep(){
+        try{
+            if(!audioContext){
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+
+            const oscillator = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+
+            oscillator.type = "sine";
+            oscillator.frequency.value = 880;
+
+            gain.gain.setValueAtTime(0.0001, audioContext.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.18, audioContext.currentTime + 0.02);
+            gain.gain.exponentialRampToValueAtTime(0.0001, audioContext.currentTime + 0.32);
+
+            oscillator.connect(gain);
+            gain.connect(audioContext.destination);
+
+            oscillator.start();
+            oscillator.stop(audioContext.currentTime + 0.34);
+        }catch(error){
+            console.log("Audio no disponible:", error);
+        }
+    }
+
+    function iniciarAlarma(){
+        if(alarmaActiva) return;
+        alarmaActiva = true;
+
+        beep();
+        temporizadorAlarma = setInterval(beep, 3000);
+    }
+
+    function detenerAlarma(){
+        alarmaActiva = false;
+
+        if(temporizadorAlarma){
+            clearInterval(temporizadorAlarma);
+            temporizadorAlarma = null;
+        }
+    }
+
+    async function consultarEmergencias(){
+        try{
+            const response = await fetch(ENDPOINT, {
+                method: "GET",
+                headers: {"X-Requested-With": "XMLHttpRequest"},
+                cache: "no-store"
+            });
+
+            if(!response.ok){
+                throw new Error("Respuesta no válida");
+            }
+
+            const data = await response.json();
+            setMonitor(true);
+
+            const actuales = new Set(data.emergencias.map(item => item.id));
+            const sinTomar = data.emergencias.filter(item => item.estado === "activa");
+
+            let hayNueva = false;
+
+            data.emergencias.forEach(item => {
+                if(!idsConocidos.has(item.id)){
+                    hayNueva = true;
+                }
+            });
+
+            if(!primeraConsulta && hayNueva){
+                iniciarAlarma();
+
+                // Recargamos para mostrar inmediatamente la tarjeta completa.
+                setTimeout(() => {
+                    window.location.reload();
+                }, 700);
+                return;
+            }
+
+            // Si una alerta que estaba visible cambia de estado o desaparece,
+            // refrescamos para actualizar el dashboard.
+            if(!primeraConsulta){
+                const cambioCantidad = actuales.size !== idsConocidos.size;
+                const hayActiva = sinTomar.length > 0;
+
+                if(cambioCantidad){
+                    window.location.reload();
+                    return;
+                }
+
+                if(!hayActiva){
+                    detenerAlarma();
+                }
+            }
+
+            idsConocidos = actuales;
+            primeraConsulta = false;
+
+        }catch(error){
+            setMonitor(false);
+        }
+    }
+
+    // Los navegadores bloquean audio automático hasta que el usuario interactúa.
+    // Con el primer click/tecla dejamos el audio habilitado para futuras alertas.
+    function habilitarAudio(){
+        try{
+            if(!audioContext){
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if(audioContext.state === "suspended"){
+                audioContext.resume();
+            }
+        }catch(error){}
+
+        document.removeEventListener("click", habilitarAudio);
+        document.removeEventListener("keydown", habilitarAudio);
+    }
+
+    document.addEventListener("click", habilitarAudio);
+    document.addEventListener("keydown", habilitarAudio);
+
+    consultarEmergencias();
+    setInterval(consultarEmergencias, INTERVALO_MS);
+})();
+</script>
+
 </body>
 </html>

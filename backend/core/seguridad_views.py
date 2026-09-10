@@ -1,4 +1,5 @@
 from django.db.models import Q
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 
@@ -136,6 +137,47 @@ def cerrar_emergencia(request, emergencia_id):
     )
 
     return redirect("seguridad_dashboard")
+
+
+@porteria_required
+def estado_emergencias(request):
+    """
+    Endpoint liviano para el dashboard de Portería.
+    Permite detectar nuevas emergencias sin recargar manualmente toda la página.
+    """
+    emergencias = Emergencia.objects.filter(
+        estado__in=["activa", "atendida"]
+    ).select_related(
+        "lote",
+        "atendida_por",
+    ).order_by(
+        "fecha_creacion"
+    )
+
+    datos = []
+
+    for emergencia in emergencias:
+        datos.append(
+            {
+                "id": emergencia.id,
+                "tipo": emergencia.tipo,
+                "tipo_display": emergencia.get_tipo_display(),
+                "estado": emergencia.estado,
+                "lote": emergencia.lote.numero,
+                "familia": emergencia.lote.apellido_familia,
+                "fecha_creacion": timezone.localtime(
+                    emergencia.fecha_creacion
+                ).strftime("%d/%m/%Y %H:%M:%S"),
+                "es_comunitaria": emergencia.es_comunitaria,
+            }
+        )
+
+    return JsonResponse(
+        {
+            "cantidad": len(datos),
+            "emergencias": datos,
+        }
+    )
 
 
 @porteria_required
