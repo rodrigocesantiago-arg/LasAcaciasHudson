@@ -204,10 +204,121 @@ body{margin:0;background:var(--page);color:var(--text);font-family:"Segoe UI",In
   .emergency-btn{text-align:center;width:100%;font-size:1rem}
 }
 
+
+/* NOTIFICACIONES */
+.notification-button{
+  position:relative;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:38px;
+  height:38px;
+  border-radius:12px;
+  border:1px solid var(--line);
+  background:#fff;
+  color:var(--green-dark);
+  text-decoration:none;
+  font-size:1.15rem;
+}
+.notification-button:hover{background:var(--green-soft);color:var(--green-dark)}
+.notification-count{
+  position:absolute;
+  top:-6px;
+  right:-6px;
+  min-width:20px;
+  height:20px;
+  padding:0 5px;
+  display:grid;
+  place-items:center;
+  border-radius:999px;
+  background:#d92d20;
+  color:#fff;
+  font-size:.68rem;
+  font-weight:900;
+  border:2px solid #fff;
+}
+
+
+/* SUM compacto */
+.feature .sumimg{
+  height:120px;
+  margin-bottom:4px !important;
+}
+.sum-reservas-scroll{
+  max-height:235px;
+  overflow-y:auto;
+  padding-right:6px;
+  scrollbar-gutter:stable;
+}
+.sum-reservas-scroll .mini{
+  padding:7px 0;
+}
+.sum-reservas-scroll .small{
+  font-size:.78rem;
+}
+.sum-reservas-scroll form{
+  margin-top:7px !important;
+}
+.sum-reservas-scroll .btn{
+  padding:4px 9px;
+  font-size:.78rem;
+}
+.sum-reservas-scroll::-webkit-scrollbar{width:7px}
+.sum-reservas-scroll::-webkit-scrollbar-track{
+  background:#f0f3f1;
+  border-radius:999px;
+}
+.sum-reservas-scroll::-webkit-scrollbar-thumb{
+  background:#b9c8be;
+  border-radius:999px;
+}
+.sum-reservas-scroll::-webkit-scrollbar-thumb:hover{
+  background:#8fa598;
+}
+
+
+/* Encomiendas compactas para equilibrar con SUM */
+.activity-package .feature{
+  min-height:0;
+}
+.activity-package .body{
+  padding:14px 16px 16px;
+}
+.activity-package .icon{
+  width:38px;
+  height:38px;
+  font-size:1.2rem;
+  margin-bottom:6px;
+}
+.encomiendas-scroll{
+  max-height:235px;
+  overflow-y:auto;
+  padding-right:6px;
+  scrollbar-gutter:stable;
+}
+.encomiendas-scroll .mini{
+  padding:7px 0;
+}
+.encomiendas-scroll .small{
+  font-size:.78rem;
+}
+.encomiendas-scroll::-webkit-scrollbar{width:7px}
+.encomiendas-scroll::-webkit-scrollbar-track{
+  background:#f0f3f1;
+  border-radius:999px;
+}
+.encomiendas-scroll::-webkit-scrollbar-thumb{
+  background:#b9c8be;
+  border-radius:999px;
+}
+.encomiendas-scroll::-webkit-scrollbar-thumb:hover{
+  background:#8fa598;
+}
+
 </style>
 </head>
 <body><div class="shell">
-<div class="topbar d-flex justify-content-between align-items-center gap-3"><div class="d-flex align-items-center gap-3"><img src="{% static 'core/img/las_acacias_logo.png' %}" alt="Las Acacias" class="logo"><div><div class="brand">Las Acacias</div><div class="sub">Comunidad360 · Portal de vecinos</div></div></div><div class="d-flex align-items-center gap-2"><span class="badge rounded-pill text-bg-light border d-none d-sm-inline">Lote {{ lote.numero }}</span><a href="{% url 'logout' %}" class="btn btn-outline-secondary btn-sm">Cerrar sesión</a></div></div>
+<div class="topbar d-flex justify-content-between align-items-center gap-3"><div class="d-flex align-items-center gap-3"><img src="{% static 'core/img/las_acacias_logo.png' %}" alt="Las Acacias" class="logo"><div><div class="brand">Las Acacias</div><div class="sub">Comunidad360 · Portal de vecinos</div></div></div><div class="d-flex align-items-center gap-2"><a href="{% url 'notificaciones' %}" class="notification-button" title="Notificaciones">🔔{% if notificaciones_no_leidas > 0 %}<span class="notification-count">{{ notificaciones_no_leidas }}</span>{% endif %}</a><span class="badge rounded-pill text-bg-light border d-none d-sm-inline">Lote {{ lote.numero }}</span><a href="{% url 'logout' %}" class="btn btn-outline-secondary btn-sm">Cerrar sesión</a></div></div>
 {% if alertas_comunitarias_activas %}
 <section class="community-alert-wrap">
   {% for alerta in alertas_comunitarias_activas %}
@@ -253,6 +364,7 @@ body{margin:0;background:var(--page);color:var(--text);font-family:"Segoe UI",In
   </div>
   <a href="{% url 'emergencia' %}" class="emergency-btn">🚨 ACTIVAR EMERGENCIA</a>
 </div>
+
 {% if cantidad_encomiendas_pendientes > 0 %}<div class="alert alert-warning notice mb-4"><div class="d-flex justify-content-between align-items-center flex-wrap gap-3"><div><div class="fw-bold fs-5">📦 Tenés {{ cantidad_encomiendas_pendientes }} {% if cantidad_encomiendas_pendientes == 1 %}encomienda pendiente{% else %}encomiendas pendientes{% endif %}</div><div class="small mt-1">Hay paquetes esperando para tu lote.</div></div><a href="{% url 'mis_encomiendas' %}" class="btn btn-warning fw-semibold">Ver encomiendas</a></div></div>{% endif %}
 <div class="title"><div><h2>Accesos rápidos</h2><p>Las funciones que más usás, siempre a mano.</p></div></div>
 <div class="row g-2 quick-grid">
@@ -267,9 +379,11 @@ body{margin:0;background:var(--page);color:var(--text);font-family:"Segoe UI",In
 </div>
 
 <div class="row g-3 dashboard-row"><div class="col-lg-7"><div class="feature"><div class="feature-head"><h3>📅 Reservas del SUM</h3><a href="{% url 'disponibilidad_sum' %}" class="btn btn-a btn-sm">Nueva reserva</a></div><div class="feature-body"><img src="{% static 'core/img/las_acacias_sum.png' %}" alt="SUM" class="sumimg mb-2">
+<div class="sum-reservas-scroll">
 {% for reserva in proximas_reservas %}<div class="mini"><div class="d-flex justify-content-between align-items-start gap-3"><div><strong>{{ reserva.fecha|date:"d/m/Y" }}</strong><div class="small text-secondary">{{ reserva.get_turno_display }}</div><div class="small text-secondary mt-1">{{ reserva.cantidad_personas }} personas</div></div><div>{% if reserva.estado == "pendiente" %}<span class="badge text-bg-warning">Pendiente</span>{% elif reserva.estado == "confirmada" %}<span class="badge text-bg-success">Confirmada</span>{% elif reserva.estado == "cancelada" %}<span class="badge text-bg-danger">Cancelada</span>{% endif %}</div></div>{% if reserva.estado != "cancelada" %}{% if reserva.puede_cancelar %}<form method="POST" action="{% url 'cancelar_reserva_sum' reserva.id %}" class="mt-3">{% csrf_token %}<button class="btn btn-outline-danger btn-sm">Cancelar reserva</button></form>{% else %}<div class="small text-secondary mt-3">La cancelación solo está disponible hasta 7 días antes del evento.</div>{% endif %}{% endif %}</div>{% empty %}<div class="mini text-secondary">Todavía no tenés próximas reservas del SUM.</div>{% endfor %}
+</div>
 <a href="{% url 'mis_reservas_sum' %}" class="btn btn-oa mt-2">Ver todas mis reservas</a></div></div></div>
-<div class="col-lg-5 activity-package"><div class="feature"><div class="body"><div class="icon">📦</div><h3>Encomiendas</h3>{% if cantidad_encomiendas_pendientes > 0 %}<p class="text-secondary">Tenés <strong>{{ cantidad_encomiendas_pendientes }}</strong> {% if cantidad_encomiendas_pendientes == 1 %}encomienda esperando retiro.{% else %}encomiendas esperando retiro.{% endif %}</p>{% for encomienda in ultimas_encomiendas_pendientes %}<div class="mini"><div class="d-flex justify-content-between align-items-start gap-2"><div><strong>{{ encomienda.remitente }}</strong>{% if encomienda.descripcion %}<div class="small text-secondary">{{ encomienda.descripcion }}</div>{% endif %}</div><span class="badge text-bg-warning">Pendiente</span></div><div class="small text-secondary mt-2">Recibida: {{ encomienda.fecha_recepcion|date:"d/m/Y H:i" }}</div></div>{% endfor %}{% else %}<div class="mini text-secondary">No tenés encomiendas pendientes de retiro.</div>{% endif %}<a href="{% url 'mis_encomiendas' %}" class="btn btn-a mt-2">Ver mis encomiendas</a></div></div></div></div>
+<div class="col-lg-5 activity-package"><div class="feature"><div class="body"><div class="icon">📦</div><h3>Encomiendas</h3>{% if cantidad_encomiendas_pendientes > 0 %}<p class="text-secondary">Tenés <strong>{{ cantidad_encomiendas_pendientes }}</strong> {% if cantidad_encomiendas_pendientes == 1 %}encomienda esperando retiro.{% else %}encomiendas esperando retiro.{% endif %}</p><div class="encomiendas-scroll">{% for encomienda in ultimas_encomiendas_pendientes %}<div class="mini"><div class="d-flex justify-content-between align-items-start gap-2"><div><strong>{{ encomienda.remitente }}</strong>{% if encomienda.descripcion %}<div class="small text-secondary">{{ encomienda.descripcion }}</div>{% endif %}</div><span class="badge text-bg-warning">Pendiente</span></div><div class="small text-secondary mt-2">Recibida: {{ encomienda.fecha_recepcion|date:"d/m/Y H:i" }}</div></div>{% endfor %}</div>{% else %}<div class="mini text-secondary">No tenés encomiendas pendientes de retiro.</div>{% endif %}<a href="{% url 'mis_encomiendas' %}" class="btn btn-a mt-2">Ver mis encomiendas</a></div></div></div></div>
 <div class="title"><div><h2>Novedades del barrio</h2><p>Comunicados y noticias recientes de Las Acacias.</p></div><a href="{% url 'noticias' %}" class="btn btn-oa btn-sm">Ver todas</a></div>
 <div class="row g-3">{% for noticia in noticias %}<div class="col-md-6 col-lg-4"><article class="news">{% if noticia.imagen %}<img src="{{ noticia.imagen.url }}" alt="{{ noticia.titulo }}" class="newsimg">{% else %}<img src="{% static 'core/img/las_acacias_juegos.png' %}" alt="Las Acacias" class="newsimg">{% endif %}<div class="newsbody"><div class="d-flex justify-content-between align-items-start gap-2"><h4>{{ noticia.titulo }}</h4>{% if noticia.destacada %}<span class="badge text-bg-warning">Destacada</span>{% endif %}</div><p class="text-secondary small mb-2">{{ noticia.contenido|truncatechars:125 }}</p><div class="small text-secondary">{{ noticia.fecha_publicacion|date:"d/m/Y H:i" }}</div></div></article></div>{% empty %}
 <div class="col-12">

@@ -23,6 +23,7 @@ from .models import (
     Integrante,
     InvitadoFrecuente,
     Noticia,
+    Notificacion,
     Reclamo,
     ReservaSUM,
     SolicitudModificacionFamilia,
@@ -168,7 +169,7 @@ def portal(request):
     ).order_by(
         "-fecha",
         "-fecha_creacion"
-    )[:3]
+    )
 
     for reserva in proximas_reservas:
 
@@ -216,6 +217,19 @@ def portal(request):
         encomiendas_pendientes[:3]
     )
 
+    # NOTIFICACIONES DEL LOTE
+
+    notificaciones_no_leidas = Notificacion.objects.filter(
+        lote=lote,
+        leida=False
+    ).count()
+
+    ultimas_notificaciones = Notificacion.objects.filter(
+        lote=lote
+    ).order_by(
+        "-fecha_creacion"
+    )[:3]
+
     # ALERTAS COMUNITARIAS ACTIVAS
     # Solo Robo e Incendio se muestran a todos los vecinos.
     alertas_comunitarias_activas = Emergencia.objects.filter(
@@ -242,6 +256,10 @@ def portal(request):
                 ultimas_encomiendas_pendientes,
             "alertas_comunitarias_activas":
                 alertas_comunitarias_activas,
+            "notificaciones_no_leidas":
+                notificaciones_no_leidas,
+            "ultimas_notificaciones":
+                ultimas_notificaciones,
         }
     )
 
@@ -315,6 +333,94 @@ def emergencia(request):
         }
     )
 
+
+
+# -------------------------------------------------
+# NOTIFICACIONES - VECINOS
+# -------------------------------------------------
+
+def notificaciones_view(request):
+    if not request.user.is_authenticated:
+        return redirect("home")
+
+    if request.user.is_superuser:
+        return redirect("administracion_dashboard")
+
+    if request.user.is_staff:
+        return redirect("seguridad_dashboard")
+
+    lote = request.user.lote
+
+    notificaciones = Notificacion.objects.filter(
+        lote=lote
+    ).order_by(
+        "-fecha_creacion"
+    )
+
+    cantidad_no_leidas = notificaciones.filter(
+        leida=False
+    ).count()
+
+    return render(
+        request,
+        "core/notificaciones.html",
+        {
+            "lote": lote,
+            "notificaciones": notificaciones,
+            "cantidad_no_leidas": cantidad_no_leidas,
+        }
+    )
+
+
+def marcar_notificacion_leida(request, notificacion_id):
+    if not request.user.is_authenticated:
+        return redirect("home")
+
+    if request.user.is_superuser:
+        return redirect("administracion_dashboard")
+
+    if request.user.is_staff:
+        return redirect("seguridad_dashboard")
+
+    lote = request.user.lote
+
+    notificacion = get_object_or_404(
+        Notificacion,
+        id=notificacion_id,
+        lote=lote
+    )
+
+    if request.method == "POST":
+        notificacion.leida = True
+        notificacion.save(update_fields=["leida"])
+
+        destino = request.POST.get("destino", "").strip()
+
+        if destino and destino.startswith("/"):
+            return redirect(destino)
+
+    return redirect("notificaciones")
+
+
+def marcar_todas_notificaciones_leidas(request):
+    if not request.user.is_authenticated:
+        return redirect("home")
+
+    if request.user.is_superuser:
+        return redirect("administracion_dashboard")
+
+    if request.user.is_staff:
+        return redirect("seguridad_dashboard")
+
+    if request.method == "POST":
+        Notificacion.objects.filter(
+            lote=request.user.lote,
+            leida=False
+        ).update(
+            leida=True
+        )
+
+    return redirect("notificaciones")
 
 # -------------------------------------------------
 # NOTICIAS

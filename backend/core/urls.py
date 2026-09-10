@@ -25,11 +25,7 @@ urlpatterns = [
     path("password-restaurada/", password_reset_views.password_restaurada, name="password_restaurada"),
 
     path("administracion/", administracion_views.administracion_dashboard, name="administracion_dashboard"),
-    path(
-    "administracion/emergencias/",
-    administracion_emergencias_views.administracion_emergencias,
-    name="administracion_emergencias"
-),
+    path("administracion/emergencias/", administracion_emergencias_views.administracion_emergencias, name="administracion_emergencias"),
     path("administracion/sum/", administracion_sum_views.administracion_sum_historial, name="administracion_sum_historial"),
     path("administracion/sum/<int:reserva_id>/", administracion_sum_views.administracion_sum_detalle, name="administracion_sum_detalle"),
     path("administracion/sum/<int:reserva_id>/estado/", administracion_sum_views.administracion_sum_cambiar_estado, name="administracion_sum_cambiar_estado"),
@@ -57,6 +53,9 @@ urlpatterns = [
 
     path("portal/", views.portal, name="portal"),
     path("emergencia/", views.emergencia, name="emergencia"),
+    path("notificaciones/", views.notificaciones_view, name="notificaciones"),
+    path("notificaciones/<int:notificacion_id>/leer/", views.marcar_notificacion_leida, name="marcar_notificacion_leida"),
+    path("notificaciones/marcar-todas/", views.marcar_todas_notificaciones_leidas, name="marcar_todas_notificaciones_leidas"),
     path("noticias/", views.noticias_view, name="noticias"),
     path("cumpleanios/", views.cumpleanios_view, name="cumpleanios"),
     path("mi-familia/", views.mi_familia, name="mi_familia"),
@@ -85,8 +84,8 @@ urlpatterns = [
     path("visitas/carga-masiva/plantilla/", views.descargar_plantilla_visitas, name="descargar_plantilla_visitas"),
 
     path("seguridad/", seguridad_views.seguridad_dashboard, name="seguridad_dashboard"),
-   path("seguridad/emergencias/<int:emergencia_id>/tomar/", seguridad_views.tomar_emergencia, name="tomar_emergencia"),
-path("seguridad/emergencias/<int:emergencia_id>/cerrar/", seguridad_views.cerrar_emergencia, name="cerrar_emergencia"),
+    path("seguridad/emergencias/<int:emergencia_id>/tomar/", seguridad_views.tomar_emergencia, name="tomar_emergencia"),
+    path("seguridad/emergencias/<int:emergencia_id>/cerrar/", seguridad_views.cerrar_emergencia, name="cerrar_emergencia"),
     path("seguridad/visitas/", seguridad_views.seguridad_visitas, name="seguridad_visitas"),
     path("seguridad/historial/", seguridad_views.historial_seguridad, name="historial_seguridad"),
     path("seguridad/visita-espontanea/", seguridad_views.visita_espontanea, name="visita_espontanea"),

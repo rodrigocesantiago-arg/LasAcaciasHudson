@@ -2,6 +2,8 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 from django.db import models
+from django.db.models.signals import post_save, pre_save
+from django.dispatch import receiver
 from django.utils.dateparse import parse_date
 
 
@@ -698,6 +700,223 @@ class ContactoUtil(models.Model):
         verbose_name = "Contacto útil"
         verbose_name_plural = "Contactos útiles"
 
+
+
+# -------------------------------------------------
+# NOTIFICACIONES
+# -------------------------------------------------
+
+class Notificacion(models.Model):
+
+    TIPOS = [
+        ("encomienda", "Encomienda"),
+        ("sum", "Reserva SUM"),
+        ("reclamo", "Reclamo"),
+        ("familia", "Mi familia"),
+        ("general", "General"),
+    ]
+
+    lote = models.ForeignKey(
+        Lote,
+        on_delete=models.CASCADE,
+        related_name="notificaciones"
+    )
+
+    tipo = models.CharField(
+        "Tipo",
+        max_length=20,
+        choices=TIPOS,
+        default="general"
+    )
+
+    titulo = models.CharField(
+        "Título",
+        max_length=180
+    )
+
+    mensaje = models.TextField(
+        "Mensaje"
+    )
+
+    url = models.CharField(
+        "Destino",
+        max_length=255,
+        blank=True
+    )
+
+    leida = models.BooleanField(
+        "Leída",
+        default=False
+    )
+
+    fecha_creacion = models.DateTimeField(
+        "Fecha de creación",
+        auto_now_add=True
+    )
+
+    def __str__(self):
+        return f"Lote {self.lote.numero} - {self.titulo}"
+
+    class Meta:
+        ordering = ["-fecha_creacion"]
+        verbose_name = "Notificación"
+        verbose_name_plural = "Notificaciones"
+
+
+# -------------------------------------------------
+# GENERACIÓN AUTOMÁTICA DE NOTIFICACIONES
+# -------------------------------------------------
+
+def _estado_anterior(instancia, modelo):
+    if not instancia.pk:
+        return None
+
+    try:
+        return modelo.objects.only("estado").get(pk=instancia.pk).estado
+    except modelo.DoesNotExist:
+        return None
+
+
+@receiver(pre_save, sender=ReservaSUM)
+def recordar_estado_reserva_sum(sender, instance, **kwargs):
+    instance._estado_anterior_notificacion = _estado_anterior(
+        instance,
+        ReservaSUM
+    )
+
+
+@receiver(post_save, sender=ReservaSUM)
+def notificar_estado_reserva_sum(sender, instance, created, **kwargs):
+    if created:
+        return
+
+    anterior = getattr(
+        instance,
+        "_estado_anterior_notificacion",
+        None
+    )
+
+    if anterior == instance.estado:
+        return
+
+    if instance.estado == "confirmada":
+        titulo = "Reserva del SUM confirmada"
+        mensaje = (
+            f"Tu reserva del SUM para el "
+            f"{instance.fecha.strftime('%d/%m/%Y')} "
+            f"({instance.get_turno_display()}) fue confirmada."
+        )
+    elif instance.estado == "cancelada":
+        titulo = "Reserva del SUM cancelada"
+        mensaje = (
+            f"La reserva del SUM para el "
+            f"{instance.fecha.strftime('%d/%m/%Y')} "
+            f"({instance.get_turno_display()}) fue cancelada."
+        )
+    else:
+        return
+
+    Notificacion.objects.create(
+        lote=instance.lote,
+        tipo="sum",
+        titulo=titulo,
+        mensaje=mensaje,
+        url="/mis-reservas-sum/"
+    )
+
+
+@receiver(pre_save, sender=Reclamo)
+def recordar_estado_reclamo(sender, instance, **kwargs):
+    instance._estado_anterior_notificacion = _estado_anterior(
+        instance,
+        Reclamo
+    )
+
+
+@receiver(post_save, sender=Reclamo)
+def notificar_estado_reclamo(sender, instance, created, **kwargs):
+    if created:
+        return
+
+    anterior = getattr(
+        instance,
+        "_estado_anterior_notificacion",
+        None
+    )
+
+    if anterior == instance.estado:
+        return
+
+    if instance.estado not in ("en_proceso", "resuelto", "rechazado"):
+        return
+
+    Notificacion.objects.create(
+        lote=instance.lote,
+        tipo="reclamo",
+        titulo=f"Reclamo #{instance.id} actualizado",
+        mensaje=(
+            f"Tu reclamo “{instance.asunto}” ahora está "
+            f"{instance.get_estado_display().lower()}."
+        ),
+        url="/reclamos/"
+    )
+
+
+@receiver(pre_save, sender=SolicitudModificacionFamilia)
+def recordar_estado_solicitud_familiar(sender, instance, **kwargs):
+    instance._estado_anterior_notificacion = _estado_anterior(
+        instance,
+        SolicitudModificacionFamilia
+    )
+
+
+@receiver(post_save, sender=SolicitudModificacionFamilia)
+def notificar_solicitud_familiar(sender, instance, created, **kwargs):
+    if created:
+        return
+
+    anterior = getattr(
+        instance,
+        "_estado_anterior_notificacion",
+        None
+    )
+
+    if anterior == instance.estado:
+        return
+
+    if instance.estado not in ("aprobada", "rechazada"):
+        return
+
+    Notificacion.objects.create(
+        lote=instance.lote,
+        tipo="familia",
+        titulo="Solicitud familiar actualizada",
+        mensaje=(
+            f"Tu solicitud de "
+            f"{instance.get_tipo_display().lower()} fue "
+            f"{instance.get_estado_display().lower()}."
+        ),
+        url="/mi-familia/"
+    )
+
+
+@receiver(post_save, sender=Encomienda)
+def notificar_nueva_encomienda(sender, instance, created, **kwargs):
+    if not created:
+        return
+
+    mensaje = f"Portería recibió una encomienda de {instance.remitente}."
+
+    if instance.descripcion:
+        mensaje += f" {instance.descripcion}"
+
+    Notificacion.objects.create(
+        lote=instance.lote,
+        tipo="encomienda",
+        titulo="Tenés una nueva encomienda",
+        mensaje=mensaje,
+        url="/mis-encomiendas/"
+    )
 
 # -------------------------------------------------
 # EMERGENCIAS
