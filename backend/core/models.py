@@ -700,6 +700,116 @@ class ContactoUtil(models.Model):
 
 
 # -------------------------------------------------
+# EMERGENCIAS
+# -------------------------------------------------
+
+class Emergencia(models.Model):
+
+    TIPOS = [
+        ("robo", "Robo"),
+        ("incendio", "Incendio"),
+        ("medica", "Emergencia médica"),
+        ("accidente", "Accidente"),
+        ("otra", "Otra"),
+    ]
+
+    ESTADOS = [
+        ("activa", "Activa"),
+        ("atendida", "Atendida por Portería"),
+        ("cerrada", "Cerrada"),
+    ]
+
+    lote = models.ForeignKey(
+        Lote,
+        on_delete=models.CASCADE,
+        related_name="emergencias"
+    )
+
+    usuario = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="emergencias_generadas",
+        verbose_name="Usuario que generó la alerta"
+    )
+
+    tipo = models.CharField(
+        "Tipo de emergencia",
+        max_length=20,
+        choices=TIPOS
+    )
+
+    descripcion = models.TextField(
+        "Descripción / información adicional",
+        blank=True
+    )
+
+    estado = models.CharField(
+        "Estado",
+        max_length=20,
+        choices=ESTADOS,
+        default="activa"
+    )
+
+    fecha_creacion = models.DateTimeField(
+        "Fecha y hora de activación",
+        auto_now_add=True
+    )
+
+    fecha_atencion = models.DateTimeField(
+        "Fecha y hora de atención",
+        null=True,
+        blank=True
+    )
+
+    atendida_por = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="emergencias_atendidas",
+        verbose_name="Atendida por"
+    )
+
+    fecha_cierre = models.DateTimeField(
+        "Fecha y hora de cierre",
+        null=True,
+        blank=True
+    )
+
+    cerrada_por = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="emergencias_cerradas",
+        verbose_name="Cerrada por"
+    )
+
+    observaciones_porteria = models.TextField(
+        "Observaciones de Portería",
+        blank=True
+    )
+
+    @property
+    def es_comunitaria(self):
+        return self.tipo in ("robo", "incendio")
+
+    def __str__(self):
+        return (
+            f"{self.get_tipo_display()} - "
+            f"Lote {self.lote.numero} - "
+            f"{self.get_estado_display()}"
+        )
+
+    class Meta:
+        ordering = ["-fecha_creacion"]
+        verbose_name = "Emergencia"
+        verbose_name_plural = "Emergencias"
+
+
+# -------------------------------------------------
 # VISITAS
 # -------------------------------------------------
 

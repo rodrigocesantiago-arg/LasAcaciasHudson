@@ -125,10 +125,117 @@ body{margin:0;background:var(--page);color:var(--text);font-family:"Segoe UI",In
     .empty-state-img{width:105px;height:82px}
 }
 
+
+/* ALERTA COMUNITARIA ACTIVA - prioridad máxima */
+.community-alert-wrap{
+  margin:0 0 16px;
+}
+.community-alert{
+  background:linear-gradient(135deg,#7a1710,#b42318);
+  color:#fff;
+  border:3px solid #ffb4ad;
+  border-radius:20px;
+  padding:20px;
+  margin-bottom:10px;
+  box-shadow:0 12px 30px rgba(140,24,16,.30);
+  animation:communityPulse 1.6s infinite;
+}
+.community-alert.attended{
+  background:linear-gradient(135deg,#8a4b08,#b86a0b);
+  border-color:#ffd18d;
+  animation:none;
+}
+@keyframes communityPulse{
+  0%,100%{box-shadow:0 12px 30px rgba(140,24,16,.30)}
+  50%{box-shadow:0 12px 38px rgba(217,45,32,.58)}
+}
+.community-alert-kicker{
+  font-size:.8rem;
+  font-weight:900;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  opacity:.92;
+}
+.community-alert-title{
+  font-size:clamp(1.7rem,4vw,2.5rem);
+  line-height:1.05;
+  font-weight:900;
+  margin:5px 0 9px;
+}
+.community-alert-meta{
+  font-size:.95rem;
+  line-height:1.5;
+}
+.community-alert-desc{
+  margin-top:10px;
+  background:rgba(255,255,255,.12);
+  border-radius:12px;
+  padding:10px 12px;
+}
+@media(max-width:600px){
+  .community-alert{padding:17px}
+  .community-alert-title{font-size:1.7rem}
+}
+
+/* Emergencias: acción prioritaria, separada de novedades y gestiones normales */
+.emergency-access{
+  margin:0 4.5% 18px;
+  background:linear-gradient(135deg,#7a1710,#b42318);
+  color:#fff;
+  border-radius:18px;
+  padding:18px 20px;
+  box-shadow:0 10px 26px rgba(130,20,15,.20);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:18px;
+}
+.emergency-access h2{font-size:1.25rem;font-weight:900;margin:0 0 4px;color:#fff}
+.emergency-access p{margin:0;color:rgba(255,255,255,.88);font-size:.86rem}
+.emergency-btn{
+  flex:0 0 auto;background:#fff;color:#9f1d14;text-decoration:none;
+  border-radius:13px;padding:12px 18px;font-weight:900;
+  box-shadow:0 5px 14px rgba(0,0,0,.12)
+}
+.emergency-btn:hover{color:#74140e;background:#fff4f3}
+@media(max-width:900px){.emergency-access{margin-left:0;margin-right:0}}
+@media(max-width:600px){
+  .emergency-access{align-items:stretch;flex-direction:column;padding:16px}
+  .emergency-btn{text-align:center;width:100%;font-size:1rem}
+}
+
 </style>
 </head>
 <body><div class="shell">
 <div class="topbar d-flex justify-content-between align-items-center gap-3"><div class="d-flex align-items-center gap-3"><img src="{% static 'core/img/las_acacias_logo.png' %}" alt="Las Acacias" class="logo"><div><div class="brand">Las Acacias</div><div class="sub">Comunidad360 · Portal de vecinos</div></div></div><div class="d-flex align-items-center gap-2"><span class="badge rounded-pill text-bg-light border d-none d-sm-inline">Lote {{ lote.numero }}</span><a href="{% url 'logout' %}" class="btn btn-outline-secondary btn-sm">Cerrar sesión</a></div></div>
+{% if alertas_comunitarias_activas %}
+<section class="community-alert-wrap">
+  {% for alerta in alertas_comunitarias_activas %}
+  <div class="community-alert {% if alerta.estado == 'atendida' %}attended{% endif %}">
+    <div class="community-alert-kicker">🚨 ALERTA COMUNITARIA ACTIVA</div>
+    <div class="community-alert-title">
+      {% if alerta.tipo == "incendio" %}🔥 INCENDIO{% else %}🚨 ROBO{% endif %}
+    </div>
+    <div class="community-alert-meta">
+      <div><strong>Lote {{ alerta.lote.numero }}</strong> · {{ alerta.lote.apellido_familia }}</div>
+      <div>Activada: <strong>{{ alerta.fecha_creacion|date:"d/m/Y H:i:s" }}</strong></div>
+      {% if alerta.estado == "atendida" %}
+      <div class="mt-1">✓ Portería ya tomó conocimiento de la alerta.</div>
+      {% else %}
+      <div class="mt-1"><strong>Portería fue notificada.</strong></div>
+      {% endif %}
+    </div>
+    {% if alerta.descripcion %}
+    <div class="community-alert-desc">
+      <strong>Información adicional:</strong><br>
+      {{ alerta.descripcion|linebreaksbr }}
+    </div>
+    {% endif %}
+  </div>
+  {% endfor %}
+</section>
+{% endif %}
+
 <section class="hero">
 <div class="hero-content">
   <div class="hero-panel">
@@ -139,6 +246,13 @@ body{margin:0;background:var(--page);color:var(--text);font-family:"Segoe UI",In
   </div>
 </div>
 </section>
+<div class="emergency-access">
+  <div>
+    <h2>🚨 Emergencias</h2>
+    <p>Acceso inmediato para informar una situación que requiera intervención urgente.</p>
+  </div>
+  <a href="{% url 'emergencia' %}" class="emergency-btn">🚨 ACTIVAR EMERGENCIA</a>
+</div>
 {% if cantidad_encomiendas_pendientes > 0 %}<div class="alert alert-warning notice mb-4"><div class="d-flex justify-content-between align-items-center flex-wrap gap-3"><div><div class="fw-bold fs-5">📦 Tenés {{ cantidad_encomiendas_pendientes }} {% if cantidad_encomiendas_pendientes == 1 %}encomienda pendiente{% else %}encomiendas pendientes{% endif %}</div><div class="small mt-1">Hay paquetes esperando para tu lote.</div></div><a href="{% url 'mis_encomiendas' %}" class="btn btn-warning fw-semibold">Ver encomiendas</a></div></div>{% endif %}
 <div class="title"><div><h2>Accesos rápidos</h2><p>Las funciones que más usás, siempre a mano.</p></div></div>
 <div class="row g-2 quick-grid">

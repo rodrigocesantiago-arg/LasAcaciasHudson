@@ -50,6 +50,7 @@ urlpatterns = [
     path("administracion/contactos/<int:contacto_id>/eliminar/", administracion_contactos_views.administracion_contacto_eliminar, name="administracion_contacto_eliminar"),
 
     path("portal/", views.portal, name="portal"),
+    path("emergencia/", views.emergencia, name="emergencia"),
     path("noticias/", views.noticias_view, name="noticias"),
     path("cumpleanios/", views.cumpleanios_view, name="cumpleanios"),
     path("mi-familia/", views.mi_familia, name="mi_familia"),
@@ -78,6 +79,8 @@ urlpatterns = [
     path("visitas/carga-masiva/plantilla/", views.descargar_plantilla_visitas, name="descargar_plantilla_visitas"),
 
     path("seguridad/", seguridad_views.seguridad_dashboard, name="seguridad_dashboard"),
+   path("seguridad/emergencias/<int:emergencia_id>/tomar/", seguridad_views.tomar_emergencia, name="tomar_emergencia"),
+path("seguridad/emergencias/<int:emergencia_id>/cerrar/", seguridad_views.cerrar_emergencia, name="cerrar_emergencia"),
     path("seguridad/visitas/", seguridad_views.seguridad_visitas, name="seguridad_visitas"),
     path("seguridad/historial/", seguridad_views.historial_seguridad, name="historial_seguridad"),
     path("seguridad/visita-espontanea/", seguridad_views.visita_espontanea, name="visita_espontanea"),

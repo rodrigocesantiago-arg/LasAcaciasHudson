@@ -7,7 +7,7 @@ from .forms import (
     EntregaEncomiendaForm,
     VisitaEspontaneaForm,
 )
-from .models import Encomienda, ReservaSUM, Visita
+from .models import Emergencia, Encomienda, ReservaSUM, Visita
 from .role_required import porteria_required
 
 
@@ -45,6 +45,18 @@ def seguridad_dashboard(request):
         "lote"
     ).order_by("turno")
 
+    emergencias_activas = Emergencia.objects.filter(
+        estado__in=["activa", "atendida"]
+    ).select_related(
+        "lote",
+        "usuario",
+        "atendida_por",
+    ).order_by(
+        "fecha_creacion"
+    )
+
+    cantidad_emergencias_activas = emergencias_activas.count()
+
     return render(
         request,
         "core/seguridad_dashboard.html",
@@ -55,8 +67,75 @@ def seguridad_dashboard(request):
             "proximas_visitas": proximas_visitas,
             "encomiendas_pendientes": encomiendas_pendientes,
             "reservas_sum_hoy": reservas_sum_hoy,
+            "emergencias_activas": emergencias_activas,
+            "cantidad_emergencias_activas": cantidad_emergencias_activas,
         }
     )
+
+
+@porteria_required
+def tomar_emergencia(request, emergencia_id):
+    if request.method != "POST":
+        return redirect("seguridad_dashboard")
+
+    emergencia = get_object_or_404(
+        Emergencia,
+        id=emergencia_id,
+        estado__in=["activa", "atendida"],
+    )
+
+    if emergencia.estado == "activa":
+        emergencia.estado = "atendida"
+        emergencia.fecha_atencion = timezone.now()
+        emergencia.atendida_por = request.user
+        emergencia.save(
+            update_fields=[
+                "estado",
+                "fecha_atencion",
+                "atendida_por",
+            ]
+        )
+
+    return redirect("seguridad_dashboard")
+
+
+@porteria_required
+def cerrar_emergencia(request, emergencia_id):
+    if request.method != "POST":
+        return redirect("seguridad_dashboard")
+
+    emergencia = get_object_or_404(
+        Emergencia,
+        id=emergencia_id,
+        estado__in=["activa", "atendida"],
+    )
+
+    observaciones = request.POST.get(
+        "observaciones_porteria",
+        ""
+    ).strip()
+
+    if emergencia.estado == "activa":
+        emergencia.fecha_atencion = timezone.now()
+        emergencia.atendida_por = request.user
+
+    emergencia.estado = "cerrada"
+    emergencia.fecha_cierre = timezone.now()
+    emergencia.cerrada_por = request.user
+    emergencia.observaciones_porteria = observaciones
+
+    emergencia.save(
+        update_fields=[
+            "estado",
+            "fecha_atencion",
+            "atendida_por",
+            "fecha_cierre",
+            "cerrada_por",
+            "observaciones_porteria",
+        ]
+    )
+
+    return redirect("seguridad_dashboard")
 
 
 @porteria_required

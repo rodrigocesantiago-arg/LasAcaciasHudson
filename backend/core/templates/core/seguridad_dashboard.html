@@ -286,6 +286,121 @@
             color:#fff;
         }
 
+
+        /* ALERTAS DE EMERGENCIA */
+        .emergency-zone{
+            margin-bottom:18px;
+        }
+
+        .emergency-title{
+            display:flex;
+            align-items:center;
+            gap:10px;
+            margin-bottom:10px;
+            color:#8f1710;
+            font-size:1.05rem;
+            font-weight:900;
+            letter-spacing:.02em;
+        }
+
+        .emergency-card{
+            background:linear-gradient(135deg,#7a1710,#b42318);
+            color:#fff;
+            border:3px solid #ffb4ad;
+            border-radius:22px;
+            padding:22px;
+            margin-bottom:12px;
+            box-shadow:0 12px 30px rgba(140,24,16,.24);
+            animation:emergencyPulse 1.8s infinite;
+        }
+
+        .emergency-card.attended{
+            background:linear-gradient(135deg,#8a4b08,#b86a0b);
+            border-color:#ffd18d;
+            animation:none;
+        }
+
+        @keyframes emergencyPulse{
+            0%,100%{box-shadow:0 12px 30px rgba(140,24,16,.24)}
+            50%{box-shadow:0 12px 36px rgba(217,45,32,.52)}
+        }
+
+        .emergency-top{
+            display:flex;
+            justify-content:space-between;
+            align-items:flex-start;
+            gap:16px;
+            flex-wrap:wrap;
+        }
+
+        .emergency-kicker{
+            font-size:.82rem;
+            font-weight:900;
+            letter-spacing:.08em;
+            text-transform:uppercase;
+            opacity:.9;
+        }
+
+        .emergency-type{
+            font-size:clamp(1.7rem,4vw,2.6rem);
+            line-height:1;
+            font-weight:900;
+            margin:5px 0 10px;
+        }
+
+        .community-badge{
+            display:inline-block;
+            background:#fff;
+            color:#9e1c13;
+            padding:6px 10px;
+            border-radius:999px;
+            font-size:.76rem;
+            font-weight:900;
+            margin-bottom:10px;
+        }
+
+        .emergency-data{
+            font-size:1.02rem;
+            line-height:1.55;
+        }
+
+        .emergency-description{
+            background:rgba(255,255,255,.12);
+            border-radius:12px;
+            padding:10px 12px;
+            margin-top:10px;
+        }
+
+        .emergency-actions{
+            min-width:260px;
+            background:rgba(255,255,255,.10);
+            border-radius:16px;
+            padding:14px;
+        }
+
+        .emergency-actions button{
+            width:100%;
+            font-weight:900;
+            border-radius:11px;
+            padding:10px 12px;
+        }
+
+        .emergency-actions textarea{
+            width:100%;
+            min-height:62px;
+            border:0;
+            border-radius:10px;
+            padding:9px 10px;
+            margin:9px 0;
+            resize:vertical;
+        }
+
+        .emergency-status{
+            font-size:.86rem;
+            font-weight:800;
+            margin-bottom:9px;
+        }
+
         @media(max-width:767px){
             .shell{padding:10px}
             .hero{min-height:245px;padding:24px}
@@ -316,6 +431,83 @@
             </a>
         </div>
     </div>
+
+    {% if emergencias_activas %}
+    <!-- EMERGENCIAS ACTIVAS: prioridad máxima -->
+    <section class="emergency-zone">
+        <div class="emergency-title">
+            🚨 {{ cantidad_emergencias_activas }} ALERTA{{ cantidad_emergencias_activas|pluralize:"S" }} ACTIVA{{ cantidad_emergencias_activas|pluralize:"S" }}
+        </div>
+
+        {% for emergencia in emergencias_activas %}
+        <div class="emergency-card {% if emergencia.estado == 'atendida' %}attended{% endif %}">
+            <div class="emergency-top">
+                <div class="flex-grow-1">
+                    <div class="emergency-kicker">
+                        {% if emergencia.estado == "activa" %}
+                            🚨 REQUIERE ATENCIÓN DE PORTERÍA
+                        {% else %}
+                            ✓ ALERTA TOMADA POR PORTERÍA
+                        {% endif %}
+                    </div>
+
+                    <div class="emergency-type">
+                        {% if emergencia.tipo == "incendio" %}🔥{% else %}🚨{% endif %}
+                        {{ emergencia.get_tipo_display|upper }}
+                    </div>
+
+                    {% if emergencia.es_comunitaria %}
+                        <div class="community-badge">ALERTA COMUNITARIA</div>
+                    {% endif %}
+
+                    <div class="emergency-data">
+                        <div><strong>Lote {{ emergencia.lote.numero }}</strong> · {{ emergencia.lote.apellido_familia }}</div>
+                        <div>Activada: <strong>{{ emergencia.fecha_creacion|date:"d/m/Y H:i:s" }}</strong></div>
+
+                        {% if emergencia.descripcion %}
+                        <div class="emergency-description">
+                            <strong>Información enviada por el vecino:</strong><br>
+                            {{ emergencia.descripcion|linebreaksbr }}
+                        </div>
+                        {% endif %}
+
+                        {% if emergencia.estado == "atendida" %}
+                        <div class="mt-2">
+                            Tomada por <strong>{{ emergencia.atendida_por.username }}</strong>
+                            · {{ emergencia.fecha_atencion|date:"d/m/Y H:i:s" }}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="emergency-actions">
+                    {% if emergencia.estado == "activa" %}
+                    <div class="emergency-status">Esta alerta todavía no fue tomada.</div>
+                    <form method="POST" action="{% url 'tomar_emergencia' emergencia.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-light text-danger">
+                            ✓ TOMAR ALERTA
+                        </button>
+                    </form>
+                    {% else %}
+                    <div class="emergency-status">✓ Portería ya tomó esta alerta.</div>
+                    {% endif %}
+
+                    <form method="POST" action="{% url 'cerrar_emergencia' emergencia.id %}"
+                          onsubmit="return confirm('¿Confirmás que la emergencia fue gestionada y puede cerrarse?');">
+                        {% csrf_token %}
+                        <textarea name="observaciones_porteria" maxlength="2000"
+                                  placeholder="Observaciones de cierre (opcional)"></textarea>
+                        <button type="submit" class="btn btn-dark">
+                            CERRAR ALERTA
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </section>
+    {% endif %}
 
     <!-- HERO -->
     <section class="hero">

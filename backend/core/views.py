@@ -19,6 +19,7 @@ from .models import (
     ContactoUtil,
     Documento,
     Encomienda,
+    Emergencia,
     Integrante,
     InvitadoFrecuente,
     Noticia,
@@ -215,6 +216,18 @@ def portal(request):
         encomiendas_pendientes[:3]
     )
 
+    # ALERTAS COMUNITARIAS ACTIVAS
+    # Solo Robo e Incendio se muestran a todos los vecinos.
+    alertas_comunitarias_activas = Emergencia.objects.filter(
+        tipo__in=["robo", "incendio"],
+        estado__in=["activa", "atendida"],
+    ).select_related(
+        "lote",
+        "atendida_por",
+    ).order_by(
+        "fecha_creacion"
+    )
+
     return render(
         request,
         "core/portal.html",
@@ -227,6 +240,78 @@ def portal(request):
                 cantidad_encomiendas_pendientes,
             "ultimas_encomiendas_pendientes":
                 ultimas_encomiendas_pendientes,
+            "alertas_comunitarias_activas":
+                alertas_comunitarias_activas,
+        }
+    )
+
+
+# -------------------------------------------------
+# EMERGENCIAS - VECINOS
+# -------------------------------------------------
+
+def emergencia(request):
+    if not request.user.is_authenticated:
+        return redirect("home")
+
+    if request.user.is_superuser:
+        return redirect("administracion_dashboard")
+
+    if request.user.is_staff:
+        return redirect("seguridad_dashboard")
+
+    lote = request.user.lote
+
+    emergencia_activa = Emergencia.objects.filter(
+        lote=lote,
+        estado__in=["activa", "atendida"]
+    ).order_by("-fecha_creacion").first()
+
+    if request.method == "POST":
+        if emergencia_activa:
+            return redirect("emergencia")
+
+        tipo = request.POST.get("tipo", "").strip()
+        descripcion = request.POST.get("descripcion", "").strip()
+
+        tipos_validos = {
+            codigo for codigo, nombre in Emergencia.TIPOS
+        }
+
+        if tipo not in tipos_validos:
+            return render(
+                request,
+                "core/emergencia.html",
+                {
+                    "lote": lote,
+                    "emergencia_activa": emergencia_activa,
+                    "error": "Seleccioná un tipo de emergencia válido.",
+                }
+            )
+
+        nueva_emergencia = Emergencia.objects.create(
+            lote=lote,
+            usuario=request.user,
+            tipo=tipo,
+            descripcion=descripcion,
+            estado="activa"
+        )
+
+        return render(
+            request,
+            "core/emergencia_ok.html",
+            {
+                "lote": lote,
+                "emergencia": nueva_emergencia,
+            }
+        )
+
+    return render(
+        request,
+        "core/emergencia.html",
+        {
+            "lote": lote,
+            "emergencia_activa": emergencia_activa,
         }
     )
 
