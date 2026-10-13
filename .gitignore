@@ -19,3 +19,6 @@ Thumbs.db
 
 
 backend/db_backup_*.sqlite3
+
+# Respaldos locales de bases de datos
+*.sqlite3.*

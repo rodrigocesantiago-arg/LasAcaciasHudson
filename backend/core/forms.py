@@ -499,3 +499,19 @@ class EntregaEncomiendaForm(forms.Form):
             )
 
         return cleaned_data
+
+class InvitacionVecinoForm(forms.Form):
+    email = forms.EmailField(
+        label="Correo electrónico del vecino",
+        max_length=254,
+        widget=forms.EmailInput(
+            attrs={
+                "class": "form-control",
+                "placeholder": "vecino@ejemplo.com",
+                "autocomplete": "email",
+            }
+        ),
+    )
+
+    def clean_email(self):
+        return self.cleaned_data["email"].strip().lower()

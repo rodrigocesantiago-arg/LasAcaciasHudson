@@ -1,7 +1,10 @@
+
 from django.urls import path
 
 from . import views
 from . import password_reset_views
+from . import invitaciones_views
+from . import alta_lotes_views
 from . import administracion_views
 from . import administracion_sum_views
 from . import administracion_reclamos_views
@@ -16,85 +19,480 @@ from . import administracion_emergencias_views
 
 
 urlpatterns = [
+
+    # ----------------------------------------
+    # INICIO DE SESION
+    # ----------------------------------------
+
     path("", views.home, name="home"),
     path("login/", views.login_view, name="login"),
+    path("logout/", views.logout_view, name="logout"),
 
-    path("recuperar-password/", password_reset_views.recuperar_password, name="recuperar_password"),
-    path("recuperar-password/enviado/", password_reset_views.recuperar_password_enviado, name="recuperar_password_enviado"),
-    path("recuperar-password/<uidb64>/<token>/", password_reset_views.restablecer_password, name="restablecer_password"),
-    path("password-restaurada/", password_reset_views.password_restaurada, name="password_restaurada"),
+    # ----------------------------------------
+    # RECUPERACION DE CONTRASENA
+    # ----------------------------------------
 
-    path("administracion/", administracion_views.administracion_dashboard, name="administracion_dashboard"),
-    path("administracion/emergencias/", administracion_emergencias_views.administracion_emergencias, name="administracion_emergencias"),
-    path("administracion/sum/", administracion_sum_views.administracion_sum_historial, name="administracion_sum_historial"),
-    path("administracion/sum/<int:reserva_id>/", administracion_sum_views.administracion_sum_detalle, name="administracion_sum_detalle"),
-    path("administracion/sum/<int:reserva_id>/estado/", administracion_sum_views.administracion_sum_cambiar_estado, name="administracion_sum_cambiar_estado"),
-    path("administracion/reclamos/", administracion_reclamos_views.administracion_reclamos, name="administracion_reclamos"),
-    path("administracion/reclamos/<int:reclamo_id>/", administracion_reclamos_views.administracion_reclamo_detalle, name="administracion_reclamo_detalle"),
-    path("administracion/solicitudes-familiares/", administracion_solicitudes_familiares_views.administracion_solicitudes_familiares, name="administracion_solicitudes_familiares"),
-    path("administracion/solicitudes-familiares/<int:solicitud_id>/", administracion_solicitudes_familiares_views.administracion_solicitud_familiar_detalle, name="administracion_solicitud_familiar_detalle"),
-    path("administracion/solicitudes-familiares/<int:solicitud_id>/resolver/", administracion_solicitudes_familiares_views.administracion_solicitud_familiar_resolver, name="administracion_solicitud_familiar_resolver"),
-    path("administracion/lotes/", administracion_lotes_views.administracion_lotes, name="administracion_lotes"),
-    path("administracion/lotes/<int:lote_id>/", administracion_lotes_views.administracion_lote_detalle, name="administracion_lote_detalle"),
-    path("administracion/encomiendas/", administracion_encomiendas_views.administracion_encomiendas, name="administracion_encomiendas"),
-    path("administracion/encomiendas/<int:encomienda_id>/", administracion_encomiendas_views.administracion_encomienda_detalle, name="administracion_encomienda_detalle"),
-    path("administracion/noticias/", administracion_noticias_views.administracion_noticias, name="administracion_noticias"),
-    path("administracion/noticias/nueva/", administracion_noticias_views.administracion_noticia_nueva, name="administracion_noticia_nueva"),
-    path("administracion/noticias/<int:noticia_id>/editar/", administracion_noticias_views.administracion_noticia_editar, name="administracion_noticia_editar"),
-    path("administracion/noticias/<int:noticia_id>/eliminar/", administracion_noticias_views.administracion_noticia_eliminar, name="administracion_noticia_eliminar"),
-    path("administracion/documentos/", administracion_documentos_views.administracion_documentos, name="administracion_documentos"),
-    path("administracion/documentos/nuevo/", administracion_documentos_views.administracion_documento_nuevo, name="administracion_documento_nuevo"),
-    path("administracion/documentos/<int:documento_id>/editar/", administracion_documentos_views.administracion_documento_editar, name="administracion_documento_editar"),
-    path("administracion/documentos/<int:documento_id>/eliminar/", administracion_documentos_views.administracion_documento_eliminar, name="administracion_documento_eliminar"),
-    path("administracion/contactos/", administracion_contactos_views.administracion_contactos, name="administracion_contactos"),
-    path("administracion/contactos/nuevo/", administracion_contactos_views.administracion_contacto_nuevo, name="administracion_contacto_nuevo"),
-    path("administracion/contactos/<int:contacto_id>/editar/", administracion_contactos_views.administracion_contacto_editar, name="administracion_contacto_editar"),
-    path("administracion/contactos/<int:contacto_id>/eliminar/", administracion_contactos_views.administracion_contacto_eliminar, name="administracion_contacto_eliminar"),
+    path(
+        "recuperar-password/",
+        password_reset_views.recuperar_password,
+        name="recuperar_password",
+    ),
+
+    path(
+        "recuperar-password/enviado/",
+        password_reset_views.recuperar_password_enviado,
+        name="recuperar_password_enviado",
+    ),
+
+    path(
+        "recuperar-password/<uidb64>/<token>/",
+        password_reset_views.restablecer_password,
+        name="restablecer_password",
+    ),
+
+    path(
+        "password-restaurada/",
+        password_reset_views.password_restaurada,
+        name="password_restaurada",
+    ),
+
+    # ----------------------------------------
+    # ACTIVACION DE CUENTAS
+    # ----------------------------------------
+
+    path(
+        "activar-cuenta/<uidb64>/<token>/",
+        invitaciones_views.activar_cuenta,
+        name="activar_cuenta",
+    ),
+
+    # ----------------------------------------
+    # ADMINISTRACION GENERAL
+    # ----------------------------------------
+
+    path(
+        "administracion/",
+        administracion_views.administracion_dashboard,
+        name="administracion_dashboard",
+    ),
+
+    # ----------------------------------------
+    # ADMINISTRACION DE LOTES
+    # ----------------------------------------
+
+    path(
+        "administracion/lotes/",
+        administracion_lotes_views.administracion_lotes,
+        name="administracion_lotes",
+    ),
+
+    path(
+        "administracion/lotes/nuevo/",
+        alta_lotes_views.crear_lote,
+        name="administracion_lote_nuevo",
+    ),
+
+    path(
+        "administracion/lotes/<int:lote_id>/",
+        administracion_lotes_views.administracion_lote_detalle,
+        name="administracion_lote_detalle",
+    ),
+
+    path(
+        "administracion/lotes/<int:lote_id>/invitar/",
+        administracion_lotes_views.enviar_invitacion_vecino,
+        name="enviar_invitacion_vecino",
+    ),
+
+    # ----------------------------------------
+    # ADMINISTRACION DE EMERGENCIAS
+    # ----------------------------------------
+
+    path(
+        "administracion/emergencias/",
+        administracion_emergencias_views.administracion_emergencias,
+        name="administracion_emergencias",
+    ),
+
+    # ----------------------------------------
+    # ADMINISTRACION SUM
+    # ----------------------------------------
+
+    path(
+        "administracion/sum/",
+        administracion_sum_views.administracion_sum_historial,
+        name="administracion_sum_historial",
+    ),
+
+    path(
+        "administracion/sum/<int:reserva_id>/",
+        administracion_sum_views.administracion_sum_detalle,
+        name="administracion_sum_detalle",
+    ),
+
+    path(
+        "administracion/sum/<int:reserva_id>/estado/",
+        administracion_sum_views.administracion_sum_cambiar_estado,
+        name="administracion_sum_cambiar_estado",
+    ),
+
+    # ----------------------------------------
+    # ADMINISTRACION DE RECLAMOS
+    # ----------------------------------------
+
+    path(
+        "administracion/reclamos/",
+        administracion_reclamos_views.administracion_reclamos,
+        name="administracion_reclamos",
+    ),
+
+    path(
+        "administracion/reclamos/<int:reclamo_id>/",
+        administracion_reclamos_views.administracion_reclamo_detalle,
+        name="administracion_reclamo_detalle",
+    ),
+
+    # ----------------------------------------
+    # ADMINISTRACION FAMILIAR
+    # ----------------------------------------
+
+    path(
+        "administracion/solicitudes-familiares/",
+        administracion_solicitudes_familiares_views.administracion_solicitudes_familiares,
+        name="administracion_solicitudes_familiares",
+    ),
+
+    path(
+        "administracion/solicitudes-familiares/<int:solicitud_id>/",
+        administracion_solicitudes_familiares_views.administracion_solicitud_familiar_detalle,
+        name="administracion_solicitud_familiar_detalle",
+    ),
+
+    path(
+        "administracion/solicitudes-familiares/<int:solicitud_id>/resolver/",
+        administracion_solicitudes_familiares_views.administracion_solicitud_familiar_resolver,
+        name="administracion_solicitud_familiar_resolver",
+    ),
+
+    # ----------------------------------------
+    # ADMINISTRACION DE ENCOMIENDAS
+    # ----------------------------------------
+
+    path(
+        "administracion/encomiendas/",
+        administracion_encomiendas_views.administracion_encomiendas,
+        name="administracion_encomiendas",
+    ),
+
+    path(
+        "administracion/encomiendas/<int:encomienda_id>/",
+        administracion_encomiendas_views.administracion_encomienda_detalle,
+        name="administracion_encomienda_detalle",
+    ),
+
+    # ----------------------------------------
+    # ADMINISTRACION DE NOTICIAS
+    # ----------------------------------------
+
+    path(
+        "administracion/noticias/",
+        administracion_noticias_views.administracion_noticias,
+        name="administracion_noticias",
+    ),
+
+    path(
+        "administracion/noticias/nueva/",
+        administracion_noticias_views.administracion_noticia_nueva,
+        name="administracion_noticia_nueva",
+    ),
+
+    path(
+        "administracion/noticias/<int:noticia_id>/editar/",
+        administracion_noticias_views.administracion_noticia_editar,
+        name="administracion_noticia_editar",
+    ),
+
+    path(
+        "administracion/noticias/<int:noticia_id>/eliminar/",
+        administracion_noticias_views.administracion_noticia_eliminar,
+        name="administracion_noticia_eliminar",
+    ),
+
+    # ----------------------------------------
+    # ADMINISTRACION DE DOCUMENTOS
+    # ----------------------------------------
+
+    path(
+        "administracion/documentos/",
+        administracion_documentos_views.administracion_documentos,
+        name="administracion_documentos",
+    ),
+
+    path(
+        "administracion/documentos/nuevo/",
+        administracion_documentos_views.administracion_documento_nuevo,
+        name="administracion_documento_nuevo",
+    ),
+
+    path(
+        "administracion/documentos/<int:documento_id>/editar/",
+        administracion_documentos_views.administracion_documento_editar,
+        name="administracion_documento_editar",
+    ),
+
+    path(
+        "administracion/documentos/<int:documento_id>/eliminar/",
+        administracion_documentos_views.administracion_documento_eliminar,
+        name="administracion_documento_eliminar",
+    ),
+
+    # ----------------------------------------
+    # ADMINISTRACION DE CONTACTOS
+    # ----------------------------------------
+
+    path(
+        "administracion/contactos/",
+        administracion_contactos_views.administracion_contactos,
+        name="administracion_contactos",
+    ),
+
+    path(
+        "administracion/contactos/nuevo/",
+        administracion_contactos_views.administracion_contacto_nuevo,
+        name="administracion_contacto_nuevo",
+    ),
+
+    path(
+        "administracion/contactos/<int:contacto_id>/editar/",
+        administracion_contactos_views.administracion_contacto_editar,
+        name="administracion_contacto_editar",
+    ),
+
+    path(
+        "administracion/contactos/<int:contacto_id>/eliminar/",
+        administracion_contactos_views.administracion_contacto_eliminar,
+        name="administracion_contacto_eliminar",
+    ),
+
+    # ----------------------------------------
+    # PORTAL DEL VECINO
+    # ----------------------------------------
 
     path("portal/", views.portal, name="portal"),
+
     path("emergencia/", views.emergencia, name="emergencia"),
-    path("notificaciones/", views.notificaciones_view, name="notificaciones"),
-    path("notificaciones/<int:notificacion_id>/leer/", views.marcar_notificacion_leida, name="marcar_notificacion_leida"),
-    path("notificaciones/marcar-todas/", views.marcar_todas_notificaciones_leidas, name="marcar_todas_notificaciones_leidas"),
+
+    path(
+        "notificaciones/",
+        views.notificaciones_view,
+        name="notificaciones",
+    ),
+
+    path(
+        "notificaciones/<int:notificacion_id>/leer/",
+        views.marcar_notificacion_leida,
+        name="marcar_notificacion_leida",
+    ),
+
+    path(
+        "notificaciones/marcar-todas/",
+        views.marcar_todas_notificaciones_leidas,
+        name="marcar_todas_notificaciones_leidas",
+    ),
+
     path("noticias/", views.noticias_view, name="noticias"),
     path("cumpleanios/", views.cumpleanios_view, name="cumpleanios"),
-    path("mi-familia/", views.mi_familia, name="mi_familia"),
-    path("mi-familia/solicitar-modificacion/", views.solicitar_modificacion_familia, name="solicitar_modificacion_familia"),
 
-    path("mis-reservas-sum/", views.mis_reservas_sum, name="mis_reservas_sum"),
-    path("disponibilidad-sum/", views.disponibilidad_sum, name="disponibilidad_sum"),
-    path("reservar-sum/", views.reservar_sum, name="reservar_sum"),
-    path("cancelar-reserva-sum/<int:reserva_id>/", views.cancelar_reserva_sum, name="cancelar_reserva_sum"),
+    path("mi-familia/", views.mi_familia, name="mi_familia"),
+
+    path(
+        "mi-familia/solicitar-modificacion/",
+        views.solicitar_modificacion_familia,
+        name="solicitar_modificacion_familia",
+    ),
+
+    # ----------------------------------------
+    # RESERVAS SUM
+    # ----------------------------------------
+
+    path(
+        "mis-reservas-sum/",
+        views.mis_reservas_sum,
+        name="mis_reservas_sum",
+    ),
+
+    path(
+        "disponibilidad-sum/",
+        views.disponibilidad_sum,
+        name="disponibilidad_sum",
+    ),
+
+    path(
+        "reservar-sum/",
+        views.reservar_sum,
+        name="reservar_sum",
+    ),
+
+    path(
+        "cancelar-reserva-sum/<int:reserva_id>/",
+        views.cancelar_reserva_sum,
+        name="cancelar_reserva_sum",
+    ),
+
+    # ----------------------------------------
+    # RECLAMOS Y ENCOMIENDAS
+    # ----------------------------------------
 
     path("reclamos/", views.mis_reclamos, name="mis_reclamos"),
     path("reclamos/nuevo/", views.nuevo_reclamo, name="nuevo_reclamo"),
-    path("mis-encomiendas/", views.mis_encomiendas, name="mis_encomiendas"),
+
+    path(
+        "mis-encomiendas/",
+        views.mis_encomiendas,
+        name="mis_encomiendas",
+    ),
+
     path("documentos/", views.documentos_view, name="documentos"),
-    path("contactos-utiles/", views.contactos_utiles, name="contactos_utiles"),
+
+    path(
+        "contactos-utiles/",
+        views.contactos_utiles,
+        name="contactos_utiles",
+    ),
+
+    # ----------------------------------------
+    # VISITAS
+    # ----------------------------------------
 
     path("visitas/", views.visitas_view, name="visitas"),
-    path("visitas/autorizar/", views.autorizar_visita, name="autorizar_visita"),
-    path("visitas/historial/", views.historial_visitas, name="historial_visitas"),
-    path("visitas/agenda/", views.agenda_visitas, name="agenda_visitas"),
-    path("visitas/invitados-frecuentes/", views.invitados_frecuentes, name="invitados_frecuentes"),
-    path("visitas/invitados-frecuentes/nuevo/", views.nuevo_invitado_frecuente, name="nuevo_invitado_frecuente"),
-    path("visitas/<int:visita_id>/cancelar/", views.cancelar_visita, name="cancelar_visita"),
-    path("visitas/carga-masiva/", views.carga_masiva_visitas, name="carga_masiva_visitas"),
-    path("visitas/carga-masiva/confirmar/", views.confirmar_carga_masiva_visitas, name="confirmar_carga_masiva_visitas"),
-    path("visitas/carga-masiva/plantilla/", views.descargar_plantilla_visitas, name="descargar_plantilla_visitas"),
 
-    path("seguridad/", seguridad_views.seguridad_dashboard, name="seguridad_dashboard"),
-    path("seguridad/emergencias/<int:emergencia_id>/tomar/", seguridad_views.tomar_emergencia, name="tomar_emergencia"),
-    path("seguridad/emergencias/<int:emergencia_id>/cerrar/", seguridad_views.cerrar_emergencia, name="cerrar_emergencia"),
-    path("seguridad/visitas/", seguridad_views.seguridad_visitas, name="seguridad_visitas"),
-    path("seguridad/historial/", seguridad_views.historial_seguridad, name="historial_seguridad"),
-    path("seguridad/visita-espontanea/", seguridad_views.visita_espontanea, name="visita_espontanea"),
-    path("seguridad/encomiendas/", seguridad_views.seguridad_encomiendas, name="seguridad_encomiendas"),
-    path("seguridad/encomiendas/nueva/", seguridad_views.registrar_encomienda, name="registrar_encomienda"),
-    path("seguridad/encomiendas/<int:encomienda_id>/entregar/", seguridad_views.entregar_encomienda, name="entregar_encomienda"),
-    path("seguridad/visitas/<int:visita_id>/ingreso/", seguridad_views.registrar_ingreso, name="registrar_ingreso"),
-    path("seguridad/visitas/<int:visita_id>/salida/", seguridad_views.registrar_salida, name="registrar_salida"),
-    path("seguridad/emergencias/estado/", seguridad_views.estado_emergencias, name="estado_emergencias"),
+    path(
+        "visitas/autorizar/",
+        views.autorizar_visita,
+        name="autorizar_visita",
+    ),
 
-    path("logout/", views.logout_view, name="logout"),
+    path(
+        "visitas/historial/",
+        views.historial_visitas,
+        name="historial_visitas",
+    ),
+
+    path(
+        "visitas/agenda/",
+        views.agenda_visitas,
+        name="agenda_visitas",
+    ),
+
+    path(
+        "visitas/invitados-frecuentes/",
+        views.invitados_frecuentes,
+        name="invitados_frecuentes",
+    ),
+
+    path(
+        "visitas/invitados-frecuentes/nuevo/",
+        views.nuevo_invitado_frecuente,
+        name="nuevo_invitado_frecuente",
+    ),
+
+    path(
+        "visitas/<int:visita_id>/cancelar/",
+        views.cancelar_visita,
+        name="cancelar_visita",
+    ),
+
+    path(
+        "visitas/carga-masiva/",
+        views.carga_masiva_visitas,
+        name="carga_masiva_visitas",
+    ),
+
+    path(
+        "visitas/carga-masiva/confirmar/",
+        views.confirmar_carga_masiva_visitas,
+        name="confirmar_carga_masiva_visitas",
+    ),
+
+    path(
+        "visitas/carga-masiva/plantilla/",
+        views.descargar_plantilla_visitas,
+        name="descargar_plantilla_visitas",
+    ),
+
+    # ----------------------------------------
+    # SEGURIDAD Y PORTERIA
+    # ----------------------------------------
+
+    path(
+        "seguridad/",
+        seguridad_views.seguridad_dashboard,
+        name="seguridad_dashboard",
+    ),
+
+    path(
+        "seguridad/emergencias/<int:emergencia_id>/tomar/",
+        seguridad_views.tomar_emergencia,
+        name="tomar_emergencia",
+    ),
+
+    path(
+        "seguridad/emergencias/<int:emergencia_id>/cerrar/",
+        seguridad_views.cerrar_emergencia,
+        name="cerrar_emergencia",
+    ),
+
+    path(
+        "seguridad/visitas/",
+        seguridad_views.seguridad_visitas,
+        name="seguridad_visitas",
+    ),
+
+    path(
+        "seguridad/historial/",
+        seguridad_views.historial_seguridad,
+        name="historial_seguridad",
+    ),
+
+    path(
+        "seguridad/visita-espontanea/",
+        seguridad_views.visita_espontanea,
+        name="visita_espontanea",
+    ),
+
+    path(
+        "seguridad/encomiendas/",
+        seguridad_views.seguridad_encomiendas,
+        name="seguridad_encomiendas",
+    ),
+
+    path(
+        "seguridad/encomiendas/nueva/",
+        seguridad_views.registrar_encomienda,
+        name="registrar_encomienda",
+    ),
+
+    path(
+        "seguridad/encomiendas/<int:encomienda_id>/entregar/",
+        seguridad_views.entregar_encomienda,
+        name="entregar_encomienda",
+    ),
+
+    path(
+        "seguridad/visitas/<int:visita_id>/ingreso/",
+        seguridad_views.registrar_ingreso,
+        name="registrar_ingreso",
+    ),
+
+    path(
+        "seguridad/visitas/<int:visita_id>/salida/",
+        seguridad_views.registrar_salida,
+        name="registrar_salida",
+    ),
+
+    path(
+        "seguridad/emergencias/estado/",
+        seguridad_views.estado_emergencias,
+        name="estado_emergencias",
+    ),
 ]
