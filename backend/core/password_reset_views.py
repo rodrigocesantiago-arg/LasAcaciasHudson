@@ -49,11 +49,8 @@ def recuperar_password(request):
                 f"Las Acacias Hudson · Comunidad360"
             )
 
-            # Durante desarrollo se usa el backend de consola.
-            # El email completo aparecerá en la terminal donde corre runserver.
-            connection = get_connection(
-                backend="django.core.mail.backends.console.EmailBackend"
-            )
+            # Utiliza el servicio de correo configurado en settings.py.
+            connection = get_connection()
 
             EmailMessage(
                 subject=asunto,

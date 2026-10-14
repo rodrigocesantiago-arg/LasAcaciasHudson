@@ -143,13 +143,10 @@ def enviar_invitacion_vecino(request, lote_id):
             )
             return redirect("administracion_lote_detalle", lote_id=lote.id)
 
-    # En desarrollo mostramos el correo en los registros de Docker.
+    # Utiliza el correo SMTP configurado en settings.py.
     from django.core.mail import get_connection
 
-    conexion = get_connection(
-        backend="django.core.mail.backends.console.EmailBackend"
-    )
-
+    conexion = get_connection()
     try:
         with transaction.atomic():
             if usuario is None:
@@ -187,7 +184,7 @@ def enviar_invitacion_vecino(request, lote_id):
                     f"Si no esperabas esta invitación, "
                     f"contactá a la administración."
                 ),
-                from_email="Comunidad360 <no-reply@lasacaciashudson.local>",
+                from_email="Comunidad360 <comunidad360.lasacacias@gmail.com>",
                 to=[email],
                 connection=conexion,
             ).send(fail_silently=False)
